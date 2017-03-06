@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='CallCenter'>
+    <!-- Inherit the core Web Toolkit stuff.                        -->
+    <inherits name='com.google.gwt.user.User'/>
+
+
+    <inherits name="com.smartgwtpower.SmartGwtPowerNoScript"/>
+    <inherits name="com.smartgwt.Drawing"/>
+    <inherits name="com.smartgwt.Charts"/>
+    <inherits name="com.smartgwt.tools.SmartGwtTools"/>
+    <inherits name="com.smartgwtpower.tools.Tools"/>
+    <inherits name="com.smartclient.theme.enterpriseblue.EnterpriseBlue"/>
+    <inherits name="com.smartclient.theme.enterprise.EnterpriseResources"/>
+
+
+    <!-- Inherit the default GWT style sheet.  You can change       -->
+    <!-- the theme of your GWT application by uncommenting          -->
+    <!-- any one of the following lines.                            -->
+    <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+    <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+    <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
+
+    <!-- Other module inherits                                      -->
+
+    <!-- Specify the app entry point class.                         -->
+    <entry-point class='ge.magti.client.CallCenter'/>
+
+    <!-- Specify the paths for translatable code                    -->
+    <source path='client'/>
+    <source path='shared'/>
+
+
+    <add-linker name="xsiframe"/>
+    <set-configuration-property name="devModeRedirectEnabled" value="true"/>
+    <set-property name="compiler.useSourceMaps" value="true"/>
+    <set-configuration-property name="gwt.superdevmode" value="on"/>
+    <set-configuration-property name="xsiframe.failIfScriptTag" value="FALSE"/>
+
+</module>
