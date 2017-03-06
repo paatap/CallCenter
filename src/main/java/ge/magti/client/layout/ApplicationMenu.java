@@ -15,6 +15,7 @@ public class ApplicationMenu extends HLayout {
     public ApplicationMenu() {
 
         super();
+
         this.setHeight(APPLICATION_MENU_HEIGHT);
 
         label = new Label();
