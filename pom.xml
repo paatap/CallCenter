@@ -21,6 +21,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <web.socket.version>1.1.2</web.socket.version>
     </properties>
 
     <dependencyManagement>
@@ -135,6 +136,19 @@
             <groupId>com.isomorphic.smartgwt.enterprise</groupId>
             <artifactId>smartgwt-skins</artifactId>
             <version>${smartgwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>7.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.realityforge.gwt.websockets</groupId>
+            <artifactId>gwt-websockets</artifactId>
+            <version>${web.socket.version}</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

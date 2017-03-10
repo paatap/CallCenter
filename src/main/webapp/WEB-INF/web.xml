@@ -3,9 +3,25 @@
         PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
         "http://java.sun.com/dtd/web-app_2_3.dtd">
 
-<web-app>
+<!--web-app-->
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
     <!-- Servlets -->
+
+
+    <servlet>
+        <servlet-name>mymessage</servlet-name>
+        <servlet-class>ge.magti.mymessage</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>mymessage</servlet-name>
+        <url-pattern>/mymessage</url-pattern>
+    </servlet-mapping>
+
+
+
+
     <servlet>
         <servlet-name>greetServlet</servlet-name>
         <servlet-class>ge.magti.server.GreetingServiceImpl</servlet-class>
@@ -48,10 +64,10 @@
          of this servlet would not be ordinary SmartClient/SmartGWT applications (though they
          could be), but other client technologies that need to access SmartClient DataSource
          operations as reusable services -->
-    <servlet>
+    <!--servlet>
         <servlet-name>RESTHandler</servlet-name>
         <servlet-class>com.isomorphic.servlet.RESTHandler</servlet-class>
-    </servlet>
+    </servlet-->
 
     <!-- The DataSourceLoader servlet returns Javascript representations of the dataSources whose
          ID's are passed to it - it is an alternative to using the <loadDS> JSP tag -->
@@ -79,11 +95,11 @@
     <listener>
         <listener-class>com.isomorphic.base.InitListener</listener-class>
     </listener>
-    <servlet>
+    <!--servlet>
         <servlet-name>Init</servlet-name>
         <servlet-class>com.isomorphic.base.Init</servlet-class>
         <load-on-startup>1</load-on-startup>
-    </servlet>
+    </servlet-->
 
     <servlet>
         <servlet-name>HttpProxy</servlet-name>
@@ -94,11 +110,11 @@
          data need for all client requests.  This is optional, and improves performance
          of the first few page requests.  PreCache cannot be invoked by a browser, because
          there is no "servlet-mapping" defined for it. -->
-    <servlet>
+    <!--servlet>
         <servlet-name>PreCache</servlet-name>
         <servlet-class>com.isomorphic.servlet.PreCache</servlet-class>
         <load-on-startup>2</load-on-startup>
-    </servlet>
+    </servlet-->
 
     <!-- RPCManager uses this URL by default for Built-in DataSource operations -->
     <servlet-mapping>
