@@ -1,0 +1,21 @@
+<Context>
+
+<Resource name="jdbc/myconn"
+
+auth="Container"
+
+type="javax.sql.DataSource"
+
+username="cc_crm"
+
+password=""
+
+driverClassName="com.mysql.jdbc.Driver"
+
+url="jdbc:mysql:/[yourserver]:3306/[yourapplication]"
+
+maxActive="15"
+
+maxIdle="3"/>
+
+</Context>

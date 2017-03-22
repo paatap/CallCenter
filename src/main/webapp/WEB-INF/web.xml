@@ -19,7 +19,14 @@
         <url-pattern>/mymessage</url-pattern>
     </servlet-mapping>
 
-
+    <servlet>
+        <servlet-name>cc_get_number</servlet-name>
+        <servlet-class>ge.magti.cc_get_number</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>cc_get_number</servlet-name>
+        <url-pattern>/cc_get_number</url-pattern>
+    </servlet-mapping>
 
 
     <servlet>
@@ -128,10 +135,10 @@
         <url-pattern>/isomorphic/IDACall.aspx/*</url-pattern>
     </servlet-mapping>
 
-    <!-- DataSourceLoader requests -->
+    <!-- DataSourceLoader requests **isomorphic-->
     <servlet-mapping>
         <servlet-name>DataSourceLoader</servlet-name>
-        <url-pattern>/isomorphic/DataSourceLoader</url-pattern>
+        <url-pattern>/sc/DataSourceLoader</url-pattern>
     </servlet-mapping>
 
     <!-- The screenLoader servlet loads screen definitions in javascript notation -->
@@ -183,4 +190,28 @@
         <extension>manifest</extension>
         <mime-type>text/cache-manifest</mime-type>
     </mime-mapping>
+
+
+
+
+
+
+
+
+
+
+        <resource-ref>
+
+            <description>mydbconn</description>
+
+            <res-ref-name>jdbc/myconn</res-ref-name>
+
+            <res-type>javax.sql.DataSource</res-type>
+
+            <res-auth>Container</res-auth>
+
+        </resource-ref>
+
+
+
 </web-app>

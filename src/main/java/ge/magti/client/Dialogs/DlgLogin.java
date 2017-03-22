@@ -9,6 +9,7 @@ package ge.magti.client.Dialogs;
         import com.smartgwt.client.widgets.form.DynamicForm;
         import com.smartgwt.client.widgets.form.fields.ButtonItem;
         import com.smartgwt.client.widgets.form.fields.PasswordItem;
+        import com.smartgwt.client.widgets.form.fields.SelectItem;
         import com.smartgwt.client.widgets.form.fields.TextItem;
         import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
         import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
@@ -17,7 +18,9 @@ package ge.magti.client.Dialogs;
         import com.smartgwt.client.widgets.layout.HLayout;
         import ge.magti.client.CallCenter;
 
+
         import java.util.Date;
+        import java.util.LinkedHashMap;
 
 public class DlgLogin extends Window {
 
@@ -27,10 +30,11 @@ public class DlgLogin extends Window {
     private TextItem userNameItem;
     private PasswordItem passwordItem;
     public ButtonItem buttonItem;
+    public ButtonItem buttonItem2;
+    SelectItem grp;
     private Canvas mainWindow;
 
     public DlgLogin() {
-
         setWidth(280);
         setHeight(130);
         setTitle("Login");
@@ -89,8 +93,27 @@ public class DlgLogin extends Window {
             }
         });
 
+
+        grp = new SelectItem("Group");
+        buttonItem2 = new ButtonItem();
+        buttonItem2.setTitle("Apply");
+        buttonItem2.setColSpan(2);
+        buttonItem2.setAlign(Alignment.RIGHT);
+        buttonItem2.setWidth(80);
+//        userNameItem.setHint("თქვენი email-ი, @magticom.ge-ს გარეშე");
+        buttonItem2.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                //SC.say(grp.getValueAsString());
+                //SC.say(mp.get(grp.getValueAsString()).toString());
+                CallCenter.callCenterInstance.loginSuccess2(grp.getValueAsString());
+            }
+        });
+buttonItem2.setVisible(false);grp.setVisible(false);
+
+
         form.setFields(userNameItem, passwordItem,
-                buttonItem);
+                buttonItem,grp,buttonItem2);
         hLayout.setMembers(form);
         addItem(hLayout);
         setCookieValues();
@@ -115,7 +138,7 @@ public class DlgLogin extends Window {
                 return;
             }
             buttonItem.setDisabled(true);
-
+            CallCenter.callCenterInstance.pass=password;
             CallCenter.callCenterInstance.sendgreet("login\t"+userName+"\t"+password);
 
             //CallCenter.callCenterInstance.loginSuccess(this);
@@ -159,5 +182,23 @@ public class DlgLogin extends Window {
         super.destroy();
         if (mainWindow != null)
             mainWindow.destroy();
+    }
+    LinkedHashMap mp;
+    public void loginSuccess(String[] s22){
+        if (s22.length==2) { CallCenter.callCenterInstance.loginSuccess2(s22[1]);}
+        else {
+            setHeight(200);
+            buttonItem2.setVisible(true);
+            grp.setVisible(true);
+            mp = new LinkedHashMap();
+            for (int i = 1; i < s22.length; i++) {
+                //String[] s222=s22[i].replace("null","").split("\t");
+                //log.operat, log.provider, log2.problems, log2.info, log.call_start,log.callid
+                mp.put(s22[i], s22[i]);
+            }
+            grp.setValueMap(mp);
+            grp.setValue(mp.get(s22[1]));
+            form.redraw();
+        }
     }
 }

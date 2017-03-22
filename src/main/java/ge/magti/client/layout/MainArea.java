@@ -1,23 +1,25 @@
 package ge.magti.client.layout;
 
-import com.google.gwt.core.shared.GWT;
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
+
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.rpc.Messaging;
 import com.smartgwt.client.rpc.MessagingCallback;
 import com.smartgwt.client.types.*;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.Window;
+import com.smartgwt.client.widgets.events.ClickEvent;
+import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
+import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -29,14 +31,37 @@ import ge.magti.client.CallCenter;
 import ge.magti.client.GreetingService;
 import ge.magti.client.GreetingServiceAsync;
 
-import java.awt.*;
+
+import java.util.*;
 
 public class MainArea extends VLayout {
 
     //private Label label;
+//Operator States
+    public static final int   SendRingFile  =200;
+    public static final int   LOGIN 		=201;
+    public static final int   BUSY		=202;
+    public static final int   READY		=203;
+    public static final int   RINGING	=204;
+    public static final int   REST		=205;
+    public static final int   ANSWER	=206;
+    public static final int   CON		=207;
+    public static final int   TERMINATE	=208;
+    public static final int   END		=209;
+    public static final int   PlayWtOpFile  =210;
+    public static final int   PlayMenu      =211;
+
+    public static final int   mobile        =0;
+    public static final int   gov           =2;
+    public static final int   magtisat      =13;
+    public static final int   magtifix      =3;
+    public static final int   marketing     =5;
+
+    int state=0;
 
 
-    final int y100=100;//buttons height
+
+    final int y100=50;//buttons height
     final int y300=150;//buttons+ring+save/height
     final ListGrid problems = new ListGrid();
     final ListGrid infos = new ListGrid();
@@ -48,20 +73,43 @@ public class MainArea extends VLayout {
     final DynamicForm shablonform = new DynamicForm();
     final DynamicForm chaninfoform = new DynamicForm();
     public TextAreaItem txt = new TextAreaItem();
-    int mygrp=0;
-    String problemsinfo="";
+    TextItem number = new TextItem();
+    TextAreaItem ninfo = new TextAreaItem();
+    String callid="";
+    public int mygrp=0;
+    public String mygrps="";
+    //String problemsinfo="";
+    HashMap<String,String> problems0;
+    HashMap<String,String> infos0;
+    LinkedHashMap<String,String> mp=new LinkedHashMap();
+
+    String numberdescrip="";
+
+    IButton readybutton;
+    IButton restbutton;
+    IButton busybutton;
+    IButton endbutton;
+    IButton restendbutton;
+    IButton infobutton;
+    IButton savebutton;
+    IButton clirbutton;
+    IButton garbagebutton;
+
+    VLayout callpanel;
+    final Label readyint;
+
     public MainArea() {
 
         super();
 
 
-        registerCallBack(this);
 
-        final VLayout mainLayout = new VLayout();
+
+        //final VLayout mainLayout = new VLayout();
 
 
         final VLayout VLayout10 = new VLayout(); VLayout10.setShowEdges(true);
-        final VLayout VLayout20 = new VLayout(); VLayout10.setShowEdges(true);
+        callpanel = new VLayout(); VLayout10.setShowEdges(true);
         //mainLayout.setEdgeImage("edges/custom/sharpframe_10.png");
         //mainLayout.setDragAppearance(DragAppearance.TARGET);
         //mainLayout.setOverflow(Overflow.HIDDEN);
@@ -76,39 +124,96 @@ public class MainArea extends VLayout {
         final HLayout HLayout1 = new HLayout();HLayout1.setShowEdges(true);
 
         final HLayout HLayout2 = new HLayout();HLayout2.setShowEdges(true);
+        final HLayout HLayout3 = new HLayout();HLayout3.setShowEdges(true);
 
 
+        //com.smartgwt.client.widgets.events.
+        //com.smartgwt.client.widgets.events.
+
+        readybutton = new IButton("READY");readybutton.setHeight100();readybutton.setWidth("33%");
+        readybutton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                myonclick("ready",readybutton);
+            }
+        });
+        readyint = new Label("0");readyint.setHeight100();readyint.setAlign(Alignment.CENTER);
+        readyint.setWidth("33%");
+        restbutton= new IButton("REST");restbutton.setHeight100();restbutton.setWidth("33%");
+        restbutton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                myonclick("rest",restbutton);
+            }
+        });
+
+        busybutton = new IButton("BUSY");busybutton.setHeight100();busybutton.setWidth("33%");
+        busybutton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                myonclick("busy",busybutton);
+            }
+        });
+        endbutton = new IButton("END");endbutton.setHeight100();endbutton.setWidth("33%");
+        endbutton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                myonclick("end",endbutton);
+            }
+        });
+        restendbutton = new IButton("RESTEND");restendbutton.setHeight100();restendbutton.setWidth("33%");
+        restendbutton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                myonclick("restend",restendbutton);
+            }
+        });
+        savebutton = new IButton("SAVE");savebutton.setHeight(y100/2);savebutton.setWidth("33%");
+        savebutton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                String ss=txt.getValue().toString();
+                if (ss.contains("it is my test")) CallCenter.callCenterInstance.debug=true;
+                else if (ss.contains("it is not my test")) CallCenter.callCenterInstance.debug=false;
+
+                CallCenter.callCenterInstance.sendgreet("savetxt\t"+CallCenter.callCenterInstance.uname
+                        +"\n"+ss);
 
 
+            }
+        });
+        clirbutton = new IButton("CLIR");clirbutton.setHeight(y100/2);clirbutton.setWidth("33%");
+        clirbutton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                com.google.gwt.user.client.Window.open(
+                        "http://cc2.magti.ge:8080/oprep/rep1?job=clir",
+                        "_blank",
+                        ""
+                );
+            }
+        });
 
-
-
-        IButton readybutton = new IButton("READY");readybutton.setHeight100();
-        final Label readyint = new Label("0");readyint.setHeight100();readyint.setAlign(Alignment.CENTER);
-        IButton restbutton= new IButton("REST");restbutton.setHeight100();
-
-
-        IButton busybutton = new IButton("BUSY");busybutton.setHeight100();
-        IButton endbutton = new IButton("END");endbutton.setHeight100();
-        IButton restendbutton = new IButton("RESTEND");restendbutton.setHeight100();
-
-
+        final Label tmp1 = new Label("");tmp1.setWidth("33%");
 
         HLayout1.addMember(readybutton);HLayout1.addMember(readyint);HLayout1.addMember(restbutton);
         HLayout2.addMember(busybutton);HLayout2.addMember(endbutton);HLayout2.addMember(restendbutton);
 
+        //HLayout3.setAlign(VerticalAlignment.BOTTOM);
+        HLayout3.setDefaultLayoutAlign(VerticalAlignment.CENTER);
+        HLayout3.setAlign(Alignment.LEFT);
+
+        HLayout3.addMember(savebutton);HLayout3.addMember(clirbutton);HLayout3.addMember(tmp1);
+        HLayout1.setHeight(y100);HLayout2.setHeight(y100);HLayout3.setHeight100();
+
         VLayout10.addMember(HLayout1);
         VLayout10.addMember(HLayout2);
+        VLayout10.addMember(HLayout3);
         //HLayout3.addMember(kukubutton);
 
 
 
-        //int y=readybutton.getHeight();
-        HLayout1.setHeight100();HLayout2.setHeight100();
-        VLayout10.setHeight(y100);
 
-        int x=readybutton.getWidth();
-        HLayout1.setWidth(x*3);HLayout2.setWidth(x*3);
+        //int y=readybutton.getHeight();
+        HLayout1.setHeight100();HLayout2.setHeight100();;HLayout3.setHeight100();
+        VLayout10.setHeight100();
+
+        int x=100;
+        //HLayout1.setWidth(x*3);HLayout2.setWidth(x*3);HLayout3.setWidth(x*3);
+        HLayout1.setWidth100();HLayout2.setWidth100();HLayout3.setWidth100();
         VLayout10.setWidth(x*3);
 
 
@@ -118,12 +223,65 @@ public class MainArea extends VLayout {
         HLayout100.setWidth100();
 
         //VLayout20.setWidth(x*2);
-        VLayout20.setWidth100();
-        VLayout20.setBackgroundColor("#FF0000");
+        callpanel.setWidth100();
+        callpanel.setBackgroundColor("#FF0000");
+
+        final DynamicForm call = new DynamicForm();
+        //call.setWidth(400);
+        //call.setColWidths(120, "*");
+        call.setWidth("100%");
+        call.setAlign(Alignment.CENTER);
+        number.setColSpan(2);
+        number.setTitle("Number");number.setWidth("100%");
+        number.setAlign(Alignment.CENTER);
+        infobutton = new IButton("CCARE");infobutton.setWidth100();
+        infobutton.setAlign(Alignment.CENTER);
+        infobutton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                //com.google.gwt.user.client.Window.Location.assign("http://www.google.com");
+                com.google.gwt.user.client.Window.open(
+                        "http://ccare.magti.ge/CCareFE/ccarefe/initAppServlet?userName="+
+                                CallCenter.callCenterInstance.uname
+                                +"&phone="+number.getValue()
+                                +"&password="+
+                                CallCenter.callCenterInstance.pass,"_blank",
+                        ""
+                );
+
+            }
+        });
+        garbagebutton = new IButton("GARBAGE");garbagebutton.setWidth100();
+        garbagebutton.setAlign(Alignment.CENTER);
+        garbagebutton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+
+                //com.google.gwt.user.client.Window.Location.assign("http://www.google.com");
+                com.google.gwt.user.client.Window.open(
+                        "http://sdesk.magticom.ge:8080/sm/index.do"
+                        ,"_blank",""
+                );
+            }
+        });
+
+        ninfo.setColSpan(2);
+        ninfo.setShowTitle(false);ninfo.setWidth("100%");
+        ninfo.setAlign(Alignment.CENTER);
+        ninfo.setHeight("100%");
+
+
+        //        prgarb=Runtime.getRuntime().exec(brouser+" http://sdesk.magticom.ge:8080/sm/index.do");
+        callpanel.setWidth100();
+        callpanel.setHeight100();
+        callpanel.addMember(call);
+        callpanel.addMember(infobutton);
+        callpanel.addMember(garbagebutton);
+
+        call.setFields(number,ninfo);call.setHeight(80);//call.setBackgroundColor("#00FF00");
+        call.setTitleOrientation(TitleOrientation.TOP);
 
         HLayout100.addMember(VLayout10);
-        HLayout100.addMember(VLayout20);
-
+        HLayout100.addMember(callpanel);
+        callpanel.setLayoutMargin(10);
 
         final VLayout VLayout1000 = new VLayout(); VLayout1000.setShowEdges(true);
         VLayout1000.setHeight100();
@@ -222,9 +380,9 @@ HLayout104.addMember(VLayout11);HLayout104.addMember(VLayout12);
         //HLayout10000.addMember(problems);HLayout10000.addMember(infos);
 
 
-        mainLayout.addMember(HLayout10000);
+      //  mainLayout.addMember(HLayout10000);
 
-        this.addMember(mainLayout);
+        this.addMember(HLayout10000);
 
 
         initprobleminfo();
@@ -232,10 +390,11 @@ HLayout104.addMember(VLayout11);HLayout104.addMember(VLayout12);
         if (mygrp==0||mygrp==1) vv="0,2";
         else if (mygrp==3) vv="0";
         else if (mygrp==6) vv="6";
-        else vv=mygrp+",0";
+        else vv=""+mygrp+",0";
 
-        CallCenter.callCenterInstance.sendgreet("getprobleminfo\t"+vv+"\t"+mygrp);
-
+        CallCenter.callCenterInstance.sendgreet("getprobleminfo\t"+vv+"\t"+mygrp+"\t"+
+                CallCenter.callCenterInstance.uname+"\t"+CallCenter.callCenterInstance.mynumber);
+//txt.setValue(CallCenter.callCenterInstance.messagestring+"\n"+CallCenter.callCenterInstance.debug);
   //      greetingService.greetServer("getprobleminfo\t"+vv+"\t"+mygrp, CallCenter.callCenterInstance.cb);
 
 
@@ -288,9 +447,10 @@ HLayout104.addMember(VLayout11);HLayout104.addMember(VLayout12);
 
     //SC.say(getWebSocketURL());
     }
-
-
-
+    public void init() {
+        registerCallBack(this, CallCenter.callCenterInstance.messagestring + "/" +
+                CallCenter.callCenterInstance.mynumber + "," + mygrp);
+    }
     private String getWebSocketURL()
     {
         final String moduleBaseURL = com.google.gwt.core.client.GWT.getHostPageBaseURL();
@@ -361,7 +521,15 @@ HLayout104.addMember(VLayout11);HLayout104.addMember(VLayout12);
         //chaninfo.setAlign(Alignment.CENTER);
         chaninfo.setWidth("100%");
 
-        chaninfo.setValueMap("ring1", "ring2");
+        chaninfo.addChangeHandler(new ChangeHandler() {
+            public void onChange(ChangeEvent event) {
+            //    txt.setValue(shablon.getValueAsString()+"="+shablon.getValue()+"="+shablon.getDisplayField()
+              //  +"="+event.getValue());
+                setprobleminfo2(event.getValue().toString());
+            }
+        });
+
+        //chaninfo.setValueMap("ring1", "ring2");
         //shablon
         shablon.setShowTitle(false);
         shablon.setAlign(Alignment.CENTER);
@@ -376,8 +544,12 @@ HLayout104.addMember(VLayout11);HLayout104.addMember(VLayout12);
         });
 
 
-
-
+        problems2.setCanSelectAll(false);
+        ListGridField problem2Field = new ListGridField("problem", "problem");
+        problems2.setFields( problem2Field);problems2.setShowHeader(false);
+        infos2.setCanSelectAll(false);
+        ListGridField info2Field = new ListGridField("info", "info");
+        infos2.setFields( info2Field);infos2.setShowHeader(false);
 
      /*   Messaging.subscribe("stockQuotes" , new MessagingCallback() {
             @Override
@@ -388,65 +560,189 @@ HLayout104.addMember(VLayout11);HLayout104.addMember(VLayout12);
         });*/
 
     }
+    void setprobleminfo2(String ss11) {
+        String ss=mp.get(ss11);//txt.setValue(ss);
+        problems2.setData(new ListGridRecord[] {});
+        infos2.setData(new ListGridRecord[] {});
+
+        String[] s2=ss.split("\t");
+        //log.operat, log.provider, log2.problems, log2.info, log.call_start,log.callid
+
+
+        if (!s2[2].equals(" ")) {
+            String[] sp2=s2[2].replace("{","").replace("}","").split(",");
+            for (int i = 0; i < sp2.length; i++) {
+                Record rr = new Record();
+                String[] sp = problems0.get(sp2[i]).split("\t");
+                if (sp[1].equals("100")) rr.setAttribute("problem", "(reg)" + sp[0]);
+                else rr.setAttribute("problem", sp[0]);
+                problems2.addData(rr);
+            }
+            //if (sp2.length>0) problems2.setVisible(true);
+        }
+
+        if (!s2[3].equals(" ")) {
+            String[] si2=s2[3].replace("{","").replace("}","").split(",");
+            for (int i = 0; i < si2.length; i++) {
+                Record rr = new Record();
+                rr.setAttribute("info", infos0.get(si2[i]).split("\t")[0]);
+                infos2.addData(rr);
+            }
+            //if (si2.length>0) infos2.setVisible(true);
+        }
+
+    }
     public void fromgreet(String result) {
-        problemsinfo = result;
+        //problemsinfo = result;
+        initprobleminfo0(result);
         setprobleminfo(shablon.getValueAsString());
     }
+
+    void initprobleminfo0(String result) {
+        problems0=new HashMap();
+        infos0=new HashMap();
+        String[] s2=result.split("\n");
+        int type=0;
+        StringBuffer txt0=new StringBuffer("");StringBuffer sh0=new StringBuffer("");
+        boolean btxt=true;boolean bsh=true;
+        for (int i=1;i<s2.length;i++) {
+            if (s2[i].equals("$problem")) type=0;
+            else if (s2[i].equals("$info")) type=1;
+            else if (s2[i].equals("$savetxt")) type=11;
+            else if (s2[i].equals("$shablon")) type=22;
+            else {
+                if (type==11){
+                    if (btxt) {txt0.append(s2[i]);btxt=false;}
+                    else txt0.append("\n"+s2[i]);
+                }else if (type==22){
+                    if (bsh) {sh0.append(s2[i]);bsh=false;}
+                    else sh0.append("\n"+s2[i]);
+                }else {
+                    String[] s3 = s2[i].split("\t");
+                    if (type == 0) {
+                        problems0.put(s3[0], s3[1] + "\t" + s3[2]);
+                    } else if (type == 1) {
+                        infos0.put(s3[0], s3[1] + "\t" + s3[2]);
+                    }
+                }
+            }
+        }
+        txt.setValue(txt0.toString());
+        CallCenter.callCenterInstance.setchatsh(sh0.toString());
+    }
+
     void setprobleminfo(String shabl) {
 
- /*       String vv="";
+        String vv="";
         //logika pokaza???????????????????????????????
         if (mygrp==0||mygrp==1) vv="0,2";
         else if (mygrp==3) vv="0";
         else if (mygrp==6) vv="6";
-        else vv=mygrp+",0";
+        else vv=""+mygrp+",0";
 //        vv="0";
         //end logika pokaza
-        String[] vv2=vv.split(",");*/
+        String[] vv2=vv.split(",");
 problems.setData(new ListGridRecord[] {});
 infos.setData(new ListGridRecord[] {});
 requests.setData(new ListGridRecord[] {});
-        String[] s2=problemsinfo.split("\n");
-        int type=0;
-       // for (int j=0;j<vv2.length;j++)
-        for (int i=1;i<s2.length;i++) {
-            if (s2[i].equals("$problem")) type=0;
-            else if (s2[i].equals("$info")) type=1;
-            else {
-                String[] s3=s2[i].split("\t");
 
-                if (type == 0&&s3[2].equals("100")){
 
-                        Record rr = new Record();
-                        rr.setAttribute("myid", s3[0]);
-                        rr.setAttribute("request", s3[1]);
-                        requests.addData(rr);
+        problems2.setData(new ListGridRecord[] {});
+        infos2.setData(new ListGridRecord[] {});
+problems2.setEmptyMessage("");
+infos2.setEmptyMessage("");
 
-                }else
-               // if (s3[2].equals(vv2[i]))
-                    if (s3[1].indexOf(shabl)>0) {
-                        Record rr = new Record();
-                        rr.setAttribute("myid", s3[0]);
-                        if (type == 0) {
-                            rr.setAttribute("problem", s3[1]);
-                            problems.addData(rr);
-                        } else if (type == 1) {
-                            rr.setAttribute("info", s3[1]);
-                            infos.addData(rr);
-                        }
-                    }
+        for(Map.Entry<String, String> entry : problems0.entrySet()){
+
+            String key=entry.getKey();
+            String[] val2=entry.getValue().split("\t");
+            String val=val2[0];
+            String grp=val2[1];
+            if (grp.equals("100")){
+                Record rr = new Record();
+                rr.setAttribute("myid", key);
+                rr.setAttribute("request", val);
+                requests.addData(rr);
+            }else if (val.indexOf(shabl)>0){
+                if (vv.contains(grp)) {
+                    Record rr = new Record();
+                    rr.setAttribute("myid", key);
+                    rr.setAttribute("problem", val);
+                    problems.addData(rr);
+                }
             }
         }
 
+        for(Map.Entry<String, String> entry : infos0.entrySet()){
+            String key=entry.getKey();
+            String[] val2=entry.getValue().split("\t");
+            String val=val2[0];
+            String grp=val2[1];
+            if (val.indexOf(shabl)>0){
+                if (vv.contains(grp)) {
+                    Record rr = new Record();
+                    rr.setAttribute("myid", key);
+                    rr.setAttribute("info", val);
+                    infos.addData(rr);
+                }
+            }
+        }
+
+//txt.setValue(mygrp+"=="+vv);
+
+    }
+    public void callMeBackclose(String msg1,String msg2){
+        CallCenter.callCenterInstance.closeLayouts(false);
     }
 
     public void callMeBack(String msg1,String msg2){
         //SC.say(msg1,msg2);
-        txt.setValue("message===="+msg1+msg2);
+        if (CallCenter.callCenterInstance.debug) txt.setValue("message===="+msg1+msg2);
+        //$command2	1489392937.94	599283399mess
+        if (msg1.startsWith("$command2")){
+            String[] s22=msg1.split("\n");
+            String[] s2=s22[0].split("\t");
+            number.setValue(s2[2]);
+            state=CON;
+            callid=s2[1];
+
+            mp=new LinkedHashMap();
+            numberdescrip="";int type=0;
+            for (int i=1;i<s22.length;i++){
+                //String[] s222=s22[i].replace("null","").split("\t");
+                //log.operat, log.provider, log2.problems, log2.info, log.call_start,log.callid
+                if (s22[i].equals("it$is$phonedescrip")) {type=1;continue;}
+                if (type==0) mp.put(""+i,s22[i].replace("null"," "));
+                else {
+                    String s1=s22[i].trim();
+                    if (!s1.equals("")) {
+                        if (numberdescrip.equals("")) numberdescrip = s1;
+                         else numberdescrip +="\n"+ s1;
+                    }
+                }
+            }
+            ninfo.setValue(numberdescrip);
+            chaninfo.setValueMap(mp);
+            chaninfo.setValue(mp.get("1"));
+
+            this.setbuttons();
+            setprobleminfo2("1");
+        }else if (msg1.startsWith("$command3")) {
+            //txt.setValue("command3");
+            state=TERMINATE;
+            this.setbuttons();
+            CallCenter.callCenterInstance.sendgreet("button\t"+CallCenter.callCenterInstance.uname+"\t"+
+                    "terminate"+"\t"+CallCenter.callCenterInstance.mynumber+"\t"+
+                    " "+"\t"+mygrp+"\t"+mygrps);
+        }else CallCenter.callCenterInstance.message(msg1);
     }
 
+    public native void closesocket() /*-{
+        //$wnd.closeSocket();
+$wndaa.close();
+        }-*/;
 
-    public native void registerCallBack(MainArea callBackObject) /*-{
+    public native void registerCallBack(MainArea callBackObject,String messagestring) /*-{
 
 
 
@@ -463,8 +759,8 @@ requests.setData(new ListGridRecord[] {});
         }
         // Create a new instance of the websocket
         //webSocket = new WebSocket("ws://127.0.0.1:8888/acc1111");
-        webSocket = new WebSocket("ws://127.0.0.1:9080/CallCenter_war/message");
-
+        //webSocket = new WebSocket("ws://127.0.0.1:9080/CallCenter_war/message");
+        webSocket = new WebSocket(messagestring);
 
     webSocket.onopen = function(event){
         // For reasons I can't determine, onopen gets called twice
@@ -491,6 +787,8 @@ requests.setData(new ListGridRecord[] {});
     };
 
     webSocket.onclose = function(event){
+        callBackObject.@ge.magti.client.layout.MainArea::callMeBackclose(Ljava/lang/String;Ljava/lang/String;)(event.data,"mess");
+
         writeResponse("Connection closed");
     };
 
@@ -512,7 +810,7 @@ requests.setData(new ListGridRecord[] {});
 
 
         openSocket();
-
+$wndaa =webSocket;
 
     //    $wnd.callBackTo = function (msg1,msg2) {
     //        callBackObject.@ge.magti.client.layout.MainArea::callMeBack(Ljava/lang/String;Ljava/lang/String;)(msg1,msg2);
@@ -539,4 +837,152 @@ requests.setData(new ListGridRecord[] {});
         }
     };
     */
+    void endclick(){
+        String ss="\n\tproblems";
+        for (ListGridRecord rec:problems.getSelectedRecords()){
+            ss+="\n"+rec.getAttribute("myid");
+        }
+        ss+="\n\tinfos";
+        for (ListGridRecord rec:infos.getSelectedRecords()){
+            ss+="\n"+rec.getAttribute("myid");
+        }
+        ss+="\n\trequests";
+        for (ListGridRecord rec:requests.getSelectedRecords()){
+            ss+="\n"+rec.getAttribute("myid");
+        }
+//txt.setValue(numberdescrip+"=="+ninfo.getValue().toString());
+        if (!numberdescrip.equals(ninfo.getValue().toString())){
+            ss+="\n\tphonedescrip\n";
+            ss+=ninfo.getValueAsString();
+        }
+//txt.setValue(numberdescrip+"=="+ninfo.getValue().toString()+"\n"+ss);
+        CallCenter.callCenterInstance.sendgreet("button\t"+CallCenter.callCenterInstance.uname+"\t"+
+                "end"+"\t"+CallCenter.callCenterInstance.mynumber+"\t"+
+                callid+"\t"+mygrp+"\t"+mygrps+"\t"+number.getValue().toString()+"\t"+ss);
+        problems.deselectAllRecords();
+        infos.deselectAllRecords();
+        requests.deselectAllRecords();
+        number.setValue("");
+        problems2.setData(new ListGridRecord[] {});//problems2.setVisible(false);
+        infos2.setData(new ListGridRecord[] {});//infos2.setVisible(false);
+        mp=new LinkedHashMap();
+        chaninfo.setValueMap(mp);
+        chaninfo.setValue("");
+        numberdescrip="";
+    }
+    void myonclick(String click,IButton butt){
+        ////            uname            dt    action            channel
+
+        if (click.equals("end")){
+
+            endclick();
+        }else
+
+        CallCenter.callCenterInstance.sendgreet("button\t"+CallCenter.callCenterInstance.uname+"\t"+
+            click+"\t"+CallCenter.callCenterInstance.mynumber+"\t"+
+                " "+"\t"+mygrp+"\t"+mygrps);
+        butt.disable();
+    }
+    public void fromgreetbutton(String result) {
+        String[] s2=result.split("\t");
+        if (s2[1].equals("ready")){
+            state=READY;
+        }else if (s2[1].equals("end")){
+            state=READY;
+        }else if (s2[1].equals("busy")){
+            state=BUSY;
+        }else if (s2[1].equals("rest")){
+            state=REST;
+        }else if (s2[1].equals("restend")){
+            state=READY;
+        }else if (s2[2].equals("terminate")){
+            state=TERMINATE;
+        }
+        setbuttons();
+    }
+    public void login(){
+        state=READY;
+                        CallCenter.callCenterInstance.sendgreet("button\t"+CallCenter.callCenterInstance.uname+"\t"+
+                        "ready"+"\t"+CallCenter.callCenterInstance.mynumber+"\t"+
+                        " "+"\t"+mygrp+"\t"+mygrps);
+        setbuttons();
+    }
+    int tt0=0;
+    com.google.gwt.user.client.Timer tt=new com.google.gwt.user.client.Timer() {
+
+
+    public void run() {
+        tt0--;
+        if (tt0<=0) {
+            tt.cancel();readyint.setContents("0");
+            if (state==BUSY) {
+                state=READY;
+            //setbuttons();
+                CallCenter.callCenterInstance.sendgreet("button\t"+CallCenter.callCenterInstance.uname+"\t"+
+                        "ready"+"\t"+CallCenter.callCenterInstance.mynumber+"\t"+
+                        " "+"\t"+mygrp+"\t"+mygrps);
+            }
+            if (state==TERMINATE) {
+                state=READY;
+                //setbuttons();
+                endclick();
+            }
+        }else{
+            readyint.setContents(""+tt0);
+            //txt.setValue(""+tt0);
+        }
+
+    }
+};
+
+
+    void setbuttons(){
+        if (state==BUSY){
+            tt0=15;
+            tt.scheduleRepeating(1000);
+            readyint.setContents(""+tt0);
+            //tt.run();
+        }else {tt.cancel();readyint.setContents("0");}
+
+        if (state==READY){callpanel.setVisible(false);//????????????
+            readybutton.disable();
+            restbutton.enable();
+            busybutton.enable();
+            endbutton.disable();
+            restendbutton.disable();
+        }else if (state==END){callpanel.setVisible(false);
+            readybutton.disable();
+            restbutton.disable();
+            busybutton.enable();
+            endbutton.disable();
+            restendbutton.disable();
+        }else if (state==BUSY){callpanel.setVisible(false);
+            readybutton.enable();
+            restbutton.enable();
+            busybutton.disable();
+            endbutton.disable();
+            restendbutton.disable();
+        }else if (state==REST){callpanel.setVisible(false);
+            readybutton.disable();
+            restbutton.disable();
+            busybutton.disable();
+            endbutton.disable();
+            restendbutton.enable();
+        }else if (state==CON){callpanel.setVisible(true);
+            readybutton.disable();
+            restbutton.disable();
+            busybutton.disable();
+            endbutton.disable();
+            restendbutton.disable();
+        }else if (state==TERMINATE){callpanel.setVisible(true);
+            readybutton.disable();
+            restbutton.disable();
+            busybutton.disable();
+            endbutton.enable();
+            restendbutton.disable();
+            tt0=30;
+            tt.scheduleRepeating(1000);
+            readyint.setContents(""+tt0);
+        }
+    }
 }

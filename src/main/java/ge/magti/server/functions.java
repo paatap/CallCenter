@@ -31,10 +31,18 @@ public class functions {
     public static final int isbackup=2;
     public static final int isgwt=3;
     public static final int isnewcc=4;
+    public static final int isaster12=12;
     public static Connection GetMyConnection(int _isnew) {
         //System.out.println("isnew==========="+_isnew);
         try {
-            Class.forName(sets.db_driver);
+            if (_isnew==isaster12) {
+                Class.forName(sets.db_drivermysql);
+                //System.out.println("driver===="+sets.db_drivermysql);
+            }
+            else {
+                Class.forName(sets.db_driver);
+                 //System.out.println("driver===="+sets.db_driver);
+            }
         } catch (Exception e) {
             System.out.println("111111111" + e.toString());
             return null;
@@ -56,10 +64,16 @@ public class functions {
                 return DriverManager.getConnection(sets.db_stringgwt, sets.db_user,sets.db_pass);}
             else if (_isnew==isnewcc)
             {
-                //System.out.println("gwt");
+
                 return DriverManager.getConnection(sets.db_stringnewcc, sets.db_usernewcc,sets.db_passnewcc);}
+            else if (_isnew==isaster12)
+            {
+                //System.out.println("gwt");
+                //System.out.println("link===="+sets.db_string12);
+                return DriverManager.getConnection(sets.db_string12, sets.db_user12,sets.db_pass12);}
         } catch (Exception e) {
-            System.out.println("22222222" + e.toString());
+            System.out.println("22222222" + e.toString()+"==_isnew="+_isnew);
+            System.out.println("gwt="+sets.db_stringnewcc+"="+sets.db_usernewcc);
             return null;
         }
         return null;
@@ -197,7 +211,7 @@ public class functions {
 
 
     public static String[][] getResult(String sql,int _isnew) {
-        System.out.println(sql);
+//        System.out.println(sql);
         String[][] retVal;
         Connection connection = null;Statement stmt =null;
         try {
@@ -536,6 +550,15 @@ public class functions {
         return ff.format(date);
 
     }
+    public static String getnowzavtra(int day) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.add(Calendar.DAY_OF_MONTH, day);
+        java.util.Date date = calendar.getTime();
+        DateFormat localFormat = DateFormat.getDateInstance();
+        DateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
+        return ff.format(date);
+
+    }
     public static String getdate(String ss,int d) {
         Calendar calendar = new GregorianCalendar();
         String[] s2=ss.split("-");
@@ -712,7 +735,8 @@ public class functions {
 
 
     }
-    public static void printvars(HttpServletRequest request)
+
+    public static String printvars(HttpServletRequest request)
     {
         Enumeration ee=request.getHeaderNames();
         while (ee.hasMoreElements())
@@ -722,18 +746,16 @@ public class functions {
             System.out.println("h---"+ss+"--"+s2);
         }
         ee=request.getParameterNames();
+        String sdop="";
         while (ee.hasMoreElements())
         {
             String ss=(String) ee.nextElement();
-            String[] rol= (String[])request.getParameterValues(ss);
             String s2=request.getParameter(ss);
+            sdop+=ss+"="+s2+"&";//"&amp;";
             System.out.println("p---"+ss+"--"+s2);
-            for(int i=0;i<rol.length;i++)
-            {
-                System.out.println("p-------"+ss+"["+i+"]:"+rol[i]);
-
-            }
         }
+        if (!sdop.equals(""))sdop="?"+sdop;
+        return sdop;
     }
 
     public static String str2file(String str,String filename) {
@@ -820,6 +842,22 @@ public class functions {
         int i2=ss.indexOf(" ", i1);
         return ss.substring(i1+s1.length()+1, i2);
     }
+    public static String getparam(String str,String par,String def)   {
+        int p=-1;
+        while(true)
+        {
+            p=str.indexOf(par+"=",p+1);
+            if (p==-1) return def;
+            if (p==0) break;
+            if (str.toCharArray()[p-1]=='\n') break;
+            if (str.toCharArray()[p-1]=='\r') break;
+        }
+        p+=par.length()+1;
+        int p1=str.indexOf('\n',p);
+        if (p1==-1) p1=str.length();
+        //System.out.println(String.format("%s=%s=",par,str.substring(p,p1)));
+        return str.substring(p,p1);
+    }
     static String insertselect(String name,String str,String s1){
         String ss="\n<select name='"+name+"' id='in_type'>";
         String[] s2=str.split(",");
@@ -832,6 +870,32 @@ public class functions {
         }
         ss+="</select>";
         return ss;
+    }
+
+
+    public static String sendrequest(String ss){
+
+        String out="";
+        BufferedReader in=null;
+        try {
+            URL url = new URL(ss);
+            URLConnection yc = url.openConnection();
+            in = new BufferedReader(
+                    new InputStreamReader(
+                            yc.getInputStream()));
+            String inputLine;
+
+            while ((inputLine = in.readLine()) != null)
+                out+=inputLine+"\n";
+            in.close();in=null;
+        }catch(Exception e){}
+        if (in!=null){
+            try {
+                in.close();
+            }catch(Exception e){}
+
+        }
+        return out;
     }
 
 
@@ -883,21 +947,43 @@ public class functions {
 
             while ((str = in.readLine()) != null) {
                 //moshet taim out
-                Thread.sleep(10);ii++;
+                //Thread.sleep(10);????
+                ii++;
                 fromServer+=str+"\n";
                 if (ii>1000) {System.out.println("error (time out)");break;}
             }
-            in.close();
-            out.close();
-            clientSocket.close();
+            in.close();in=null;
+            out.close();out=null;
+            clientSocket.close();clientSocket=null;
         }catch(Exception e){
             System.out.println(myserv);
             System.out.println(myservport);
             System.out.println(e.toString());
             fromServer+="\nerr="+e.toString();
         }
+        try{
+         if (in!=null)    in.close();
+        }catch(Exception e){}
+        try{
+         if (out!=null)    out.close();
+        }catch(Exception e){}
+         try{
+         if (clientSocket!=null)    clientSocket.close();
+        }catch(Exception e){}
         return fromServer;
     }
+
+    public static String getstatus(int status){
+        if(status==sets.LOGIN) return "LOGIN";
+        if(status==sets.BUSY) return "BUSY";
+        if(status==sets.READY) return "READY";
+        if(status==sets.REST) return "REST";
+        if(status==sets.CON) return "CON";
+        if(status==sets.TERMINATE) return "TERMINATE";
+        return ""+status;
+    }
+
+
     /*
    public static String sendrequest(String instr,String myserv,int myservport){
        URL url = new URL(myserv);
@@ -919,4 +1005,12 @@ public class functions {
         in.close();
    }
     */
+    private static String warname=null;
+    public static String getwarname(HttpServlet ser){
+        if (warname==null)
+         warname = new File(ser.getServletContext().getRealPath("/")).getName();
+        return warname;
+    }
+
+
 }
