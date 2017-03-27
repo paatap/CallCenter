@@ -10,11 +10,14 @@ import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 
 import com.smartgwt.client.util.BooleanCallback;
+import com.smartgwt.client.util.DateDisplayFormatter;
+import com.smartgwt.client.util.DateUtil;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -22,6 +25,8 @@ import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
 import ge.magti.client.Dialogs.DlgLogin;
 import ge.magti.client.layout.*;
+
+import java.util.Date;
 
 
 /**
@@ -52,7 +57,7 @@ public class CallCenter implements EntryPoint{
   private HLayout northLayout;
   private HLayout southLayout;
   public VLayout maincc;
-  public VLayout reportcc;
+  public VLayout reportcc=null;
   private NavigationArea westLayout;
 
   /**
@@ -77,6 +82,18 @@ public native void registeronclose() /*-{
 
 
   public void onModuleLoad() {
+      DateUtil.setShortDateDisplayFormatter(new DateDisplayFormatter() {
+          @Override
+          public String format(Date date) {
+              if(date == null) return null;
+              //you'll probably want to create the DateTimeFormat outside this method.
+              //here for illustration purposes
+              DateTimeFormat dateFormatter = DateTimeFormat.getFormat("yyyy-MM-dd");
+              String format = dateFormatter.format(date);
+              return format;
+          }
+      });
+
       //registerHandlers(Jsni.this, window);
         registeronclose();
         callCenterInstance = this;
@@ -143,14 +160,14 @@ DlgLogin dlgLogin=null;
     westLayout.setWidth("15%");
 
       maincc = new MainArea();
-      reportcc = new ReportArea();reportcc.setVisible(false);reportcc.setWidth("85%");
+
       ((MainArea)maincc).mygrp=grp;
       ((MainArea)maincc).mygrps=ss;
       ((MainArea)maincc).init();
       maincc.setWidth("85%");
 
     southLayout = new HLayout();
-    southLayout.setMembers(westLayout, maincc,reportcc);
+    southLayout.setMembers(westLayout, maincc);
 
     mainLayout.addMember(northLayout);
     mainLayout.addMember(southLayout);
@@ -160,6 +177,24 @@ DlgLogin dlgLogin=null;
         Window.setTitle(ver + " " + uname + " " + mynumber+" "+((MainArea)maincc).mygrps);
         ((MainArea) maincc).login();
         //if (uname.equals("Alexander.Sarchimelia")) debug = true;
+  }
+  public static final int mainarea=0;
+  public static final int reportarea=1;
+  public void setvisiblearea(int type){
+      if (type==mainarea) {
+          maincc.setVisible(true);
+          if (reportcc!=null)
+            reportcc.setVisible(false);
+      }else if (type==reportarea){
+          maincc.setVisible(false);
+          if (reportcc==null){
+              reportcc = new ReportArea();reportcc.setVisible(false);reportcc.setWidth("85%");
+              southLayout.addMember(reportcc);
+              ((ReportArea)reportcc).setprobleminfo();
+              reportcc.setVisible(true);
+          }else
+            reportcc.setVisible(true);
+      }
   }
 
 

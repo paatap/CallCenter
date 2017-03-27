@@ -692,7 +692,7 @@ infos2.setEmptyMessage("");
 
     }
     public void callMeBackclose(String msg1,String msg2){
-        CallCenter.callCenterInstance.closeLayouts(false);
+//        CallCenter.callCenterInstance.closeLayouts(false);//onclose???????????????????
     }
 
     public void callMeBack(String msg1,String msg2){

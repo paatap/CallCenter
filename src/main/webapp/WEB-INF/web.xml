@@ -1,15 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE web-app
-        PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-        "http://java.sun.com/dtd/web-app_2_3.dtd">
-
-<!--web-app-->
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-
-    <!-- Servlets -->
-
-
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
     <servlet>
         <servlet-name>mymessage</servlet-name>
         <servlet-class>ge.magti.mymessage</servlet-class>
@@ -39,26 +30,65 @@
         <url-pattern>/CallCenter/greet</url-pattern>
     </servlet-mapping>
 
-    <!-- Default page to serve -->
-    <welcome-file-list>
-        <welcome-file>CallCenter.html</welcome-file>
-    </welcome-file-list>
+    <!-- Device Info Servlet -->
 
 
-    <!-- Note: The servlets/filters referenced here are documented in the SDK javadoc -->
+    <!-- Standard configuration -->
+
+    <!-- standard spring configuration -->
+    <!--<context-param>-->
+        <!--<param-name>contextConfigLocation</param-name>-->
+        <!--<param-value>/WEB-INF/applicationContext.xml</param-value>-->
+    <!--</context-param>-->
+
+    <!--&lt;!&ndash; LDAP Conf &ndash;&gt;-->
+    <!--<context-param>-->
+        <!--<description>URL of the ldap-installation</description>-->
+        <!--<param-name>mgtLdapUrl</param-name>-->
+        <!--<param-value>ldap://192.168.19.102:389</param-value>-->
+    <!--</context-param>-->
+    <!--<context-param>-->
+        <!--<description>baseDN used for searches</description>-->
+        <!--<param-name>mgtBaseDN</param-name>-->
+        <!--<param-value>ou=MAGTICOM STRUCTURE,dc=magticom,dc=ge</param-value>-->
+    <!--</context-param>-->
+
+
+    <!-- Note: The servlets/filters referenced here are documented in the SDK
+        javadoc -->
 
     <!-- //>FileLoader -->
     <!-- Dynamic Compression -->
+    <!--
     <filter>
         <filter-name>CompressionFilter</filter-name>
         <filter-class>com.isomorphic.servlet.CompressionFilter</filter-class>
     </filter>
+     -->
     <!-- CompressionFilter for dynamic compression -->
+    <!--
     <filter-mapping>
         <filter-name>CompressionFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+     -->
     <!-- //<FileLoader -->
+
+    <!--<servlet>-->
+    <!--<servlet-name>context</servlet-name>-->
+    <!--<servlet-class>org.springframework.web.context.ContextLoaderServlet</servlet-class>-->
+    <!--<load-on-startup>1</load-on-startup>-->
+    <!--</servlet>-->
+    <!--<servlet>-->
+        <!--<servlet-name>view</servlet-name>-->
+        <!--<servlet-class>com.magti.billing.webui.server.impl.VelocityInit</servlet-class>-->
+        <!--<load-on-startup>1</load-on-startup>-->
+    <!--</servlet>-->
+    <!--<servlet>-->
+    <!--<servlet-name>CallCenter</servlet-name>-->
+    <!--<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>-->
+    <!--<load-on-startup>1</load-on-startup>-->
+    <!--</servlet>-->
 
     <!-- The IDACall servlet handles all Built-in DataSource operations -->
     <servlet>
@@ -66,18 +96,15 @@
         <servlet-class>com.isomorphic.servlet.IDACall</servlet-class>
     </servlet>
 
-    <!-- The RESTHandler servlet handles SmartClient Server DataSource operations issued by
-         REST clients - it's like IDACall, but for the REST protocol.  Typically,  the clients
-         of this servlet would not be ordinary SmartClient/SmartGWT applications (though they
-         could be), but other client technologies that need to access SmartClient DataSource
-         operations as reusable services -->
-    <!--servlet>
+    <!-- The RESTHandler servlet is like IDACall, but for REST requests -->
+    <servlet>
         <servlet-name>RESTHandler</servlet-name>
         <servlet-class>com.isomorphic.servlet.RESTHandler</servlet-class>
-    </servlet-->
+    </servlet>
 
-    <!-- The DataSourceLoader servlet returns Javascript representations of the dataSources whose
-         ID's are passed to it - it is an alternative to using the <loadDS> JSP tag -->
+    <!-- The DataSourceLoader servlet returns Javascript representations of
+        the dataSources whose ID's are passed to it - it is an alternative to using
+        the <loadDS> JSP tag -->
     <servlet>
         <servlet-name>DataSourceLoader</servlet-name>
         <servlet-class>com.isomorphic.servlet.DataSourceLoader</servlet-class>
@@ -95,47 +122,57 @@
         <servlet-class>com.isomorphic.servlet.FileDownload</servlet-class>
     </servlet>
 
-
-    <!-- Init: initializes SmartClient framework.  Note that we invoke the Init logic from
-         both a Listener and a load-on-startup Servlet in this file - see the client-side
-         documentation topic "serverInit" for a discussion of this.  -->
+    <!-- Init: initializes SmartGWT framework. Note that we invoke the Init
+        logic from both a Listener and a load-on-startup Servlet in this file - see
+        the client-side documentation topic "com.smartgwt.client.docs.ServerInit"
+        for a discussion of this. -->
     <listener>
         <listener-class>com.isomorphic.base.InitListener</listener-class>
     </listener>
-    <!--servlet>
+
+    <servlet>
         <servlet-name>Init</servlet-name>
         <servlet-class>com.isomorphic.base.Init</servlet-class>
         <load-on-startup>1</load-on-startup>
-    </servlet-->
+    </servlet>
 
     <servlet>
         <servlet-name>HttpProxy</servlet-name>
         <servlet-class>com.isomorphic.servlet.HttpProxyServlet</servlet-class>
     </servlet>
 
-    <!-- The PreCache servlet initializes when the servlet engine starts up and pre-loads
-         data need for all client requests.  This is optional, and improves performance
-         of the first few page requests.  PreCache cannot be invoked by a browser, because
-         there is no "servlet-mapping" defined for it. -->
-    <!--servlet>
-        <servlet-name>PreCache</servlet-name>
-        <servlet-class>com.isomorphic.servlet.PreCache</servlet-class>
-        <load-on-startup>2</load-on-startup>
-    </servlet-->
+    <!-- The PreCache servlet initializes when the servlet engine starts up
+        and pre-loads data need for all client requests. This is optional, and improves
+        performance of the first few page requests. PreCache cannot be invoked by
+        a browser, because there is no "servlet-mapping" defined for it. -->
+
+    <!-- PreCache is disabled by default because of an issue when debugging
+        the project for the first time. However, it can be safely enabled when compiling
+        with the GWT compiler prior to deployment. See the README.txt for more information. -->
+
+    <!-- <servlet> <servlet-name>PreCache</servlet-name> <servlet-class>com.isomorphic.servlet.PreCache</servlet-class>
+        <load-on-startup>2</load-on-startup> </servlet> -->
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>view</servlet-name>-->
+        <!--<url-pattern>*.vm</url-pattern>-->
+    <!--</servlet-mapping>-->
+    <!--<servlet-mapping>-->
+    <!--<servlet-name>CallCenter</servlet-name>-->
+    <!--<url-pattern>*.do</url-pattern>-->
+    <!--</servlet-mapping>-->
 
     <!-- RPCManager uses this URL by default for Built-in DataSource operations -->
     <servlet-mapping>
         <servlet-name>IDACall</servlet-name>
-        <url-pattern>/isomorphic/IDACall/*</url-pattern>
+        <url-pattern>/CallCenter/sc/IDACall/*</url-pattern>
     </servlet-mapping>
 
-    <!-- Built-in DataSource operations backcompat -->
     <servlet-mapping>
-        <servlet-name>IDACall</servlet-name>
-        <url-pattern>/isomorphic/IDACall.aspx/*</url-pattern>
+        <servlet-name>RESTHandler</servlet-name>
+        <url-pattern>/CallCenter/sc/RESTHandler/*</url-pattern>
     </servlet-mapping>
 
-    <!-- DataSourceLoader requests **isomorphic-->
+    <!-- DataSourceLoader requests -->
     <servlet-mapping>
         <servlet-name>DataSourceLoader</servlet-name>
         <url-pattern>/sc/DataSourceLoader</url-pattern>
@@ -144,74 +181,64 @@
     <!-- The screenLoader servlet loads screen definitions in javascript notation -->
     <servlet-mapping>
         <servlet-name>screenLoader</servlet-name>
-        <url-pattern>/isomorphic/screenLoader</url-pattern>
+        <url-pattern>/sc/screenLoader</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>HttpProxy</servlet-name>
-        <url-pattern>/isomorphic/HttpProxy/*</url-pattern>
+        <url-pattern>/CallCenter/sc/HttpProxy/*</url-pattern>
     </servlet-mapping>
 
-    <!-- Use FileDownload servlet to download all static content that's part of the skin, such as
-         image files, so we can set Expires headers and other cache control directives.  In a
-         production deployment, you'd want to use a webserver such as Apache to do this.
-    -->
+    <!-- Use FileDownload servlet to download all static content that's part
+        of the skin, such as image files, so we can set Expires headers and other
+        cache control directives. In a production deployment, you'd want to use a
+        webserver such as Apache to do this. -->
     <servlet-mapping>
         <servlet-name>FileDownload</servlet-name>
-        <url-pattern>/isomorphic/skins/*</url-pattern>
+        <url-pattern>/CallCenter/sc/skins/*</url-pattern>
     </servlet-mapping>
 
     <!-- serve ISC modules compressed, with expires headers -->
     <servlet-mapping>
         <servlet-name>FileDownload</servlet-name>
-        <url-pattern>/isomorphic/system/modules/*</url-pattern>
+        <url-pattern>/CallCenter/sc/system/modules/*</url-pattern>
     </servlet-mapping>
 
     <!-- serve ISC development modules compressed, with expires headers -->
     <servlet-mapping>
         <servlet-name>FileDownload</servlet-name>
-        <url-pattern>/isomorphic/system/development/*</url-pattern>
+        <url-pattern>/CallCenter/sc/system/development/*</url-pattern>
     </servlet-mapping>
 
     <!-- server skin assets with expires headers -->
     <servlet-mapping>
         <servlet-name>FileDownload</servlet-name>
-        <url-pattern>/isomorphic/system/reference/skin/*</url-pattern>
+        <url-pattern>/CallCenter/sc/system/reference/skin/*</url-pattern>
     </servlet-mapping>
 
     <!-- General config -->
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
+    <welcome-file-list>
+        <welcome-file>CallCenter.jsp</welcome-file>
+    </welcome-file-list>
+    <jsp-config>
+        <!-- Isomorphic JSP tags -->
+        <taglib>
+            <taglib-uri>isomorphic</taglib-uri>
+            <taglib-location>/WEB-INF/iscTaglib.xml</taglib-location>
+        </taglib>
+    </jsp-config>
 
-
+    <mime-mapping>
+        <extension>csv</extension>
+        <mime-type>text/csv</mime-type>
+    </mime-mapping>
 
     <mime-mapping>
         <extension>manifest</extension>
         <mime-type>text/cache-manifest</mime-type>
     </mime-mapping>
-
-
-
-
-
-
-
-
-
-
-        <resource-ref>
-
-            <description>mydbconn</description>
-
-            <res-ref-name>jdbc/myconn</res-ref-name>
-
-            <res-type>javax.sql.DataSource</res-type>
-
-            <res-auth>Container</res-auth>
-
-        </resource-ref>
-
-
 
 </web-app>

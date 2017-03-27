@@ -1,0 +1,37 @@
+
+<DataSource
+        ID="operatDS"
+        serverType="sql"
+        tableName="log"
+        qualifyColumnNames="false"
+        dropExtraFields = "false">
+    <fields>
+        <field name="oid"               type="integer"          hidden="true"            primaryKey="true" />
+        <field name="uname"           type="varchar"         title="uname"             required="true"   />
+        <field name="number"           type="varchar"         title="number"             required="true"   />
+    </fields>
+    <operationBindings>
+
+        <operationBinding operationId="getoperats" operationType="fetch">
+            <selectClause><![CDATA[
+            oid,uname,number
+    			]]>
+            </selectClause>
+            <tableClause><![CDATA[
+			   		secrets
+				]]>
+            </tableClause>
+            <whereClause><![CDATA[
+            1=1
+            #if($criteria.uname)
+			    	and (uname like '%'||$criteria.uname||'%' or number = 'SIP/'||'$criteria.uname' )
+			#end
+				]]>
+            </whereClause>
+        </operationBinding>
+
+
+
+
+    </operationBindings>
+</DataSource>

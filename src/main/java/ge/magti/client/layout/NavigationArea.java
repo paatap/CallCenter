@@ -99,13 +99,11 @@ reportTreeGrid.addNodeClickHandler(new NodeClickHandler() {
     @Override
     public void onNodeClick(NodeClickEvent nodeClickEvent) {
         if (nodeClickEvent.getNode().getName().equals("rep1")){
-            CallCenter.callCenterInstance.maincc.setVisible(false);
-            CallCenter.callCenterInstance.reportcc.setVisible(true);
+            CallCenter.callCenterInstance.setvisiblearea(CallCenter.reportarea);
+            //CallCenter.callCenterInstance.maincc.setVisible(false);
+            //CallCenter.callCenterInstance.reportcc.setVisible(true);
         }
-        if (nodeClickEvent.getNode().getName().equals("rep2")){
-            CallCenter.callCenterInstance.maincc.setVisible(true);
-            CallCenter.callCenterInstance.reportcc.setVisible(false);
-        }
+
     }
 });
 /*
@@ -142,8 +140,9 @@ section2.addItem(reportTreeGrid);
             public void onSectionHeaderClick(SectionHeaderClickEvent sectionHeaderClickEvent) {
  //               ((MainArea)CallCenter.callCenterInstance.maincc).txt.setValue("aa"+sectionHeaderClickEvent.getSection().getTitle());
                if (sectionHeaderClickEvent.getSection().getTitle().equals("Call Registration")){
-                     CallCenter.callCenterInstance.maincc.setVisible(true);
-                     CallCenter.callCenterInstance.reportcc.setVisible(false);
+                   CallCenter.callCenterInstance.setvisiblearea(CallCenter.mainarea);
+                     //CallCenter.callCenterInstance.maincc.setVisible(true);
+                     //CallCenter.callCenterInstance.reportcc.setVisible(false);
                }
 
             }
