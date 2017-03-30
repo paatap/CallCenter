@@ -185,19 +185,19 @@ buttonItem2.setVisible(false);grp.setVisible(false);
     }
     LinkedHashMap mp;
     public void loginSuccess(String[] s22){
-        if (s22.length==2) { CallCenter.callCenterInstance.loginSuccess2(s22[1]);}
+        if (s22.length==3) { CallCenter.callCenterInstance.loginSuccess2(s22[2]);}
         else {
             setHeight(200);
             buttonItem2.setVisible(true);
             grp.setVisible(true);
             mp = new LinkedHashMap();
-            for (int i = 1; i < s22.length; i++) {
+            for (int i = 2; i < s22.length; i++) {
                 //String[] s222=s22[i].replace("null","").split("\t");
                 //log.operat, log.provider, log2.problems, log2.info, log.call_start,log.callid
                 mp.put(s22[i], s22[i]);
             }
             grp.setValueMap(mp);
-            grp.setValue(mp.get(s22[1]));
+            grp.setValue(mp.get(s22[2]));
             form.redraw();
         }
     }

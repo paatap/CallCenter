@@ -17,6 +17,7 @@ import ge.magti.client.CallCenter;
 public class HeaderArea extends HLayout {
 
 //    private static final int HEADER_AREA_HEIGHT = 20;
+public Label leftl = new Label();
 
     public HeaderArea(String ss) {
 
@@ -31,11 +32,12 @@ public class HeaderArea extends HLayout {
         name.setContents(ss);
        // name.getElement().getStyle().setBackgroundColor("#FF0000");// .setFontSize(4, Style.Unit.EM);
         this.setAlign(Alignment.CENTER);
-        name.setAlign(Alignment.CENTER);
+        name.setAlign(Alignment.LEFT);
         name.setWidth100();
+        leftl.setAlign(Alignment.LEFT);
+        leftl.setWidth100();
 
-
-        IButton logout = new IButton("logout");logout.setHeight100();
+        IButton logout = new IButton("logout");logout.setHeight100();logout.setAlign(Alignment.RIGHT);
         logout.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
             public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) {
                 SC.confirm("logout", new BooleanCallback(){
@@ -51,8 +53,8 @@ public class HeaderArea extends HLayout {
 
         //name.setHeight(20);
 //this.setTitle("<h1>"+ss+"</h1>");
-
-        this.addMember(name);this.addMember(logout);
+this.setMembers(leftl,name,logout);
+       // this.addMember(name);this.addMember(logout);
 
     }
 

@@ -24,14 +24,32 @@ package ge.magti.server;
 
         import java.text.*;
 
+        import javax.naming.InitialContext;
         import javax.servlet.http.*;
+        import javax.sql.DataSource;
 
 public class functions {
     public static final int isnew=1;
     public static final int isbackup=2;
     public static final int isgwt=3;
     public static final int isnewcc=4;
+    public static final int isnewcceksp=5;
     public static final int isaster12=12;
+
+/*
+        InitialContext cxt = new InitialContext();
+        if (cxt == null) {
+            throw new Exception("Uh oh -- no context!");
+        }
+
+        DataSource ds = (DataSource) cxt.lookup("java:/comp/env/jdbc/postgres");
+
+        if (ds == null) {
+            throw new Exception("Data source not found!");
+        }
+        return ds.getConnection();
+  */
+
     public static Connection GetMyConnection(int _isnew) {
         //System.out.println("isnew==========="+_isnew);
         try {
@@ -65,7 +83,26 @@ public class functions {
             else if (_isnew==isnewcc)
             {
 
-                return DriverManager.getConnection(sets.db_stringnewcc, sets.db_usernewcc,sets.db_passnewcc);}
+                return DriverManager.getConnection(sets.db_stringnewcc, sets.db_usernewcc,sets.db_passnewcc);
+            }
+            else if (_isnew==isnewcceksp)
+            {
+                System.out.println("get connection");
+                InitialContext cxt = new InitialContext();
+                if (cxt == null) {
+                    throw new Exception("Uh oh -- no context!");
+                }
+
+                DataSource ds = (DataSource) cxt.lookup("java:/comp/env/jdbc/postgres");
+
+                if (ds == null) {
+                    throw new Exception("Data source not found!");
+                }
+                System.out.println("ura conn est");
+                Connection con=ds.getConnection();
+                return con;
+                //    return DriverManager.getConnection(sets.db_stringnewcc, sets.db_usernewcc,sets.db_passnewcc);
+            }
             else if (_isnew==isaster12)
             {
                 //System.out.println("gwt");
@@ -258,17 +295,21 @@ public class functions {
         return null;
     }
     public static StringBuffer getResult2(String sql,String nn,String tt,int _isnew) {
-//        System.out.println(sql);
+        System.out.println(sql);
         StringBuffer retVal=new StringBuffer("");
         Connection connection = null;Statement stmt =null;
         try {
 
             connection = GetMyConnection(_isnew);
+            System.out.println("11111111111111111111111");
             stmt =
                     connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
                             ResultSet.CONCUR_READ_ONLY);
+            System.out.println("222222222222222222222");
             ResultSet rs = stmt.executeQuery(sql);
+            System.out.println("333333333333333333333333333333");
             int columnCount = rs.getMetaData().getColumnCount();
+            System.out.println("44444444444444444444=="+columnCount);
       /*      int rowCount = 0;
 
             while (rs.next())
@@ -287,7 +328,7 @@ public class functions {
                 //              i++;
 
             }
-
+            System.out.println("55555555555555555555");
 
 
             return retVal;
@@ -1011,6 +1052,13 @@ public class functions {
          warname = new File(ser.getServletContext().getRealPath("/")).getName();
         return warname;
     }
-
+    public static String grp2grps(int grp){
+        if (grp==sets.mobile) return "mobile";
+        if (grp==sets.gov) return "gov";
+        if (grp==sets.magtisat) return "magtisat";
+        if (grp==sets.magtifix) return "magtifix";
+        if (grp==sets.marketing) return "marketing";
+        return ""+grp;
+    }
 
 }

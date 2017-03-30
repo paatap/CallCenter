@@ -448,6 +448,7 @@ HLayout104.addMember(VLayout11);HLayout104.addMember(VLayout12);
     //SC.say(getWebSocketURL());
     }
     public void init() {
+        if (!CallCenter.callCenterInstance.messagestring.equals("no"))
         registerCallBack(this, CallCenter.callCenterInstance.messagestring + "/" +
                 CallCenter.callCenterInstance.mynumber + "," + mygrp);
     }
@@ -692,7 +693,7 @@ infos2.setEmptyMessage("");
 
     }
     public void callMeBackclose(String msg1,String msg2){
-//        CallCenter.callCenterInstance.closeLayouts(false);//onclose???????????????????
+        CallCenter.callCenterInstance.closeLayouts(false);//onclose???????????????????
     }
 
     public void callMeBack(String msg1,String msg2){
@@ -880,7 +881,7 @@ $wndaa =webSocket;
 
         CallCenter.callCenterInstance.sendgreet("button\t"+CallCenter.callCenterInstance.uname+"\t"+
             click+"\t"+CallCenter.callCenterInstance.mynumber+"\t"+
-                " "+"\t"+mygrp+"\t"+mygrps);
+                " "+"\t"+mygrp+"\t"+mygrps+"\t"+CallCenter.callCenterInstance.myoid);
         butt.disable();
     }
     public void fromgreetbutton(String result) {
@@ -900,11 +901,19 @@ $wndaa =webSocket;
         }
         setbuttons();
     }
-    public void login(){
-        state=READY;
-                        CallCenter.callCenterInstance.sendgreet("button\t"+CallCenter.callCenterInstance.uname+"\t"+
-                        "ready"+"\t"+CallCenter.callCenterInstance.mynumber+"\t"+
+    public void login(String reststr){
+        String[] s2=reststr.split("\t");
+        if (s2.length>1){
+            state=REST;
+            CallCenter.callCenterInstance.sendgreet("button\t"+CallCenter.callCenterInstance.uname+"\t"+
+                        "rest"+"\t"+CallCenter.callCenterInstance.mynumber+"\t"+
                         " "+"\t"+mygrp+"\t"+mygrps);
+        }else {
+            state = READY;
+            CallCenter.callCenterInstance.sendgreet("button\t" + CallCenter.callCenterInstance.uname + "\t" +
+                    "ready" + "\t" + CallCenter.callCenterInstance.mynumber + "\t" +
+                    " " + "\t" + mygrp + "\t" + mygrps);
+        }
         setbuttons();
     }
     int tt0=0;
@@ -945,36 +954,36 @@ $wndaa =webSocket;
         }else {tt.cancel();readyint.setContents("0");}
 
         if (state==READY){callpanel.setVisible(false);//????????????
-            readybutton.disable();
+            readybutton.disable();CallCenter.callCenterInstance.setleft("READY");
             restbutton.enable();
             busybutton.enable();
             endbutton.disable();
             restendbutton.disable();
-        }else if (state==END){callpanel.setVisible(false);
+        }else if (state==END){callpanel.setVisible(false);CallCenter.callCenterInstance.setleft("END");
             readybutton.disable();
             restbutton.disable();
             busybutton.enable();
             endbutton.disable();
             restendbutton.disable();
-        }else if (state==BUSY){callpanel.setVisible(false);
+        }else if (state==BUSY){callpanel.setVisible(false);CallCenter.callCenterInstance.setleft("BUSY");
             readybutton.enable();
             restbutton.enable();
             busybutton.disable();
             endbutton.disable();
             restendbutton.disable();
-        }else if (state==REST){callpanel.setVisible(false);
+        }else if (state==REST){callpanel.setVisible(false);CallCenter.callCenterInstance.setleft("REST");
             readybutton.disable();
             restbutton.disable();
             busybutton.disable();
             endbutton.disable();
             restendbutton.enable();
-        }else if (state==CON){callpanel.setVisible(true);
+        }else if (state==CON){callpanel.setVisible(true);CallCenter.callCenterInstance.setleft("CON");
             readybutton.disable();
             restbutton.disable();
             busybutton.disable();
             endbutton.disable();
             restendbutton.disable();
-        }else if (state==TERMINATE){callpanel.setVisible(true);
+        }else if (state==TERMINATE){callpanel.setVisible(true);CallCenter.callCenterInstance.setleft("TERMINATE");
             readybutton.disable();
             restbutton.disable();
             busybutton.disable();

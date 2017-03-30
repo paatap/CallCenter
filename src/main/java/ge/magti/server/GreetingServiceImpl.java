@@ -41,23 +41,25 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
           "Name must be at least 4 characters long");
     }
 
-    String serverInfo = getServletContext().getServerInfo();
-    String userAgent = getThreadLocalRequest().getHeader("User-Agent");
+    //String serverInfo = getServletContext().getServerInfo();
+    //String userAgent = getThreadLocalRequest().getHeader("User-Agent");
 
     // Escape data from the client to avoid cross-site script vulnerabilities.
     input = escapeHtml(input);
-    userAgent = escapeHtml(userAgent);
-    System.out.println("1111111111111111111111111111111111");
-    System.out.println("1111111111111111111111111111111111=="+userAgent+serverInfo);
+    //userAgent = escapeHtml(userAgent);
+    System.out.println("1111111111111111111111111111111111=="+input.substring(0,10));
+    //System.out.println("1111111111111111111111111111111111=="+userAgent+serverInfo);
     if (input.startsWith("getprobleminfo")) return getprobleminfo(input);
     if (input.startsWith("login")) return login(input);
     if (input.startsWith("button")) return button(input);
+    if (input.startsWith("getserverinfo")) return EchoServer.getserverinfo();
     if (input.startsWith("savetxt")) return savetxt(input);
     if (input.startsWith("getops")) return EchoServer.getops(input);
     if (input.startsWith("sendmessage")) return EchoServer.sendopmessage(input);
     if (input.startsWith("sendsms")) return sendsms(input);
-    return "Hello, " + input + "!<br><br>I am running " + serverInfo
-        + ".<br><br>It looks like you are using:<br>" + userAgent;
+   // return "Hello, " + input + "!<br><br>I am running " + serverInfo
+   //     + ".<br><br>It looks like you are using:<br>" + userAgent;
+      return "unknown";
   }
 
 
@@ -143,9 +145,9 @@ functions.execSql(query,functions.isnewcc);
         state=sets.READY;
       }else if (s2[2].equals("busy")){
         state=sets.BUSY;
-      }else if (s2[2].equals("rest")){
+      }else if (s2[2].equals("rest")){this.reststart(s2[3]);
         state=sets.REST;
-      }else if (s2[2].equals("restend")){
+      }else if (s2[2].equals("restend")){this.restend(s2[3]);
         state=sets.READY;
       }else if (s2[2].equals("terminate")){
         state=sets.TERMINATE;
@@ -158,7 +160,7 @@ functions.execSql(query,functions.isnewcc);
     System.out.println("sessssssssssssssssssss=="+s2[3]+"="+state);
     mysession ses=EchoServer.getsession(s2[3]);
     if (ses!=null){
-      ses.status=state;
+      ses.status=state;ses.tim=System.nanoTime() / 1000000;
       if (state==sets.READY) {ses.callid="";ses.anumber="";}
     }
 
@@ -202,8 +204,10 @@ functions.execSql(query,functions.isnewcc);
         return "$login\terror\tSession is open!!!";
       }
 
+        String rst=this.getRestOpTime(res[0][2]);
      // System.out.println("111111111111111111111111111111111111");
-      return "$login\tok\t"+setsmessagestring+"\t"+sets.debug+"\t"+res[0][2]+"\t"+s2[1]+"\n"+res2;
+
+      return "$login\tok\t"+setsmessagestring+"\t"+sets.debug+"\t"+res[0][2]+"\t"+s2[1]+"\t"+res[0][1]+"\t"+res[0][0]+"\n"+rst+"\n"+res2;
     }
     else return "$login\terror\tError user password !!!";
   }
@@ -225,14 +229,7 @@ functions.execSql(query,functions.isnewcc);
     System.out.println(query);
     functions.execSql(query,functions.isaster12);
   }
-  static String grp2grps(int grp){
-    if (grp==sets.mobile) return "mobile";
-    if (grp==sets.gov) return "gov";
-    if (grp==sets.magtisat) return "magtisat";
-    if (grp==sets.magtifix) return "magtifix";
-    if (grp==sets.marketing) return "marketing";
-    return "";
-  }
+
 
   String getprobleminfo(String input){
     String[] s2=input.split("\t");
@@ -271,7 +268,7 @@ functions.execSql(query,functions.isnewcc);
     mysession ses=EchoServer.getsession(s2[4]);
     if (ses!=null){
       ses.uname=s2[3];
-      ses.status=sets.LOGIN;
+      ses.status=sets.LOGIN;ses.tim=System.nanoTime() / 1000000;
     }
 
    /* ss.append("$request\n");
@@ -293,40 +290,86 @@ functions.execSql(query,functions.isnewcc);
 
 
   /////////////////////////////////////////////////////////////////////////////////////////////
-int RestFullTime=1800;
-  int getRestOpTime(int oid)//aaaaaaaaaaaaaa
+
+  String getRestOpTime(String oid)//oid=number
   {
+
       String ctmp=functions.getnow();
-      String query=String.format("SELECT resttime,cast(extract(second from start_time)+60*extract(minute from start_time)+60*60*extract(hour from start_time) as int) FROM oprest WHERE oid='%d' and rdate='%s'", oid,ctmp);
+      String query=String.format("SELECT resttime,EXTRACT(EPOCH FROM now()-start_time)," +
+              "state,statedop FROM oprest WHERE oid='%s' and rdate='%s'", oid,ctmp);
 
       String[][] res=functions.getResult(query,functions.isnewcc);
 
 
       if(res.length==1)
       {
-        int tt=functions.str2int(res[0][0]);
-        //op[OpChan].reststarttime=atoi(PQgetvalue(res, 0, 1));
 
-        return tt;
+        //op[OpChan].reststarttime=atoi(PQgetvalue(res, 0, 1));
+          if (res[0][2]!=null&&res[0][2].equals(""+sets.REST)){
+             return res[0][0]+"\t"+res[0][1]+"\t"+res[0][2]+"\t"+res[0][3];
+          }
+
+        return res[0][0];
       }  else
       {
-        query=String.format("SELECT resttime  FROM oprest WHERE oid='%d'", oid);
+        query=String.format("SELECT resttime  FROM oprest WHERE oid='%s'", oid);
         res=functions.getResult(query,functions.isnewcc);
+
         if(res.length>=1) {
-          query = String.format("UPDATE oprest set resttime='%d',rdate='%s',state=0,statedop=0 WHERE oid='%d'", RestFullTime, ctmp, oid);
+          query = String.format("UPDATE oprest set resttime='%d',rdate='%s',state=0,statedop=0 WHERE oid='%s'", sets.RestFullTime, ctmp, oid);
           functions.execSql(query, functions.isnewcc);
         }else {
 
-          ctmp = functions.getnow();
-
-          query = String.format("INSERT INTO oprest (oid,resttime,rdate) VALUES (%d,%d,'%s')", oid, RestFullTime, ctmp);
+          query = String.format("INSERT INTO oprest (oid,resttime,rdate,start_time,state,statedop) VALUES (%s,%d,'%s',now(),0,0)", oid, sets.RestFullTime, ctmp);
           functions.execSql(query, functions.isnewcc);
         }
-        return RestFullTime;
+        return ""+sets.RestFullTime;
       }
 
   }
+  void reststart(String oid){
+             String query=String.format("UPDATE oprest set start_time=NOW(),state=%d,statedop=%d WHERE oid='%s'",
+                 sets.REST,0,oid);
+        functions.execSql(query, functions.isnewcc);
+  }
+  void restend(String oid){
+        String query=String.format("UPDATE oprest set state=%d,statedop=%d,resttime=resttime-EXTRACT(EPOCH FROM now()-start_time) WHERE oid='%s'",
+                0,0,oid);
 
+        functions.execSql(query, functions.isnewcc);
+  }
+
+
+
+/*
+  void setRestOpTime(int oid,boolean startrest,int state,int statedop)//aaaaaaaaaaaaaa
+  {
+
+      if (startrest)
+      {
+        String query=String.format("UPDATE oprest set start_time=NOW(),state=%d,statedop=%d WHERE oid='%d'",
+                 state,statedop,oid);
+        functions.execSql(query, functions.isnewcc);
+
+      }
+      else
+      {
+        //int dt=getDBTime()-op[OpChan].reststarttime;
+//   		sprintf(query,"UPDATE oprest set state=%d,statedop=%d,resttime=resttime-cast(extract(second from current_timestamp-start_time)+60*extract(minute from current_timestamp-start_time)+60*60*extract(hour from current_timestamp-start_time) as int) WHERE oid='%d'", op[OpChan].state,op[OpChan].statedop,op[OpChan].oid);
+        String query=String.format("UPDATE oprest set state=%d,statedop=%d,resttime=resttime-EXTRACT(EPOCH FROM now()-start_time) WHERE oid='%d'",
+                state,statedop,oid);
+
+        functions.execSql(query, functions.isnewcc);
+      }
+
+    getRestOpTime(oid);
+  }
+
+*/
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
   String sendsms(String input){
     String[] s2=input.split("\n");
     String[] s22=s2[0].split("\t");
@@ -371,35 +414,7 @@ String s223=java.net.URLEncoder.encode(s22[3],"UTF-8");
 
 
 
-/*
-  void setRestOpTime(int oid,boolean startrest)//aaaaaaaaaaaaaa
-  {
 
-      if (startrest)
-      {
-        String query=String.format("UPDATE oprest set start_time=NOW(),state=%d,statedop=%d WHERE oid='%d'",
-                 op[OpChan].state,op[OpChan].statedop,op[OpChan].oid);
-        functions.execSql(query, functions.isnewcc);
-
-      }
-      else
-      {
-        int dt=getDBTime()-op[OpChan].reststarttime;
-//   		sprintf(query,"UPDATE oprest set state=%d,statedop=%d,resttime=resttime-cast(extract(second from current_timestamp-start_time)+60*extract(minute from current_timestamp-start_time)+60*60*extract(hour from current_timestamp-start_time) as int) WHERE oid='%d'", op[OpChan].state,op[OpChan].statedop,op[OpChan].oid);
-        String query=String.format("UPDATE oprest set state=%d,statedop=%d,resttime=resttime-%d WHERE oid='%d'",
-                op[OpChan].state,op[OpChan].statedop,dt,op[OpChan].oid);
-
-        functions.execSql(query, functions.isnewcc);
-      }
-
-    getRestOpTime(oid);
-  }
-
-
-
-*/
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Escape an html string. Escaping data received from the client helps to

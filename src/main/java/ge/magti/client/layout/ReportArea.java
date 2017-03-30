@@ -14,10 +14,16 @@ import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.*;
+import com.smartgwt.client.widgets.form.fields.events.KeyDownEvent;
+import com.smartgwt.client.widgets.form.fields.events.KeyDownHandler;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.SelectionChangedHandler;
+import com.smartgwt.client.widgets.grid.events.SelectionEvent;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import ge.magti.client.CallCenter;
@@ -25,6 +31,7 @@ import ge.magti.server.functions;
 
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -60,7 +67,7 @@ public class ReportArea extends VLayout {
         //audiowindow.setAutoSize(true);
         audiowindow.setTitle("audiowindow");
         audiowindow.setWidth(350);
-        audiowindow.setHeight(80);
+        audiowindow.setHeight(100);
         audiowindow.setMinHeight(40);
 
         audiowindow.setCanDragReposition(true);
@@ -74,9 +81,12 @@ public class ReportArea extends VLayout {
 
         HLayout soundlayout = new HLayout();
         soundlayout.setWidth100();
-        soundlayout.setHeight100();
+        soundlayout.setHeight("60%");
         soundlayout.setShowEdges(true);
-
+        HLayout soundlayout2 = new HLayout();
+        soundlayout2.setWidth100();
+        soundlayout2.setHeight("40%");
+        soundlayout2.setShowEdges(true);
 
 
 
@@ -126,6 +136,16 @@ public class ReportArea extends VLayout {
          soperat = new SelectItem("operator");
 
          /////////////////////////////////////////////
+
+
+
+        //fillCombo(null, "CorporateUsersDS", "getRoles", "role_id", "role");
+
+
+        fillCombo(soperat,  "operatDS",  "getoperats",
+        "number", "uname", null);
+
+        /*
 ListGrid olistGrid=new ListGrid();
 
         olistGrid.setShowRecordComponents(true);
@@ -183,7 +203,7 @@ if (number == null) number = "[no description3]";
     //    olistGrid.setFields(ooid,ouname);
 
 olistGrid.setHeight(200);
-DataSource ds=DataSource.get("operatDS");
+DataSource ds=DataSource.get("operatDS1");
    //     DataSourceTextField oidField = new DataSourceTextField("oid", "oid");
      //   DataSourceTextField unameField = new DataSourceTextField("uname", "uname");
       //  ds.setFields(oidField,unameField);
@@ -192,11 +212,11 @@ soperat.setOptionDataSource(ds);
 
         ListGrid olistGrid2=new ListGrid();
 soperat.setPickListFields(ooid,uname);
-        soperat.setDisplayField("uname");
+        //soperat.setDisplayField("uname");
         soperat.setPickListProperties(olistGrid2);
 
 soperat.setValue("fhgtrhrth");
-
+*/
 
 
         /////////////////////////////////////////////////////////
@@ -211,12 +231,12 @@ soperat.setValue("fhgtrhrth");
 
       //  form2.setItems(infos,finfo,problems,fproblem,soperat,fbutton);
 
-         finfo = new TextItem();finfo.setTitle("info shablon");
+         finfo = new TextItem();finfo.setTitle("info pattern");
 
-         fproblem = new TextItem();fproblem.setTitle("problem shablon");
-        foperat = new TextItem();foperat.setTitle("operat shablon");
+         fproblem = new TextItem();fproblem.setTitle("problem pattern");
+        foperat = new TextItem();foperat.setTitle("operat pattern");
 
-        ButtonItem fbutton = new ButtonItem("Filtr");fbutton.setStartRow(false);
+        ButtonItem fbutton = new ButtonItem("Filter");fbutton.setStartRow(false);
 
         fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler() {
             @Override
@@ -250,7 +270,7 @@ fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.Click
         VLayout1001.addMember(filtrlayout);//VLayout1001.addMember(olistGrid);
 
 
-        IButton refreshbutton = new IButton("Refresh");
+        IButton refreshbutton = new IButton("Find ring");
         refreshbutton.setHeight(30);
         refreshbutton.setWidth(200);
         IButton clearbutton = new IButton("Clear fields");
@@ -292,8 +312,10 @@ fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.Click
                             String[] ss= DateTimeFormat.getFormat( "yyyy-MM-dd" ).format( dat ).split("-");
                             String su="http://192.168.27.14/storage/"+ss[0]+"/"+ss[0]+ss[1]+"/"+ss[0]+ss[1]+ss[2]+"/"+callid+".mp3";
 //width="100%" height="100%"
-                            String audioTag = "<audio src=\""+su+"\" autobuffer preload controls autoplay> Your browser does not support the <audio> element. </audio>";
+                            String audioTag = "<audio style=\"width: 100%;\" src=\""+su+"\" autobuffer preload controls autoplay width=\"100%\"> Your browser does not support the <audio> element. </audio>";
                             soundlayout.setContents(audioTag);
+                             audioTag = "<a href=\""+su+"\" download>download</a>";
+                            soundlayout2.setContents(audioTag);
                             audiowindow.setTitle(callid+" "+DateTimeFormat.getFormat( "yyyy-MM-dd HH:mm:ss" ).format( dat )+" "+operat+" "+anumber);
                             audiowindow.setVisible(true);
                         }
@@ -305,7 +327,42 @@ fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.Click
 
             }
         };
-
+listGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
+    @Override
+    public void onSelectionChanged(SelectionEvent selectionEvent) {
+        String pr=selectionEvent.getSelectedRecord().getAttribute("problems");
+        String inf=selectionEvent.getSelectedRecord().getAttribute("info");
+        problems2.setData(new ListGridRecord[] {});
+        if (pr!=null){
+            Map<String, String> problems0= ((MainArea)CallCenter.callCenterInstance.maincc).problems0;
+            String[] pr2=pr.split(",");
+            for (int i=0;i<pr2.length;i++) {
+                String val=problems0.get(pr2[i]);
+                Record rr = new Record();
+                if (val==null) rr.setAttribute("problem",pr2[i]);
+                else  {String[] v2=val.split("\t");
+                    if (v2[1].equals("100")) rr.setAttribute("problem","(req)"+v2[0]);
+                    else rr.setAttribute("problem",v2[0]);
+                }
+                problems2.addData(rr);
+            }
+        }
+        infos2.setData(new ListGridRecord[] {});
+        if (inf!=null){
+            Map<String, String> infos0= ((MainArea)CallCenter.callCenterInstance.maincc).infos0;
+            String[] inf2=inf.split(",");
+            for (int i=0;i<inf2.length;i++) {
+                String val=infos0.get(inf2[i]);
+                Record rr = new Record();
+                if (val==null) rr.setAttribute("info",inf2[i]);
+                else {
+                    rr.setAttribute("info",val.split("\t")[0]);
+                }
+                infos2.addData(rr);
+            }
+        }
+    }
+});
         myclear();
         listGrid.setShowRecordComponents(true);
         listGrid.setShowRecordComponentsByCell(true);
@@ -340,11 +397,11 @@ fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.Click
 
 
         ListGridField oid = new ListGridField("oid","oid");
-        ListGridField abonent = new ListGridField("abonent","abonent");
+
 
 
         ListGridField call_start = new ListGridField("call_start","call_start");
-
+        ListGridField op_answer = new ListGridField("op_answer","op_answer");
         ListGridField duration = new ListGridField("duration","duration");
         ListGridField problem = new ListGridField("problems","problems");
         ListGridField info = new ListGridField("info","info");
@@ -352,15 +409,15 @@ fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.Click
         ListGridField anumber = new ListGridField("anumber","anumber");
         ListGridField called = new ListGridField("called","called");
         ListGridField callid = new ListGridField("callid","callid");
-        ListGridField op_answer = new ListGridField("op_answer","op_answer");
+
 
 
         ListGridField audioField = new ListGridField("audio", "audio");
         audioField.setWidth(65);
 
         call_start.setAttribute("displayFormat", "yyyy-MM-dd HH:mm:ss");
-
-           listGrid.setFields(oid,abonent,call_start,duration,problem,info,operat,anumber,called,callid,op_answer,audioField);
+        op_answer.setAttribute("displayFormat", "yyyy-MM-dd HH:mm:ss");
+           listGrid.setFields(oid,call_start,op_answer,duration,problem,info,operat,anumber,called,callid,audioField);
 
 
 /*
@@ -448,6 +505,12 @@ refreshbutton.addClickHandler(new ClickHandler() {
         HLayout prinfolayout=new HLayout();prinfolayout.setWidth100();prinfolayout.setHeight(200);
         problems2= new ListGrid();
         infos2= new ListGrid();
+        ListGridField problem2Field = new ListGridField("problem", "problem");
+        ListGridField info2Field = new ListGridField("info", "info");
+        problems2.setFields(problem2Field);
+        infos2.setFields(info2Field);
+        problems2.setEmptyMessage("");
+        infos2.setEmptyMessage("");
         prinfolayout.setMembers(problems2,infos2);
         VLayout1001.addMember(prinfolayout);
 
@@ -461,7 +524,7 @@ refreshbutton.addClickHandler(new ClickHandler() {
 
 
 
-        audiowindow.addMember(soundlayout);
+        audiowindow.addMember(soundlayout);audiowindow.addMember(soundlayout2);
 
 
         this.addChild(audiowindow);
@@ -520,6 +583,16 @@ String sh="";if (!da) sh=fproblem.getValue().toString().toLowerCase();
         }
         infos.setValueMap(mpi);
 
+        HashMap<String,String> hm=null;
+
+        if(foperat.getValue()!=null&&!foperat.getValue().toString().equals(""))
+        {
+            hm=new HashMap<String,String>();
+            hm.put("uname","%"+foperat.getValue().toString()+"%");
+            hm.put("number",foperat.getValue().toString());
+        }
+            fillCombo(soperat,  "operatDS",  "getoperats",
+                    "number", "uname", hm);
     }
 
     void myclear(){Date dt=new Date();
@@ -547,17 +620,93 @@ String sh="";if (!da) sh=fproblem.getValue().toString().toLowerCase();
         }
 
         if(date1.getValue()!=null&&!date1.getValue().toString().equals(""))
-            criteria.setAttribute("date1", date1.getValue().toString());
+            criteria.setAttribute("date1", date1.getValue().toString()+" "+hour1.getValue().toString()+":0:0");
 
         if(date2.getValue()!=null&&!date2.getValue().toString().equals(""))
-            criteria.setAttribute("date2", date2.getValue().toString());
+            criteria.setAttribute("date2", date2.getValue().toString()+" "+hour2.getValue().toString()+":0:0");
 
         if(problems.getValue()!=null&&!problems.getValue().toString().equals(""))
-            criteria.setAttribute("problems", problems.getAccessKey());
+            criteria.setAttribute("problems", problems.getValue().toString());
 
         if(infos.getValue()!=null&&!infos.getValue().toString().equals(""))
-            criteria.setAttribute("problems", infos.getAccessKey());
+            criteria.setAttribute("infos", infos.getValue().toString());
+
+        if(soperat.getValue()!=null&&!soperat.getValue().toString().equals(""))
+            criteria.setAttribute("operat", "SIP/"+soperat.getValue().toString());
 
         return criteria;
     }
+
+
+
+    public static void fillCombo(final FormItem formItem, String sDataSource, String sFetchOperation,
+                                 final String valueField, String displayField, Map<String, String> aditionalCriteria) {
+
+        try {
+            if (!(formItem instanceof ComboBoxItem) && !(formItem instanceof SelectItem)) {
+                return;
+            }
+
+            formItem.setFetchMissingValues(true);
+            formItem.setFilterLocally(false);
+            if (formItem instanceof ComboBoxItem) {
+                ComboBoxItem cItem = (ComboBoxItem) formItem;
+                cItem.setAddUnknownValues(false);
+                cItem.setAutoFetchData(false);
+            } else {
+                SelectItem sItem = (SelectItem) formItem;
+                sItem.setAddUnknownValues(false);
+                sItem.setAutoFetchData(false);
+            }
+
+            formItem.setFilterLocally(false);
+            formItem.setFetchMissingValues(true);
+
+            DataSource comboDS = DataSource.get(sDataSource);
+            formItem.setOptionOperationId(sFetchOperation);
+            formItem.setOptionDataSource(comboDS);
+            formItem.setValueField(valueField);
+            formItem.setDisplayField(displayField);
+            Criteria criteria = new Criteria();
+            //addEditionalCriteria(aditionalCriteria, criteria);???????????????????
+if (aditionalCriteria!=null)
+            for(Map.Entry<String, String> entry : aditionalCriteria.entrySet()){
+                    criteria.setAttribute(entry.getKey(), entry.getValue());
+            }else{
+    criteria.setAttribute("aditionalCriteria", "aditionalCriteria");
+            }
+
+
+            formItem.setOptionCriteria(criteria);
+            if (formItem instanceof SelectItem)
+                formItem.addKeyDownHandler(new KeyDownHandler() {
+
+                    @Override
+                    public void onKeyDown(KeyDownEvent event) {
+                        String key = event.getKeyName();
+                        if ((key.equals("Escape") || key.equals("Delete"))) {
+                            formItem.clearValue();
+                        }
+
+                    }
+                });
+            formItem.addKeyPressHandler(new KeyPressHandler() {
+                @Override
+                public void onKeyPress(KeyPressEvent event) {
+
+                    Criteria criteria = formItem.getOptionCriteria();
+                    if (criteria != null) {
+                        Object oldAttr = criteria.getAttribute(valueField);
+                        if (oldAttr != null) {
+                            criteria.setAttribute(valueField, (String) null);
+                        }
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            SC.say(e.toString());
+        }
+    }
+
 }

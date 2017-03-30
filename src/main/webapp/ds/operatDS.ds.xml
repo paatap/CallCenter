@@ -6,15 +6,15 @@
         qualifyColumnNames="false"
         dropExtraFields = "false">
     <fields>
-        <field name="oid"               type="integer"          hidden="true"            primaryKey="true" />
+        <field name="number"               type="varchar"          hidden="true"            required="true" />
         <field name="uname"           type="varchar"         title="uname"             required="true"   />
-        <field name="number"           type="varchar"         title="number"             required="true"   />
+
     </fields>
     <operationBindings>
 
         <operationBinding operationId="getoperats" operationType="fetch">
             <selectClause><![CDATA[
-            oid,uname,number
+            number,(uname||' '||number) as uname
     			]]>
             </selectClause>
             <tableClause><![CDATA[
@@ -24,7 +24,7 @@
             <whereClause><![CDATA[
             1=1
             #if($criteria.uname)
-			    	and (uname like '%'||$criteria.uname||'%' or number = 'SIP/'||'$criteria.uname' )
+			    	and (uname like $criteria.uname or number = $criteria.number )
 			#end
 				]]>
             </whereClause>

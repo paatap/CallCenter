@@ -1,5 +1,7 @@
 package ge.magti.server;
 
+import ge.magti.EchoServer;
+
 /**
  * Created by user on 3/10/17.
  */
@@ -18,6 +20,7 @@ public class sets {
             System.out.println("debug="+debug);
             System.out.println("messagestring="+messagestring);
             firstinit=false;
+            EchoServer.starttimer();
         }
     }
     public static boolean debug=false;
@@ -63,4 +66,9 @@ public class sets {
     public static final int   END		=209;
     public static final int   PlayWtOpFile  =210;
     public static final int   PlayMenu      =211;
+
+    public static final int   RESTWARNING		=301;
+
+    public static int RestFullTime=120;
+    public static int RestWarnTime=20;
 }

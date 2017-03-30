@@ -1,35 +1,30 @@
 package ge.magti.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.dev.shell.Jsni;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
+
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 
-import com.smartgwt.client.util.BooleanCallback;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.util.DateDisplayFormatter;
 import com.smartgwt.client.util.DateUtil;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.layout.HLayout;
+import com.smartgwt.client.widgets.layout.Layout;
 import com.smartgwt.client.widgets.layout.VLayout;
-import com.smartgwt.client.widgets.tab.Tab;
-import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
 import ge.magti.client.Dialogs.DlgLogin;
 import ge.magti.client.layout.*;
+import ge.magti.server.functions;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
-/**
+/**  --select * from pg_stat_activity;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class CallCenter implements EntryPoint{
@@ -49,17 +44,36 @@ public class CallCenter implements EntryPoint{
   public  boolean debug=false;
   public  String messagestring;
   public  String mynumber;
+  public String myoid;
   public  String uname;
   public  String pass;
+  public String reststr;
+  public  int optype=-1;
   private static final int HEADER_HEIGHT = 20;
 
   private VLayout mainLayout;
   private HLayout northLayout;
-  private HLayout southLayout;
+  public HLayout southLayout;
   public VLayout maincc;
-  public VLayout reportcc=null;
+  HeaderArea hh;
+  //public VLayout reportcc=null;
+  //public VLayout reportcc2=null;
+  //public VLayout reportcc3=null;
   private NavigationArea westLayout;
 
+
+MyVLayout[] reps=new MyVLayout[]{
+        new MyVLayout("mainarea"),
+        new MyVLayout("rep1"),
+        new MyVLayout("rep2"),
+        new MyVLayout("rep3"),
+        new MyVLayout("rep4")
+};
+public Layout getlayout(String name){
+    for (int i=0;i<reps.length;i++)
+        if (name.equals(reps[i].name)) return reps[i].myvlayout;
+    return null;
+}
   /**
    * This is the entry point method.
    */
@@ -93,6 +107,8 @@ public native void registeronclose() /*-{
               return format;
           }
       });
+
+
 
       //registerHandlers(Jsni.this, window);
         registeronclose();
@@ -152,7 +168,8 @@ DlgLogin dlgLogin=null;
     northLayout.setHeight(HEADER_HEIGHT);
 
     VLayout vLayout = new VLayout();
-    vLayout.addMember(new HeaderArea(ver + " " + uname + " " + mynumber+" "+ss));
+    hh=new HeaderArea(ver + " " + uname + " " + mynumber+" "+ss);
+    vLayout.addMember(hh);
     //vLayout.addMember(new ApplicationMenu());
     northLayout.addMember(vLayout);
 
@@ -175,26 +192,74 @@ DlgLogin dlgLogin=null;
     // add the main layout container to GWT's root panel
     RootLayoutPanel.get().add(mainLayout);
         Window.setTitle(ver + " " + uname + " " + mynumber+" "+((MainArea)maincc).mygrps);
-        ((MainArea) maincc).login();
+        ((MainArea) maincc).login(reststr);
         //if (uname.equals("Alexander.Sarchimelia")) debug = true;
   }
-  public static final int mainarea=0;
-  public static final int reportarea=1;
-  public void setvisiblearea(int type){
-      if (type==mainarea) {
+  public void setleft(String ss,boolean add,boolean color){
+        String s1;
+        if (add)  s1=hh.leftl.getContents()+ss;
+        else s1=ss;
+        if (color) s1="<span style='color:#ff0000'>"+s1+"</span>";
+
+        hh.leftl.setContents(s1);
+  }
+  public void setleft(String ss){
+
+         hh.leftl.setContents(ss);
+
+         hh.leftl.setBackgroundColor("#ffffff");
+  }
+public void setsouthLayout(Layout lay){
+    southLayout.setMembers(westLayout, lay);
+}
+  public void setvisiblearea(String type){
+
+        for (int i=0;i<reps.length;i++){
+
+          String key=reps[i].name;
+
+          if (key.equals(type)) reps[i].myinit();
+          else reps[i].mydestroy();
+
+      }
+
+
+        /*
+      if (type.equals("mainarea")) {
           maincc.setVisible(true);
-          if (reportcc!=null)
-            reportcc.setVisible(false);
-      }else if (type==reportarea){
+
+          if (reportcc!=null) reportcc.destroy();reportcc=null;
+          if (reportcc2!=null) reportcc2.destroy();reportcc2=null;
+          if (reportcc3!=null) reportcc3.destroy();reportcc3=null;
+      }else if (type.equals("rep1")){
           maincc.setVisible(false);
+          if (reportcc2!=null) reportcc2.destroy();reportcc2=null;
           if (reportcc==null){
-              reportcc = new ReportArea();reportcc.setVisible(false);reportcc.setWidth("85%");
+              reportcc = new ReportArea();reportcc.setWidth("85%");
               southLayout.addMember(reportcc);
               ((ReportArea)reportcc).setprobleminfo();
-              reportcc.setVisible(true);
-          }else
+          }
             reportcc.setVisible(true);
+      }else if (type.equals("rep2")){
+          maincc.setVisible(false);
+          if (reportcc!=null) reportcc.destroy();reportcc=null;
+          if (reportcc2==null){
+              reportcc2 = new ReportArea2();reportcc2.setWidth("85%");
+              southLayout.addMember(reportcc2);
+              //((ReportArea)reportcc).setprobleminfo();
+          }
+            reportcc2.setVisible(true);
+      }else if (type.equals("rep3")){
+          maincc.setVisible(false);
+          if (reportcc!=null) reportcc.destroy();reportcc=null;
+          if (reportcc2==null){
+              reportcc2 = new ReportArea2();reportcc2.setWidth("85%");
+              southLayout.addMember(reportcc2);
+              //((ReportArea)reportcc).setprobleminfo();
+          }
+            reportcc2.setVisible(true);
       }
+      */
   }
 
 
@@ -239,14 +304,15 @@ DlgLogin dlgLogin=null;
             messagestring=s2[2];
             mynumber=s2[4];
             uname=s2[5];
-
-            if (s22.length<2){
+            optype= str2int(s2[6],-1);
+            myoid=s2[7];
+            if (s22.length<3){
                 SC.warn("Group not found !");
                 dlgLogin.buttonItem.setDisabled(false);
             }else {
 
                 dlgLogin.loginSuccess(s22);
-
+                reststr=s22[1];
             }
         }else {
             String[] s2=result.split("\t");
@@ -261,6 +327,11 @@ DlgLogin dlgLogin=null;
       }else if (result.startsWith("$getops")){
           westLayout.chat.getops(result);
 
+      }else if (result.startsWith("$getserverinfo")){
+          ReportArea4 r4=(ReportArea4) getlayout("rep4");
+          if (r4!=null){
+              r4.fromgreet(result);
+          }
       }
 
 
@@ -273,10 +344,22 @@ DlgLogin dlgLogin=null;
   public void message(String result){
       if (result.startsWith("$sendopmessage")) {
           westLayout.chat.getmessage(result);
+      }else if (result.startsWith("$restwarning")){
+          setleft(" rest warnig",true,true);
       }
   }
   public void setchatsh(String sh0){
        westLayout.chat.setchatsh(sh0);
   }
+    public static int str2int(String str,int def) {
+        int rr = 0;
+        try {
+            rr = Integer.parseInt(str,10);
+        } catch (Exception e) {
+            // rr=-111111;
+            rr = def;
+        }
+        return rr;
+    }
 
 }

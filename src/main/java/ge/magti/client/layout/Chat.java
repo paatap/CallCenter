@@ -113,7 +113,8 @@ public class Chat extends SectionStackSection {
 
         opsform.setFields(ops);
 
-        gopsbutton = new IButton("ops");gopsbutton.setHeight100();gopsbutton.setWidth("20%");
+        gopsbutton = new IButton("");gopsbutton.setHeight100();gopsbutton.setWidth("20%");
+        gopsbutton.setIcon("users.png");
         gopsbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 CallCenter.callCenterInstance.sendgreet("getops\t"+CallCenter.callCenterInstance.mynumber);

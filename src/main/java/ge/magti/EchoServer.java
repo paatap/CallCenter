@@ -5,6 +5,7 @@ package ge.magti;
  */
 import ge.magti.server.GreetingServiceImpl;
 import ge.magti.server.functions;
+import ge.magti.server.sets;
 
 import java.io.IOException;
 import java.util.*;
@@ -51,6 +52,8 @@ public class EchoServer {
 
     static HashMap<String,mysession> session2=new HashMap<String,mysession>();
 
+
+
     static synchronized void addsession(String clientId, Session session,int grp){
         mysession ses=new mysession();
         ses.session=session;
@@ -76,10 +79,35 @@ public class EchoServer {
     static synchronized void removesession(){
         ArrayList rems=new ArrayList();
         for (Map.Entry entr:session2.entrySet()){
-            if (entr.getValue()==null) rems.add(entr.getKey());
-            else{
-                if (!((mysession)entr.getValue()).session.isOpen()){
-                    rems.add(entr.getKey());
+            mysession ses = (mysession) entr.getValue();
+            if (ses==null) {
+                rems.add(entr.getKey());
+            }else if (ses.session==null){
+                rems.add(entr.getKey());
+            }else if (!ses.session.isOpen()) {
+                rems.add(entr.getKey());
+            }else {
+
+                String query="select oid from oprest where state=205 and statedop=0 and " +
+                        " EXTRACT(EPOCH FROM now()-start_time)>"+sets.RestWarnTime;
+                //System.out.println("kukukuku");
+                String[][] res=functions.getResult(query,functions.isnewcc);
+
+                for (int i=0;i<res.length;i++){
+                    restwarn(res[i][0]);
+                    sendmessage(res[i][0],"$restwarning");
+                    System.out.println("warn20 "+res[i][0]);
+
+                }
+
+                query="select oid from oprest where state=205 and statedop=0 and " +
+                        " resttime-EXTRACT(EPOCH FROM now()-start_time)<0 ";
+                //System.out.println("kukukuku");
+                res=functions.getResult(query,functions.isnewcc);
+                for (int i=0;i<res.length;i++){
+                    restwarn(res[i][0]);
+                    sendmessage(res[i][0],"$restwarning");
+                    System.out.println("warn "+res[i][0]);
                 }
             }
         }
@@ -242,5 +270,98 @@ public class EchoServer {
 
         return "$sendopmessageok";
     }
+    static class Ops{
+        public int   Operators=0;
+        public int    Rest=0;
+        public int  Ready=0;
+        public int  Busy=0;
+        public int   Conn=0;
+        public int   Term=0;
+    }
+    public static String getserverinfo(){//synchronized ???
+        StringBuffer ss=new StringBuffer("$getserverinfo\n");
+        HashMap<Integer,Ops> grps= new HashMap<Integer,Ops>();
+        for (Map.Entry entr:EchoServer.session2.entrySet()){
+            mysession ses=(mysession)entr.getValue();
 
+            if (ses==null) {
+
+            }else if (ses.session==null){
+
+            }else if (!ses.session.isOpen()) {
+
+            }else {
+                Ops grp1=grps.get(ses.grp);
+                if (grp1==null){
+                    grp1=new Ops();
+                    grps.put(ses.grp,grp1);
+                }
+
+
+                if(ses.status==sets.REST) grp1.Rest++;
+                if(ses.status==sets.READY) grp1.Ready++;
+                if(ses.status==sets.BUSY) grp1.Busy++;
+                if(ses.status==sets.CON) grp1.Conn++;
+                if(ses.status==sets.TERMINATE) grp1.Term++;
+
+                grp1.Operators++;
+                long tt=(System.nanoTime() / 1000000 - ses.tim)/1000;
+                String stt="";
+                if (tt<60) stt=""+tt +" s";
+                else stt=""+(tt/60)+" m "+(tt % 60) +" s";
+                ss.append(functions.grp2grps(ses.grp)+" "+ses.grp+"\t" + functions.getstatus(ses.status)+"\t"+stt+"\t"+
+                        ses.uname+"\t"+entr.getKey()+"\t" +ses.anumber+"\t" +ses.callid+"\n");
+            }
+
+        }
+        ss.append("$stat\n");
+        String   sgrps="";
+        String   Operators="Operators";
+        String    Rest="Rest";
+        String  Ready="Ready";
+        String  Busy="Busy";
+        String   Conn="Connect";
+        String   Term="Terminate";
+        for (Map.Entry entr:grps.entrySet()){
+            Ops grp1=(Ops)entr.getValue();
+            int grp=functions.str2int(entr.getKey().toString());
+            sgrps+="\t"+functions.grp2grps(grp)+" "+grp;
+            Operators+="\t"+grp1.Operators;
+            Rest+="\t"+grp1.Rest;
+            Ready+="\t"+grp1.Ready;
+            Busy+="\t"+grp1.Busy;
+            Conn+="\t"+grp1.Conn;
+            Term+="\t"+grp1.Term;
+
+        }
+
+        ss.append(""+sgrps+"\n"+Operators+"\n"+Rest+"\n"+Ready+"\n"+Busy+"\n"+Conn+"\n"+Term);
+    //    Operators
+    //    RestOp
+    //    ReadyOp
+    //    RingingToOp
+    //    Ringing
+    //    MaxRest
+
+        return ss.toString();
+    }
+    static Timer timer=new Timer();
+
+    public static void starttimer (){
+        TimerTask task;
+
+        task = new TimerTask() {
+            @Override
+            public void run() {
+                    removesession();
+            }
+        };
+         timer.schedule(task, 0, 1000);
+        System.out.println("start timer");
+    };
+    static void restwarn(String oid){
+        String query=String.format("UPDATE oprest set statedop=%d WHERE oid='%s'",
+                sets.RESTWARNING,oid);
+        functions.execSql(query, functions.isnewcc);
+    }
 }

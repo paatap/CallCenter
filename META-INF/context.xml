@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <Context path="/connectionPool"/>   -->
+<Context>
+
+    <Resource name="jdbc/postgres" auth="Container"
+              type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://192.168.27.30:5432/cc_crm"
+              username="cc_crm" password="" maxTotal="20" maxIdle="10"
+              maxWaitMillis="-1"/>
+</Context>

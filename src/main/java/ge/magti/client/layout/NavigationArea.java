@@ -25,7 +25,10 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 import ge.magti.client.CallCenter;
-import jdk.nashorn.internal.codegen.CompilerConstants;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class NavigationArea extends HLayout {
@@ -54,7 +57,7 @@ public class NavigationArea extends HLayout {
         section1.addItem(label1);*/
 
         SectionStackSection section2 = new SectionStackSection("Reporting");
-        section2.setExpanded(false);
+        section2.setExpanded(true);
       /*  Label label2 = new Label();
         label2.setContents("Restricted");
         label2.setOverflow(Overflow.AUTO);
@@ -71,7 +74,7 @@ public class NavigationArea extends HLayout {
         reportTree.setParentIdField("idto");
         reportTree.setOpenProperty("isOpen");
         reportTree.setTitleProperty("title");
-        reportTree.setData(reportData);
+        reportTree.setData(getreportData(CallCenter.callCenterInstance.optype));
 
 
         final TreeGrid reportTreeGrid = new TreeGrid();
@@ -98,11 +101,7 @@ public class NavigationArea extends HLayout {
 reportTreeGrid.addNodeClickHandler(new NodeClickHandler() {
     @Override
     public void onNodeClick(NodeClickEvent nodeClickEvent) {
-        if (nodeClickEvent.getNode().getName().equals("rep1")){
-            CallCenter.callCenterInstance.setvisiblearea(CallCenter.reportarea);
-            //CallCenter.callCenterInstance.maincc.setVisible(false);
-            //CallCenter.callCenterInstance.reportcc.setVisible(true);
-        }
+        CallCenter.callCenterInstance.setvisiblearea(nodeClickEvent.getNode().getName());
 
     }
 });
@@ -133,18 +132,17 @@ section2.addItem(reportTreeGrid);
         sectionStack.addSection(section1);
         sectionStack.addSection(section2);
         sectionStack.addSection(chat);
-
+        sectionStack.setVisibilityMode(VisibilityMode.MULTIPLE);
 
         sectionStack.addSectionHeaderClickHandler(new SectionHeaderClickHandler() {
             @Override
             public void onSectionHeaderClick(SectionHeaderClickEvent sectionHeaderClickEvent) {
  //               ((MainArea)CallCenter.callCenterInstance.maincc).txt.setValue("aa"+sectionHeaderClickEvent.getSection().getTitle());
                if (sectionHeaderClickEvent.getSection().getTitle().equals("Call Registration")){
-                   CallCenter.callCenterInstance.setvisiblearea(CallCenter.mainarea);
+                   CallCenter.callCenterInstance.setvisiblearea("mainarea");
                      //CallCenter.callCenterInstance.maincc.setVisible(true);
                      //CallCenter.callCenterInstance.reportcc.setVisible(false);
                }
-
             }
         });
 
@@ -160,11 +158,28 @@ section2.addItem(reportTreeGrid);
             setAttribute("isOpen", isOpen);
         }
     }
-    public static final TreeNode[] reportData = new TreeNode[] {
-            new reportTreeNode("4", "1", "rep1", "rep 1", true),
-            new reportTreeNode("189", "1", "rep2", "rep 2", true),
-            new reportTreeNode("265", "1", "rep3", "rep 3", true),
-            new reportTreeNode("264", "1", "rep4", "rep 4", true),
-            new reportTreeNode("188", "1", "rep5", "rep 5", true)
+    public static TreeNode[] getreportData(int optype){
+        ArrayList<TreeNode> rd=new ArrayList<TreeNode>();
+        if (optype>0) rd.add(new reportTreeNode("2", "1", "rep1", "find ring", true));
+        if (optype>0) rd.add(new reportTreeNode("5", "1", "rep4", "server info", true));
+        if (optype>-2) rd.add(new reportTreeNode("3", "1", "rep2", "server info2", true));
+        if (optype>0) rd.add(new reportTreeNode("4", "1", "rep3", "old rep", true));
+
+
+        Object[] ob2=rd.toArray();
+
+        TreeNode[] reportData=new TreeNode[ob2.length];
+        for (int i=0;i<ob2.length;i++) reportData[i]=(TreeNode)ob2[i];
+
+        return reportData;
+    }
+    /*
+    public static final TreeNode[] reportData11 = new TreeNode[] {
+            new reportTreeNode("4", "1", "rep1", "find ring", true),
+            new reportTreeNode("189", "1", "rep2", "server info", true),
+            new reportTreeNode("265", "1", "rep3", "old rep", true)
+     //       ,new reportTreeNode("264", "1", "rep4", "rep 4", true)
+     //       ,new reportTreeNode("188", "1", "rep5", "rep 5", true)
     };
+    */
 }

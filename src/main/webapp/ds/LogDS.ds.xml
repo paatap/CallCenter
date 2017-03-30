@@ -7,8 +7,8 @@
         dropExtraFields = "false">
     <fields>
         <field name="oid"               type="integer"          hidden="true"            primaryKey="true" />
-        <field name="abonent"           type="varchar"         title="abonent"             required="true"   />
         <field name="call_start"        type="datetime"         title="call_start"             required="true"   />
+        <field name="op_answer"           type="datetime"         title="op_answer"             required="true"   />
         <field name="duration"           type="varchar"         title="duration"             required="true"   />
         <field name="problems"           type="text"         title="problems"             required="true"   />
         <field name="info"           type="text"         title="info"             required="true"   />
@@ -16,18 +16,17 @@
         <field name="anumber"           type="varchar"         title="anumber"             required="true"   />
         <field name="called"           type="varchar"         title="called"             required="true"   />
         <field name="callid"           type="varchar"         title="callid"             required="true"   />
-        <field name="op_answer"           type="datetime"         title="op_answer"             required="true"   />
         <field name="audio"           type="varchar"         title="audio"             required="true"   />
     </fields>
     <operationBindings>
 
         <operationBinding operationId="getLogs" operationType="fetch">
             <selectClause><![CDATA[
-log.oid,log.abonent,log.call_start,
+log.oid,log.call_start,log.op_answer,
 (SELECT EXTRACT(EPOCH FROM log.call_end-log.call_start)) as duration,
 array_to_string(log2.problems, ',', '*') as problems,
 array_to_string(log2.info, ',', '*') as info,
-log.operat,log.anumber,log.called,log.callid,log.op_answer,log.callid
+log.operat,log.anumber,log.called,log.callid,log.callid
     			]]>
             </selectClause>
             <tableClause><![CDATA[
@@ -51,6 +50,9 @@ log.operat,log.anumber,log.called,log.callid,log.op_answer,log.callid
 			#end
 			#if($criteria.infos)
 			    	and  $criteria.infos = any(log2.info)
+			#end
+			#if($criteria.operat)
+			    	and  $criteria.operat = log.operat
 			#end
 				]]>
             </whereClause>
