@@ -82,8 +82,27 @@ public class functions {
                 return DriverManager.getConnection(sets.db_stringgwt, sets.db_user,sets.db_pass);}
             else if (_isnew==isnewcc)
             {
+                try {
+                    InitialContext cxt = new InitialContext();
 
-                return DriverManager.getConnection(sets.db_stringnewcc, sets.db_usernewcc,sets.db_passnewcc);
+
+                    DataSource ds = (DataSource) cxt.lookup("java:/comp/env/jdbc/postgres");
+
+
+                    Connection con = ds.getConnection();
+                    if (con==null){
+                        System.out.println("pooling no conn=null");
+                        return DriverManager.getConnection(sets.db_stringnewcc, sets.db_usernewcc,sets.db_passnewcc);
+
+                    }
+                    return con;
+                }catch(Exception e){
+                    System.out.println("pooling no "+e.toString());
+                    return DriverManager.getConnection(sets.db_stringnewcc, sets.db_usernewcc,sets.db_passnewcc);
+                }
+
+
+                //return DriverManager.getConnection(sets.db_stringnewcc, sets.db_usernewcc,sets.db_passnewcc);
             }
             else if (_isnew==isnewcceksp)
             {
@@ -301,15 +320,15 @@ public class functions {
         try {
 
             connection = GetMyConnection(_isnew);
-            System.out.println("11111111111111111111111");
+
             stmt =
                     connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
                             ResultSet.CONCUR_READ_ONLY);
-            System.out.println("222222222222222222222");
+
             ResultSet rs = stmt.executeQuery(sql);
-            System.out.println("333333333333333333333333333333");
+
             int columnCount = rs.getMetaData().getColumnCount();
-            System.out.println("44444444444444444444=="+columnCount);
+
       /*      int rowCount = 0;
 
             while (rs.next())
@@ -328,7 +347,7 @@ public class functions {
                 //              i++;
 
             }
-            System.out.println("55555555555555555555");
+
 
 
             return retVal;

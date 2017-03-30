@@ -130,11 +130,11 @@
         <listener-class>com.isomorphic.base.InitListener</listener-class>
     </listener>
 
-    <servlet>
+    <!--servlet>
         <servlet-name>Init</servlet-name>
         <servlet-class>com.isomorphic.base.Init</servlet-class>
         <load-on-startup>1</load-on-startup>
-    </servlet>
+    </servlet-->
 
     <servlet>
         <servlet-name>HttpProxy</servlet-name>

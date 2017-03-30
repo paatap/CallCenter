@@ -206,6 +206,7 @@
                     <modules>
                         <module>ge.magti.CallCenter</module>
                     </modules>
+
                 </configuration>
             </plugin>
         </plugins>
