@@ -38,7 +38,7 @@ import java.util.Map;
 /**
  * Created by user on 3/21/17.
  */
-public class ReportArea extends VLayout {
+public class ReportAreaFring extends VLayout {
     final Window audiowindow;
      final       SelectItem soperat ;
 
@@ -57,7 +57,7 @@ public class ReportArea extends VLayout {
     final    SelectItem hour2 ;
     final ListGrid problems2;
     final ListGrid infos2;
-    public ReportArea() {
+    public ReportAreaFring() {
 
         super();
         final VLayout VLayout1001 = new VLayout();VLayout1001.setShowEdges(true);

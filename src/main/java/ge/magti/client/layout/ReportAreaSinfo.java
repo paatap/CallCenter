@@ -15,16 +15,16 @@ import java.util.ArrayList;
 /**
  * Created by user on 3/28/17.
  */
-public class ReportArea4 extends HLayout {
+public class ReportAreaSinfo extends HLayout {
     ListGrid ops1;
     ListGrid ops2;
     ListGrid info;
     int infom=-1;
-    public ReportArea4() {
+    public ReportAreaSinfo() {
 
         super();
 
-        this.getShowEdges();
+        this.setShowEdges(true);
 
          ops1=new ListGrid();
 //        ss.append(ses.grp+"\t" + functions.getstatus(ses.status)+"\t"+"time"+"\t"+

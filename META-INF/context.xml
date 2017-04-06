@@ -2,9 +2,9 @@
 <!-- <Context path="/connectionPool"/>   -->
 <Context>
 
-    <Resource name="jdbc/postgres" auth="Container"
+    <!--Resource name="jdbc/postgres1111" auth="Container"
               type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
               url="jdbc:postgresql://192.168.27.30:5432/cc_crm"
-              username="cc_crm" password="" maxTotal="20" maxIdle="10"
-              maxWaitMillis="-1"/>
+              username="cc_crm" password="" maxTotal="10" maxIdle="5"
+              maxWaitMillis="-1"/-->
 </Context>

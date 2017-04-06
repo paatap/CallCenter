@@ -17,6 +17,7 @@ package ge.magti.client.Dialogs;
         import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
         import com.smartgwt.client.widgets.layout.HLayout;
         import ge.magti.client.CallCenter;
+        import ge.magti.client.clfunctions;
 
 
         import java.util.Date;
@@ -90,6 +91,11 @@ public class DlgLogin extends Window {
             @Override
             public void onClick(ClickEvent event) {
                 login();
+                String skinCookieName="Graphite";
+                String skinCookieValue="Graphite";
+                Cookies.setCookie(skinCookieName, skinCookieValue);
+                com.google.gwt.user.client.Window.Location.reload();
+                SC.say("1111111111111111");
             }
         });
 
@@ -117,6 +123,7 @@ buttonItem2.setVisible(false);grp.setVisible(false);
         hLayout.setMembers(form);
         addItem(hLayout);
         setCookieValues();
+        setcss("",false);
     }
 
     public void setMainWindow(Canvas mainWindow) {
@@ -185,6 +192,7 @@ buttonItem2.setVisible(false);grp.setVisible(false);
     }
     LinkedHashMap mp;
     public void loginSuccess(String[] s22){
+        CallCenter.callCenterInstance.resttime= clfunctions.str2int(s22[1].split("\t")[0],0);
         if (s22.length==3) { CallCenter.callCenterInstance.loginSuccess2(s22[2]);}
         else {
             setHeight(200);
@@ -200,5 +208,18 @@ buttonItem2.setVisible(false);grp.setVisible(false);
             grp.setValue(mp.get(s22[2]));
             form.redraw();
         }
+    }
+    public void setcss(String css,boolean refr){
+        //private DynamicForm form;
+       // userNameItem.setTextBoxStyle(userNameItem.getTextBoxStyle()+" myfont1");
+       // userNameItem.setTitleStyle(userNameItem.getTitleStyle()+" myfont1");
+
+       // passwordItem.setTextBoxStyle(passwordItem.getTextBoxStyle()+" myfont1");
+       // buttonItem.setBaseStyle("button myfont1");
+       // buttonItem2.setBaseStyle("button myfont1");
+       // grp.setTextBoxStyle(grp.getTextBoxStyle()+" myfont1");
+       // grp.setPickListBaseStyle(grp.getPickListBaseStyle()+" myfont1");
+
+        form.setStyleName(form.getStyleName()+" myfont1");
     }
 }

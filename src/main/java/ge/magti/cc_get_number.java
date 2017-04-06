@@ -134,14 +134,21 @@ public class cc_get_number extends HttpServlet {
                     System.out.println("result===="+ss);
                     out.println(ss);
 
+                }else if (cc_command.equals("98")) {
+                    System.out.println("command=98");
+
+                    out.println("kuku");
+
                 }
                 System.out.println("/CallCentr/cc_get_number" + ssreq);
 
                     String warname=functions.getwarname(this);
 
                     if (anum.contains("599283399")||bnum.contains("599283399"))
-                 if (warname.equals("CallCenter"))
-                        functions.mysocket("/CallCentr/cc_get_number" + ssreq, "192.168.27.30", 8080);
+                 if (warname.equals("CallCenter")) {
+                     functions.mysocket("/CallCentr/cc_get_number" + ssreq, "192.168.27.30", 8080);
+                     functions.mysocket("/CallCentr/cc_get_number" + ssreq, "192.168.18.22", 9080);
+                 }
 
 
 

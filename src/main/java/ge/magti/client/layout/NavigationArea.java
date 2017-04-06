@@ -6,6 +6,7 @@ import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.SelectionAppearance;
 import com.smartgwt.client.types.TreeModelType;
 import com.smartgwt.client.types.VisibilityMode;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
@@ -33,6 +34,8 @@ import java.util.List;
 
 public class NavigationArea extends HLayout {
     public Chat chat;
+ //   Tree reportTree = new Tree();
+    TreeGrid reportTreeGrid = new TreeGrid();
     public NavigationArea() {
 
         super();
@@ -48,7 +51,7 @@ public class NavigationArea extends HLayout {
         sectionStack.setVisibilityMode(VisibilityMode.MUTEX);
         sectionStack.setOverflow(Overflow.HIDDEN);
 
-        SectionStackSection section1 = new SectionStackSection("Call Registration");
+        SectionStackSection section1 = new SectionStackSection("Call Center");//Registration
         section1.setExpanded(true);
 
         //section1.setCanCollapse(false);
@@ -66,18 +69,18 @@ public class NavigationArea extends HLayout {
 
 
 
-        Tree reportTree = new Tree();
-        reportTree.setModelType(TreeModelType.PARENT);
+
+  /*      reportTree.setModelType(TreeModelType.PARENT);
         reportTree.setRootValue(1);
         reportTree.setNameProperty("name");
         reportTree.setIdField("myid");
         reportTree.setParentIdField("idto");
         reportTree.setOpenProperty("isOpen");
-        reportTree.setTitleProperty("title");
-        reportTree.setData(getreportData(CallCenter.callCenterInstance.optype));
+        reportTree.setTitleProperty("title");*/
+        //reportTree.setData(getreportData(CallCenter.callCenterInstance.optype));
 
 
-        final TreeGrid reportTreeGrid = new TreeGrid();
+
         reportTreeGrid.setWidth100();
         reportTreeGrid.setHeight(200);
         reportTreeGrid.setShowHeader(false);
@@ -86,7 +89,7 @@ public class NavigationArea extends HLayout {
         //reportTreeGrid.setShowOpenIcons(false);
         //reportTreeGrid.setShowDropIcons(false);
         reportTreeGrid.setClosedIconSuffix("");
-        reportTreeGrid.setData(reportTree);
+        //reportTreeGrid.setData(reportTree);
         reportTreeGrid.setShowRoot(false);
 //        employeeTreeGrid.setSelectionAppearance(SelectionAppearance.CHECKBOX);
         reportTreeGrid.setShowSelectedStyle(false);
@@ -101,7 +104,10 @@ public class NavigationArea extends HLayout {
 reportTreeGrid.addNodeClickHandler(new NodeClickHandler() {
     @Override
     public void onNodeClick(NodeClickEvent nodeClickEvent) {
-        CallCenter.callCenterInstance.setvisiblearea(nodeClickEvent.getNode().getName());
+      //  SC.say(nodeClickEvent.getNode().getAttribute("dat").toString());
+
+        CallCenter.callCenterInstance.setvisiblearea(nodeClickEvent.getNode().getName(),
+                nodeClickEvent.getNode().getAttribute("dat").toString());
 
     }
 });
@@ -138,8 +144,8 @@ section2.addItem(reportTreeGrid);
             @Override
             public void onSectionHeaderClick(SectionHeaderClickEvent sectionHeaderClickEvent) {
  //               ((MainArea)CallCenter.callCenterInstance.maincc).txt.setValue("aa"+sectionHeaderClickEvent.getSection().getTitle());
-               if (sectionHeaderClickEvent.getSection().getTitle().equals("Call Registration")){
-                   CallCenter.callCenterInstance.setvisiblearea("mainarea");
+               if (sectionHeaderClickEvent.getSection().getTitle().equals("Call Center")){
+                   CallCenter.callCenterInstance.setvisiblearea("mainarea","mainarea");
                      //CallCenter.callCenterInstance.maincc.setVisible(true);
                      //CallCenter.callCenterInstance.reportcc.setVisible(false);
                }
@@ -150,20 +156,57 @@ section2.addItem(reportTreeGrid);
 
     }
     public static class reportTreeNode extends TreeNode {
-        public reportTreeNode(String myid, String idto, String name,String title, boolean isOpen) {
+        public reportTreeNode(String myid, String idto, String name,String title, boolean isOpen,String dat) {
             setAttribute("myid", myid);
             setAttribute("idto", idto);
             setAttribute("name", name);
             setAttribute("title", title);
             setAttribute("isOpen", isOpen);
+            setAttribute("dat", dat);
         }
     }
-    public static TreeNode[] getreportData(int optype){
+    public void settree(String ss) {
+        Tree reportTree = new Tree();
+        reportTree.setModelType(TreeModelType.PARENT);
+        reportTree.setRootValue(1);
+        reportTree.setNameProperty("name");
+        reportTree.setIdField("myid");
+        reportTree.setParentIdField("idto");
+        reportTree.setOpenProperty("isOpen");
+        reportTree.setTitleProperty("title");
+        reportTree.setData(getreportData(ss));
+        reportTreeGrid.setData(reportTree);
+    }
+
+    public static TreeNode[] getreportData(String ss) {
+
+        String[] s2=ss.split("\n");
+        ArrayList<TreeNode> rd=new ArrayList<TreeNode>();
+        String ss22="";
+        for (int i=0;i<s2.length;i++){
+            String[] s22=s2[i].split("\t");
+
+            ss22+=s22[0]+s22[1]+"\n";
+            rd.add(new reportTreeNode(""+(i+2), "1", s22[0], s22[1], true,s22[2]));
+        }
+
+
+        //SC.say(ss22);
+        Object[] ob2=rd.toArray();
+
+        TreeNode[] reportData=new TreeNode[ob2.length];
+        for (int i=0;i<ob2.length;i++) reportData[i]=(TreeNode)ob2[i];
+
+        return reportData;
+    }
+    /*
+    public static TreeNode[] getreportData2(int optype){
         ArrayList<TreeNode> rd=new ArrayList<TreeNode>();
         if (optype>0) rd.add(new reportTreeNode("2", "1", "rep1", "find ring", true));
         if (optype>0) rd.add(new reportTreeNode("5", "1", "rep4", "server info", true));
         if (optype>-2) rd.add(new reportTreeNode("3", "1", "rep2", "server info2", true));
         if (optype>0) rd.add(new reportTreeNode("4", "1", "rep3", "old rep", true));
+        if (optype>0) rd.add(new reportTreeNode("6", "1", "rep5", "admin", true));
 
 
         Object[] ob2=rd.toArray();
@@ -172,7 +215,7 @@ section2.addItem(reportTreeGrid);
         for (int i=0;i<ob2.length;i++) reportData[i]=(TreeNode)ob2[i];
 
         return reportData;
-    }
+    }*/
     /*
     public static final TreeNode[] reportData11 = new TreeNode[] {
             new reportTreeNode("4", "1", "rep1", "find ring", true),

@@ -6,6 +6,7 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="gwt:property" content="locale=ka">
     <meta name="author" content="Sarchi"/>
+
     <meta name="Description" content="Magticom CallCenter Web Application"/>
     <meta name="Keywords" content="Billing "/>
 
@@ -224,8 +225,8 @@
 <script type="text/javascript" src='CallCenter/sc/modules/ISC_Tools.js?isc_version=11.0p_2016-08-04.js'></script>
 
 <script type="text/javascript">document.getElementById('loadingMsg').innerHTML = 'მონაცემთა წყაროების ჩატვირთვა...';</script>
-<script type='text/javascript' src='CallCenter/sc/skins/EnterpriseBlue/load_skin.js?isc_version=11.0p_2016-08-04.js'></script>
-
+<!--<script type='text/javascript' src='CallCenter/sc/skins/EnterpriseBlue/load_skin.js?isc_version=11.0p_2016-08-04.js'></script>
+-->
 
 <!--load the datasources-->
 <script type="text/javascript" src="sc/DataSourceLoader?dataSource=LogDS">
@@ -257,8 +258,10 @@
 
     // Load the skin
     document.getElementById('loadingMsg').innerHTML = 'ვიზუალის ჩატვირთვა ...';
+//currentSkin = "EnterpriseBlue";
+    alert(currentSkin);
 //    document.write("<" + "script type='text/javascript' src='CallCenter/sc/skins/" + currentSkin + "/load_skin.js?isc_version=11.0p_2016-08-04.js'><" + "/script>");
-
+    document.write("<"+"script src=CallCenter/sc/skins/" + currentSkin + "/load_skin.js><"+"/script>");
 
     // Include the application JS
     document.getElementById('loadingMsg').innerHTML = 'ჩატვირთვის დასრულება<br>გთხოვთ მოითმინოთ...';

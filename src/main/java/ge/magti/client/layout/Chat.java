@@ -3,6 +3,7 @@ package ge.magti.client.layout;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -117,7 +118,9 @@ public class Chat extends SectionStackSection {
         gopsbutton.setIcon("users.png");
         gopsbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                CallCenter.callCenterInstance.sendgreet("getops\t"+CallCenter.callCenterInstance.mynumber);
+                if (CallCenter.callCenterInstance.mynumber==null) SC.say("nulllll");
+
+                CallCenter.callCenterInstance.sendgreet("getops\t"+CallCenter.callCenterInstance.mynumber+"\t");
             }
         });
         HLayout1.addMember(sendbutton);HLayout1.addMember(okbutton);
@@ -142,6 +145,7 @@ public class Chat extends SectionStackSection {
                             "\t" + number.getValue().toString() + "\n"+txt.getValue().toString());
                     txt.setValue("");
                 }
+
 
             }
         });
@@ -361,5 +365,8 @@ public class Chat extends SectionStackSection {
         }
         shablon2.setValueMap(mp2);
         shablon2.setValue(mp2.get(ss));
+    }
+    public void setsmsnumber(String smsnumber){
+        number.setValue(smsnumber);
     }
 }

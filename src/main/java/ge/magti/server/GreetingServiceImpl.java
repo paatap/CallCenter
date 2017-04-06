@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 
 /**
@@ -47,16 +48,18 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
     // Escape data from the client to avoid cross-site script vulnerabilities.
     input = escapeHtml(input);
     //userAgent = escapeHtml(userAgent);
+    if (input.startsWith("getserverinfo")) return EchoServer.getserverinfo();
     System.out.println("1111111111111111111111111111111111=="+input.substring(0,10));
-    //System.out.println("1111111111111111111111111111111111=="+userAgent+serverInfo);
+
     if (input.startsWith("getprobleminfo")) return getprobleminfo(input);
     if (input.startsWith("login")) return login(input);
     if (input.startsWith("button")) return button(input);
-    if (input.startsWith("getserverinfo")) return EchoServer.getserverinfo();
+
     if (input.startsWith("savetxt")) return savetxt(input);
     if (input.startsWith("getops")) return EchoServer.getops(input);
     if (input.startsWith("sendmessage")) return EchoServer.sendopmessage(input);
     if (input.startsWith("sendsms")) return sendsms(input);
+    if (input.startsWith("grpadd")) return EchoServer.grpadd(input);
    // return "Hello, " + input + "!<br><br>I am running " + serverInfo
    //     + ".<br><br>It looks like you are using:<br>" + userAgent;
       return "unknown";
@@ -82,6 +85,17 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
   }
   String button(String input){
     String[] s2=input.split("\t");
+      String rest="?";
+
+     if (s2[2].equals("rest")) {
+         rest=EchoServer.getRest(s2[5], s2[3]);
+         if (rest.equals("false")) {
+             return "$button\trestno\t"+rest;
+         }
+     }
+
+
+
 
 //            uname            dt    action            channel
 //    CallCenter.callCenterInstance.sendgreet("button\t"+CallCenter.callCenterInstance.uname+"\t"+
@@ -117,14 +131,14 @@ functions.execSql(query,functions.isnewcc);
         }
       }
       if (!problems.equals("") && !infos.equals(""))//4,3,
-        query += "\ninsert into log2(callid,operat,problems,info) values ('" + s2[4] + "','SIP/" + s2[3] + "'," +
-                "'{" + problems + "}','{" + infos + "}');";
+        query += "\ninsert into log2(callid,operat,problems,info,op_end) values ('" + s2[4] + "','SIP/" + s2[3] + "'," +
+                "'{" + problems + "}','{" + infos + "}',now());";
       else if (!problems.equals(""))
-        query += "\ninsert into log2(callid,operat,problems) values ('" + s2[4] + "','SIP/" + s2[3] + "'," +
-                "'{" + problems + "}');";
+        query += "\ninsert into log2(callid,operat,problems,op_end) values ('" + s2[4] + "','SIP/" + s2[3] + "'," +
+                "'{" + problems + "}',now());";
       else if (!infos.equals(""))
-        query += "\ninsert into log2(callid,operat,info) values ('" + s2[4] + "','SIP/" + s2[3] + "'," +
-                "'{" + infos + "}');";
+        query += "\ninsert into log2(callid,operat,info,op_end) values ('" + s2[4] + "','SIP/" + s2[3] + "'," +
+                "'{" + infos + "}',now());";
 
  System.out.println("*************************="+phonedescrip+"*="+s2[7]+"\n"+input);
 
@@ -139,19 +153,22 @@ functions.execSql(query,functions.isnewcc);
     }
       int state=0;
       System.out.println("status====="+s2[2]+" "+s2[3]+" "+s2[6]);
+
       if (s2[2].equals("ready")){
         state=sets.READY;
       }else if (s2[2].equals("end")){
         state=sets.READY;
       }else if (s2[2].equals("busy")){
         state=sets.BUSY;
-      }else if (s2[2].equals("rest")){this.reststart(s2[3]);
-        state=sets.REST;
-      }else if (s2[2].equals("restend")){this.restend(s2[3]);
+      }else if (s2[2].equals("rest")){
+              //rest = this.reststart(s2[3]);
+              state = sets.REST;
+      }else if (s2[2].equals("restend")){rest=this.restend(s2[3]);
         state=sets.READY;
       }else if (s2[2].equals("terminate")){
         state=sets.TERMINATE;
       }
+
       if (state==sets.READY){
           callenable(s2[3],s2[6]);
       }else{
@@ -162,10 +179,11 @@ functions.execSql(query,functions.isnewcc);
     if (ses!=null){
       ses.status=state;ses.tim=System.nanoTime() / 1000000;
       if (state==sets.READY) {ses.callid="";ses.anumber="";}
+        System.out.println("sess is not null");
     }
 
 
-    return "$button\t"+s2[2];
+    return "$button\t"+s2[2]+"\t"+rest;
 
   }
 
@@ -178,15 +196,22 @@ functions.execSql(query,functions.isnewcc);
 
 
     String query="SELECT oid,optype,number FROM secrets where uname='"+s2[1]+"'and secret='"+s2[2]+"'";
-    String[][] res = functions.getResult(query,functions.isnewcc);
-    if (res.length>0) {
-      query="insert into oplog(uname,dt,action,channel) values ('"+s2[1]+"',NOW(),'login','"+res[0][2]+"');";
+      ArrayList<String[]> res = functions.getResult(query,functions.isnewcc);
+    if (res.size()>0) {
+        String res2;
+   //     System.out.println("=========!"+res[0][2]+"!================");
+        if (res.get(0)[2].startsWith("-")){
+            res2="nophone";
+           // System.out.println("=================nophone============");
+        }else {
 
-      functions.execSql(query,functions.isnewcc);
+            query = "insert into oplog(uname,dt,action,channel) values ('" + s2[1] + "',NOW(),'login','" + res.get(0)[2] + "');";
 
-      query="select queue from pbx.member_control where number='"+res[0][2]+"'";
-      String res2 = functions.getResult2(query,"\n","\t",functions.isaster12).toString();
+            functions.execSql(query, functions.isnewcc);
 
+            query = "select queue from pbx.member_control where number='" + res.get(0)[2] + "'";
+            res2 = functions.getResult2(query, "\n", "\t", functions.isaster12).toString();
+        }
       String warName = functions.getwarname(this);
 //      if (s2[1].equals("sarchi")) {
       String setsmessagestring=sets.messagestring;
@@ -199,15 +224,16 @@ functions.execSql(query,functions.isnewcc);
 
 
 
-      mysession ses=EchoServer.getsession(res[0][2]);
+      mysession ses=EchoServer.getsession(res.get(0)[2]);
       if (ses!=null){
         return "$login\terror\tSession is open!!!";
       }
 
-        String rst=this.getRestOpTime(res[0][2]);
+        String rst=this.getRestOpTime(res.get(0)[2]);
      // System.out.println("111111111111111111111111111111111111");
-
-      return "$login\tok\t"+setsmessagestring+"\t"+sets.debug+"\t"+res[0][2]+"\t"+s2[1]+"\t"+res[0][1]+"\t"+res[0][0]+"\n"+rst+"\n"+res2;
+        boolean debug=sets.debug;
+        if (s2[1].equals("sarchi")) debug=true;
+      return "$login\tok\t"+setsmessagestring+"\t"+debug+"\t"+res.get(0)[2]+"\t"+s2[1]+"\t"+res.get(0)[1]+"\t"+res.get(0)[0]+"\n"+rst+"\n"+res2;
     }
     else return "$login\terror\tError user password !!!";
   }
@@ -235,24 +261,25 @@ functions.execSql(query,functions.isnewcc);
     String[] s2=input.split("\t");
     String vv=s2[1];
     String mygrp=s2[2];
+      String optype=s2[5];
     StringBuffer  ss=new StringBuffer("");
     ss.append("$getprobleminfo\n$problem\n");
 
 //    String query="SELECT problem.oid, problem.p_type,problem.grp,not(problem.grp="+mygrp+") as mygrp FROM problem where problem.grp in ("+vv+",100) ORDER BY mygrp,problem.p_type";
 
-    String query="SELECT problem.oid, problem.p_type,problem.grp,not(problem.grp="+mygrp+") as mygrp FROM problem where not(problem.grp=-10) ORDER BY mygrp,problem.p_type";
-    String[][] res = functions.getResult(query,functions.isnewcc);
+    String query="select problem.oid, problem.p_type,problem.grp,not(problem.grp="+mygrp+") as mygrp FROM problem where not(problem.grp=-10) ORDER BY mygrp,problem.p_type";
+      ArrayList<String[]> res = functions.getResult(query,functions.isnewcc);
 
-    for (int i=0;i<res.length;i++) {
-      ss.append(""+res[i][0]+"\t"+res[i][1]+"\t"+res[i][2]+"\n");
+    for (int i=0;i<res.size();i++) {
+      ss.append(""+res.get(i)[0]+"\t"+res.get(i)[1]+"\t"+res.get(i)[2]+"\n");
     }
 
     ss.append("$info\n");
 //    query="SELECT info.oid, info.i_type,info.grp,not(info.grp="+mygrp+") as mygrp FROM info where info.grp in ("+vv+") ORDER BY mygrp,info.i_type";
-   query="SELECT info.oid, info.i_type,info.grp,not(info.grp="+mygrp+") as mygrp FROM info where not(info.grp=-10) ORDER BY mygrp,info.i_type";
+   query="select info.oid, info.i_type,info.grp,not(info.grp="+mygrp+") as mygrp FROM info where not(info.grp=-10) ORDER BY mygrp,info.i_type";
     res = functions.getResult(query,functions.isnewcc);
-    for (int i=1;i<res.length;i++) {
-      ss.append(""+res[i][0]+"\t"+res[i][1]+"\t"+res[i][2]+"\n");
+    for (int i=0;i<res.size();i++) {
+      ss.append(""+res.get(i)[0]+"\t"+res.get(i)[1]+"\t"+res.get(i)[2]+"\n");
     }
     ss.append("$savetxt\n");
     String uname=s2[3].replace(".","_").replace(" ","_");
@@ -264,6 +291,13 @@ functions.execSql(query,functions.isnewcc);
     txt=functions.file2str("/home/ccfiles/smsshablon.txt");
     ss.append(txt);
 
+      ss.append("$reports\n");
+//    query="SELECT info.oid, info.i_type,info.grp,not(info.grp="+mygrp+") as mygrp FROM info where info.grp in ("+vv+") ORDER BY mygrp,info.i_type";
+      query="select name,title,dat from mydat where optype<='"+optype+"' and type=1 ORDER BY n";
+      res = functions.getResult(query,functions.isnewcc);
+      for (int i=0;i<res.size();i++) {
+          ss.append(""+res.get(i)[0]+"\t"+res.get(i)[1]+"\t"+res.get(i)[2]+"\n");
+      }
 
     mysession ses=EchoServer.getsession(s2[4]);
     if (ses!=null){
@@ -291,31 +325,31 @@ functions.execSql(query,functions.isnewcc);
 
   /////////////////////////////////////////////////////////////////////////////////////////////
 
-  String getRestOpTime(String oid)//oid=number
+  static String getRestOpTime(String oid)//oid=number
   {
 
       String ctmp=functions.getnow();
       String query=String.format("SELECT resttime,EXTRACT(EPOCH FROM now()-start_time)," +
               "state,statedop FROM oprest WHERE oid='%s' and rdate='%s'", oid,ctmp);
 
-      String[][] res=functions.getResult(query,functions.isnewcc);
+      ArrayList<String[]> res=functions.getResult(query,functions.isnewcc);
 
 
-      if(res.length==1)
+      if(res.size()==1)
       {
 
         //op[OpChan].reststarttime=atoi(PQgetvalue(res, 0, 1));
-          if (res[0][2]!=null&&res[0][2].equals(""+sets.REST)){
-             return res[0][0]+"\t"+res[0][1]+"\t"+res[0][2]+"\t"+res[0][3];
+          if (res.get(0)[2]!=null&&res.get(0)[2].equals(""+sets.REST)){
+             return res.get(0)[0]+"\t"+res.get(0)[1]+"\t"+res.get(0)[2]+"\t"+res.get(0)[3];
           }
 
-        return res[0][0];
+        return res.get(0)[0];
       }  else
       {
         query=String.format("SELECT resttime  FROM oprest WHERE oid='%s'", oid);
         res=functions.getResult(query,functions.isnewcc);
 
-        if(res.length>=1) {
+        if(res.size()>=1) {
           query = String.format("UPDATE oprest set resttime='%d',rdate='%s',state=0,statedop=0 WHERE oid='%s'", sets.RestFullTime, ctmp, oid);
           functions.execSql(query, functions.isnewcc);
         }else {
@@ -327,16 +361,20 @@ functions.execSql(query,functions.isnewcc);
       }
 
   }
-  void reststart(String oid){
+  public static String reststart(String oid){
+      String stt=getRestOpTime(oid);
+      if (functions.str2int(stt,-1)<0) return "false";
              String query=String.format("UPDATE oprest set start_time=NOW(),state=%d,statedop=%d WHERE oid='%s'",
                  sets.REST,0,oid);
         functions.execSql(query, functions.isnewcc);
+        return stt;
   }
-  void restend(String oid){
+  static String restend(String oid){
         String query=String.format("UPDATE oprest set state=%d,statedop=%d,resttime=resttime-EXTRACT(EPOCH FROM now()-start_time) WHERE oid='%s'",
                 0,0,oid);
 
         functions.execSql(query, functions.isnewcc);
+        return getRestOpTime(oid);
   }
 
 

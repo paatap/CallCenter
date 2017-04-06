@@ -1,8 +1,6 @@
 package ge.magti.client.layout;
 
-import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.layout.Layout;
-import com.smartgwt.client.widgets.layout.VLayout;
 import ge.magti.client.CallCenter;
 
 /**
@@ -20,23 +18,30 @@ public class MyVLayout {
         if (name.equals("mainarea")) {myvlayout=CallCenter.callCenterInstance.maincc;}
         if (destroy) {
             if (myvlayout!=null) {
-                if (name.equals("rep4")){((ReportArea4)myvlayout).tt.cancel();}
+                if (name.equals("serverinfo")){((ReportAreaSinfo)myvlayout).tt.cancel();}
                 myvlayout.destroy();
                 myvlayout = null;
             }
         }else myvlayout.setVisible(false);
     }
-    public void myinit(){
+    public void myinit(String ss){
+        //SC.say("2222=="+name);
         if (name.equals("mainarea")) {myvlayout=CallCenter.callCenterInstance.maincc;}
+        //SC.say("3333");
         if (myvlayout==null){
-
+        //SC.say("44444");
             if (name.equals("mainarea")) myvlayout = new MainArea();
-            else if (name.equals("rep1")) {myvlayout = new ReportArea();((ReportArea)myvlayout).setprobleminfo();}
-            else if (name.equals("rep2")) myvlayout = new ReportArea2();
-            else if (name.equals("rep3")) myvlayout = new ReportArea3();
-            else if (name.equals("rep4")) myvlayout = new ReportArea4();
+            else if (name.equals("findring")) {myvlayout = new ReportAreaFring();((ReportAreaFring)myvlayout).setprobleminfo();}
+            else if (name.equals("serverinfo")) myvlayout = new ReportAreaSinfo();
+            else if (name.equals("admin")) {myvlayout = new ReportAreaAdmin();}
+            else if (name.equals("repframe")) {
+                    myvlayout = new ReportAreaFrame();
+                    ((ReportAreaFrame)myvlayout).init(ss);
+            }
             myvlayout.setWidth("85%");
 
+        }else if (myvlayout instanceof ReportAreaFrame&&name.equals("repframe")){
+            ((ReportAreaFrame)myvlayout).init(ss);
         }
 
         CallCenter.callCenterInstance.setsouthLayout(myvlayout);// .addMember(myvlayout);

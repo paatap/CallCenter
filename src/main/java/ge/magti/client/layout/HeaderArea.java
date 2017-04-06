@@ -37,7 +37,7 @@ public Label leftl = new Label();
         leftl.setAlign(Alignment.LEFT);
         leftl.setWidth100();
 
-        IButton logout = new IButton("logout");logout.setHeight100();logout.setAlign(Alignment.RIGHT);
+        IButton logout = new IButton("logout");logout.setHeight100();//logout.setAlign(Alignment.RIGHT);
         logout.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
             public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) {
                 SC.confirm("logout", new BooleanCallback(){

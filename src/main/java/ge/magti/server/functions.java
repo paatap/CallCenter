@@ -91,13 +91,13 @@ public class functions {
 
                     Connection con = ds.getConnection();
                     if (con==null){
-                        System.out.println("pooling no conn=null");
+                        System.out.println("poolingpostgre no conn=null????????????????????????????????????????????????");
                         return DriverManager.getConnection(sets.db_stringnewcc, sets.db_usernewcc,sets.db_passnewcc);
 
                     }
                     return con;
                 }catch(Exception e){
-                    System.out.println("pooling no "+e.toString());
+                    System.out.println("poolingpostgre no "+e.toString()+"??????????????????????????????????????????????");
                     return DriverManager.getConnection(sets.db_stringnewcc, sets.db_usernewcc,sets.db_passnewcc);
                 }
 
@@ -122,11 +122,25 @@ public class functions {
                 return con;
                 //    return DriverManager.getConnection(sets.db_stringnewcc, sets.db_usernewcc,sets.db_passnewcc);
             }
-            else if (_isnew==isaster12)
-            {
-                //System.out.println("gwt");
-                //System.out.println("link===="+sets.db_string12);
-                return DriverManager.getConnection(sets.db_string12, sets.db_user12,sets.db_pass12);}
+            else if (_isnew==isaster12) {
+                try {
+                    InitialContext cxt = new InitialContext();
+
+
+                    DataSource ds = (DataSource) cxt.lookup("java:/comp/env/jdbc/mysql");
+
+
+                    Connection con = ds.getConnection();
+                    if (con == null) {
+                        System.out.println("poolingmysql no conn=null????????????????????????????????????????????????");
+                        return DriverManager.getConnection(sets.db_string12, sets.db_user12, sets.db_pass12);
+                    }
+                    return con;
+                } catch (Exception e) {
+                    System.out.println("poolingmysql no "+e.toString()+"??????????????????????????????????????????????");
+                    return DriverManager.getConnection(sets.db_string12, sets.db_user12, sets.db_pass12);
+                }
+            }
         } catch (Exception e) {
             System.out.println("22222222" + e.toString()+"==_isnew="+_isnew);
             System.out.println("gwt="+sets.db_stringnewcc+"="+sets.db_usernewcc);
@@ -266,41 +280,46 @@ public class functions {
 
 
 
-    public static String[][] getResult(String sql,int _isnew) {
+    public static ArrayList<String[]> getResult(String sql,int _isnew) {
 //        System.out.println(sql);
         String[][] retVal;
         Connection connection = null;Statement stmt =null;
         try {
 
             connection = GetMyConnection(_isnew);
-            stmt =
-                    connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                            ResultSet.CONCUR_READ_ONLY);
+            stmt =connection.createStatement();//
+                   // connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                     //       ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = stmt.executeQuery(sql);
             int columnCount = rs.getMetaData().getColumnCount();
-            int rowCount = 0;
+            //int rowCount = 0;
 
-            while (rs.next())
+            /*while (rs.next())
                 rowCount++;
-            rs.beforeFirst();
+            rs.beforeFirst();*/
 
-            retVal = new String[rowCount][columnCount];
+            ArrayList<String[]> ret=new ArrayList<String[]>();
 
-            int i = 0;
+
+            //retVal = new String[rowCount][columnCount];
+
+            //int i = 0;
 
             while (rs.next()) {
-
+                String[] ret1=new String[columnCount];
                 for (int k = 1; k <= columnCount; k++) {
-                    retVal[i][k - 1] = rs.getString(k);
+                    ret1[k-1]=rs.getString(k);
+              //      retVal[i][k - 1] = rs.getString(k);
                     //   System.out.println("===="+k+"="+rs.getString(k));
                 }
-                i++;
+                ret.add(ret1);
+                //i++;
 
             }
 
 
 
-            return retVal;
+            return ret;
 
 
         } catch (SQLException e) {
@@ -321,9 +340,9 @@ public class functions {
 
             connection = GetMyConnection(_isnew);
 
-            stmt =
-                    connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                            ResultSet.CONCUR_READ_ONLY);
+            stmt =connection.createStatement();
+                    //connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                      //      ResultSet.CONCUR_READ_ONLY);
 
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -371,9 +390,9 @@ public class functions {
         try {
 
             connection = GetMyConnection(_isnew);
-            stmt =
-                    connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                            ResultSet.CONCUR_READ_ONLY);
+            stmt =connection.createStatement();//
+                   // connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                     //       ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = stmt.executeQuery(sql);
             int columnCount = rs.getMetaData().getColumnCount();
             for (int k = 0; k < columnCount; k++)
@@ -1077,6 +1096,7 @@ public class functions {
         if (grp==sets.magtisat) return "magtisat";
         if (grp==sets.magtifix) return "magtifix";
         if (grp==sets.marketing) return "marketing";
+        if (grp==sets.nophone) return "nophone";
         return ""+grp;
     }
 

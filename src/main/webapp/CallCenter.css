@@ -32,3 +32,175 @@ h1 {
 #closeButton {
   margin: 15px 6px 6px;
 }
+
+.mymyHighGridCell,
+.mymyHighGridCellDark {
+  color:red;
+  border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
+  background-color:#fff0f0;
+}
+
+.mymyHighGridCellcurr,
+.mymyHighGridCellcurrDark {
+  color:red;
+  border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
+  background-color:#ffe0e0;
+}
+
+
+
+
+.mymyHighGridCell2 {
+  font-family:Verdana,Bitstream Vera Sans,sans-serif; font-size:11px !important; text-overflow:ellipsis;
+  color:red;
+  border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
+  background-color:#fff0f0;
+}
+.mymyHighGridCellcurr2 {
+  font-family:Verdana,Bitstream Vera Sans,sans-serif; font-size:11px !important; text-overflow:ellipsis;
+  color:red;
+  border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
+  background-color:#ffe0e0;
+}
+
+
+.normal {
+  font-family:Arial,sans-serif; font-size:14px;
+  color:#333333;
+}
+
+.myfont1 {
+  font-size:14px !important;
+}
+
+.button1,
+.button1Over,
+.button1Focused,
+.button1FocusedOver,
+.button1Down,
+.button1FocusedDown,
+.button1Selected,
+.button1SelectedFocused,
+.button1SelectedDown,
+.button1SelectedFocusedDown,
+.button1SelectedOver,
+.button1SelectedFocusedOver,
+.button1SelectedDisabled {
+  padding:2px;
+  font-weight:bold;
+  font-family:Arial,Bitstream Vera Sans,sans-serif; font-size:14px !important;
+
+  border:1px solid #6DA2BD;
+}
+.button1Disabled {
+  padding:2px;
+  font-family:Arial,sans-serif; font-size:14px !important;
+  border:1px solid #78A9C2;
+  background-color:#97BDCF;
+  color:#808080;
+}
+
+.button1Focused,
+.button1FocusedOver {
+
+}
+
+.button1Over,
+.button1FocusedOver,
+.button1SelectedFocused,
+.button1SelectedFocusedOver {
+  border:1px solid #E4D63A;
+}
+
+.button1Down,
+.button1FocusedDown {
+
+}
+
+.button1Selected,
+.button1SelectedDown,
+.button1SelectedFocused,
+.button1SelectedOver,
+.button1SelectedFocusedOver,
+.button1SelectedFocusedDown {
+
+}
+
+.button1SelectedDisabled {
+  padding:2px;
+  font-family:Arial,sans-serif; font-size:14px !important;
+  border:1px solid #808080;
+  background-color:#FFFFFF;
+  color:#808080;
+}
+/* ImgButton */
+.imgButton,
+.imgButtonOver,
+.imgButtonSelected,
+.imgButtonSelectedDisabled,
+.imgButtonSelectedOver,
+.imgButtonDown,
+.imgButtonSelectedDown,
+.imgButtonDisabled {
+
+}
+.imgButtonDisabled {
+  color:#666666;
+}
+
+/* StretchImgButton */
+.stretchImgButton,
+.stretchImgButtonSelected,
+.stretchImgButtonSelectedOver,
+.stretchImgButtonOver,
+.stretchImgButtonDown,
+.stretchImgButtonSelectedDown,
+.stretchImgButtonSelectedDisabled,
+.stretchImgButtonDisabled {
+  font-family:Arial,sans-serif; font-size:13px !important;
+}
+.stretchImgButtonOver {
+  font-weight:bold;
+}
+.stretchImgButtonSelectedDisabled,
+.stretchImgButtonDisabled {
+  color:#666666;
+}
+
+/* Button Title */
+.button1Title,
+.button1TitleOver,
+.button1TitleDown,
+.button1TitleSelected,
+.button1TitleFocused,
+.button1TitleSelectedFocused,
+.button1TitleSelectedOver,
+.button1TitleFocusedOver,
+.button1TitleSelectedFocusedOver,
+.button1TitleSelectedDown,
+.button1TitleFocusedDown,
+.button1TitleSelectedFocusedDown,
+.button1TitleDisabled,
+.button1TitleSelectedDisabled {
+  font-family:Arial,Bitstream Vera Sans,sans-serif; font-size:14px !important; color: #414141;
+  font-weight:bold;
+}
+.button1TitleDown,
+.button1TitleSelectedDown,
+.button1TitleFocusedDown,
+.button1TitleSelectedFocusedDown {
+  color: #000000;
+}
+
+.button1TitleOver,
+.button1TitleFocusedOver,
+.button1TitleSelected,
+.button1TitleSelectedOver,
+.button1TitleSelectedFocusedOver {
+  color: #000000;
+}
+
+.button1TitleDisabled,
+.button1TitleSelectedDisabled {
+  color: #666666;
+}

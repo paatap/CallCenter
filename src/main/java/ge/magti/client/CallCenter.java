@@ -8,7 +8,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 
-import com.smartgwt.client.data.Record;
 import com.smartgwt.client.util.DateDisplayFormatter;
 import com.smartgwt.client.util.DateUtil;
 import com.smartgwt.client.util.SC;
@@ -17,11 +16,8 @@ import com.smartgwt.client.widgets.layout.Layout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import ge.magti.client.Dialogs.DlgLogin;
 import ge.magti.client.layout.*;
-import ge.magti.server.functions;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**  --select * from pg_stat_activity;
@@ -39,15 +35,19 @@ public class CallCenter implements EntryPoint{
   /**
    * Create a remote service proxy to talk to the server-side Greeting service.
    */
-  public static String ver="Call Center 2.0";
+  public static String ver="Call Center 2.002";
   public static CallCenter callCenterInstance;
   public  boolean debug=false;
   public  String messagestring;
   public  String mynumber;
+  public String number="";
   public String myoid;
   public  String uname;
   public  String pass;
+    public int mygrp=0;
+    public String mygrps="";
   public String reststr;
+  public int resttime=0;
   public  int optype=-1;
   private static final int HEADER_HEIGHT = 20;
 
@@ -64,10 +64,10 @@ public class CallCenter implements EntryPoint{
 
 MyVLayout[] reps=new MyVLayout[]{
         new MyVLayout("mainarea"),
-        new MyVLayout("rep1"),
-        new MyVLayout("rep2"),
-        new MyVLayout("rep3"),
-        new MyVLayout("rep4")
+        new MyVLayout("findring"),
+        new MyVLayout("serverinfo"),
+        new MyVLayout("admin"),
+        new MyVLayout("repframe")
 };
 public Layout getlayout(String name){
     for (int i=0;i<reps.length;i++)
@@ -147,6 +147,7 @@ DlgLogin dlgLogin=null;
       else if (ss.startsWith("magtisat")) grp=MainArea.magtisat;
       else if (ss.startsWith("magtifix")) grp=MainArea.magtifix;
       else if (ss.startsWith("marketing")) grp=MainArea.marketing;
+      else if (ss.startsWith("nophone")) grp=MainArea.nophone;
       else {
           SC.warn("Group not found !"+ss+"!");
 
@@ -175,11 +176,11 @@ DlgLogin dlgLogin=null;
 
     westLayout = new NavigationArea();
     westLayout.setWidth("15%");
-
+        mygrp=grp;
+        mygrps=ss;
       maincc = new MainArea();
 
-      ((MainArea)maincc).mygrp=grp;
-      ((MainArea)maincc).mygrps=ss;
+
       ((MainArea)maincc).init();
       maincc.setWidth("85%");
 
@@ -191,7 +192,7 @@ DlgLogin dlgLogin=null;
 
     // add the main layout container to GWT's root panel
     RootLayoutPanel.get().add(mainLayout);
-        Window.setTitle(ver + " " + uname + " " + mynumber+" "+((MainArea)maincc).mygrps);
+        Window.setTitle(ver + " " + uname + " " + mynumber+" "+ mygrps);
         ((MainArea) maincc).login(reststr);
         //if (uname.equals("Alexander.Sarchimelia")) debug = true;
   }
@@ -212,54 +213,21 @@ DlgLogin dlgLogin=null;
 public void setsouthLayout(Layout lay){
     southLayout.setMembers(westLayout, lay);
 }
-  public void setvisiblearea(String type){
-
+  public void setvisiblearea(String type,String ss){
+        if (ss.startsWith("<iframe")) type="repframe";
+        MyVLayout myv=null;
         for (int i=0;i<reps.length;i++){
 
           String key=reps[i].name;
 
-          if (key.equals(type)) reps[i].myinit();
+          if (key.equals(type)) myv=reps[i];
           else reps[i].mydestroy();
 
       }
+      if (myv!=null)
+        myv.myinit(ss);
 
 
-        /*
-      if (type.equals("mainarea")) {
-          maincc.setVisible(true);
-
-          if (reportcc!=null) reportcc.destroy();reportcc=null;
-          if (reportcc2!=null) reportcc2.destroy();reportcc2=null;
-          if (reportcc3!=null) reportcc3.destroy();reportcc3=null;
-      }else if (type.equals("rep1")){
-          maincc.setVisible(false);
-          if (reportcc2!=null) reportcc2.destroy();reportcc2=null;
-          if (reportcc==null){
-              reportcc = new ReportArea();reportcc.setWidth("85%");
-              southLayout.addMember(reportcc);
-              ((ReportArea)reportcc).setprobleminfo();
-          }
-            reportcc.setVisible(true);
-      }else if (type.equals("rep2")){
-          maincc.setVisible(false);
-          if (reportcc!=null) reportcc.destroy();reportcc=null;
-          if (reportcc2==null){
-              reportcc2 = new ReportArea2();reportcc2.setWidth("85%");
-              southLayout.addMember(reportcc2);
-              //((ReportArea)reportcc).setprobleminfo();
-          }
-            reportcc2.setVisible(true);
-      }else if (type.equals("rep3")){
-          maincc.setVisible(false);
-          if (reportcc!=null) reportcc.destroy();reportcc=null;
-          if (reportcc2==null){
-              reportcc2 = new ReportArea2();reportcc2.setWidth("85%");
-              southLayout.addMember(reportcc2);
-              //((ReportArea)reportcc).setprobleminfo();
-          }
-            reportcc2.setVisible(true);
-      }
-      */
   }
 
 
@@ -304,7 +272,7 @@ public void setsouthLayout(Layout lay){
             messagestring=s2[2];
             mynumber=s2[4];
             uname=s2[5];
-            optype= str2int(s2[6],-1);
+            optype= clfunctions.str2int(s2[6],-1);
             myoid=s2[7];
             if (s22.length<3){
                 SC.warn("Group not found !");
@@ -328,10 +296,13 @@ public void setsouthLayout(Layout lay){
           westLayout.chat.getops(result);
 
       }else if (result.startsWith("$getserverinfo")){
-          ReportArea4 r4=(ReportArea4) getlayout("rep4");
+          ReportAreaSinfo r4=(ReportAreaSinfo) getlayout("serverinfo");
           if (r4!=null){
               r4.fromgreet(result);
           }
+      }else if (result.startsWith("$say")){
+          String[] s2=result.split("\t");
+          SC.say(s2[1]);
       }
 
 
@@ -351,15 +322,11 @@ public void setsouthLayout(Layout lay){
   public void setchatsh(String sh0){
        westLayout.chat.setchatsh(sh0);
   }
-    public static int str2int(String str,int def) {
-        int rr = 0;
-        try {
-            rr = Integer.parseInt(str,10);
-        } catch (Exception e) {
-            // rr=-111111;
-            rr = def;
-        }
-        return rr;
-    }
+  public void setchatsmsnumber(String smsnumber){
+        westLayout.chat.setsmsnumber(smsnumber);
+  }
+  public void settree(String ss){
+      westLayout.settree(ss);
+  }
 
 }

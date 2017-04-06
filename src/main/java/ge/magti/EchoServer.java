@@ -51,7 +51,7 @@ public class EchoServer {
 
 
     static HashMap<String,mysession> session2=new HashMap<String,mysession>();
-
+    static HashMap<String,Integer> grprestadd=new HashMap<String,Integer>();
 
 
     static synchronized void addsession(String clientId, Session session,int grp){
@@ -91,12 +91,12 @@ public class EchoServer {
                 String query="select oid from oprest where state=205 and statedop=0 and " +
                         " EXTRACT(EPOCH FROM now()-start_time)>"+sets.RestWarnTime;
                 //System.out.println("kukukuku");
-                String[][] res=functions.getResult(query,functions.isnewcc);
+                ArrayList<String[]> res=functions.getResult(query,functions.isnewcc);
 
-                for (int i=0;i<res.length;i++){
-                    restwarn(res[i][0]);
-                    sendmessage(res[i][0],"$restwarning");
-                    System.out.println("warn20 "+res[i][0]);
+                for (int i=0;i<res.size();i++){
+                    restwarn(res.get(i)[0]);
+                    sendmessage(res.get(i)[0],"$restwarning");
+                    System.out.println("warn20 "+res.get(i)[0]);
 
                 }
 
@@ -104,10 +104,10 @@ public class EchoServer {
                         " resttime-EXTRACT(EPOCH FROM now()-start_time)<0 ";
                 //System.out.println("kukukuku");
                 res=functions.getResult(query,functions.isnewcc);
-                for (int i=0;i<res.length;i++){
-                    restwarn(res[i][0]);
-                    sendmessage(res[i][0],"$restwarning");
-                    System.out.println("warn "+res[i][0]);
+                for (int i=0;i<res.size();i++){
+                    restwarn(res.get(i)[0]);
+                    sendmessage(res.get(i)[0],"$restwarning");
+                    System.out.println("warn "+res.get(i)[0]);
                 }
             }
         }
@@ -322,6 +322,8 @@ public class EchoServer {
         String  Busy="Busy";
         String   Conn="Connect";
         String   Term="Terminate";
+        String   CanRest="CanRest";
+        String   AddRes="AddRest";
         for (Map.Entry entr:grps.entrySet()){
             Ops grp1=(Ops)entr.getValue();
             int grp=functions.str2int(entr.getKey().toString());
@@ -333,10 +335,15 @@ public class EchoServer {
             Conn+="\t"+grp1.Conn;
             Term+="\t"+grp1.Term;
 
+            Integer add=grprestadd.get(entr.getKey().toString());
+            if (add==null) add=0;
+            CanRest+="\t"+(grp1.Operators/10+1+add);
+            AddRes+="\t"+add;
         }
 
-        ss.append(""+sgrps+"\n"+Operators+"\n"+Rest+"\n"+Ready+"\n"+Busy+"\n"+Conn+"\n"+Term);
-    //    Operators
+        ss.append(""+sgrps+"\n"+Operators+"\n"+Rest+"\n"+Ready+"\n"+Busy+"\n"+Conn+"\n"+Term+"\n"+CanRest+"\n"+AddRes);
+      //  System.out.println("===!"+ss.toString()+"!===");
+        //    Operators
     //    RestOp
     //    ReadyOp
     //    RingingToOp
@@ -344,6 +351,48 @@ public class EchoServer {
     //    MaxRest
 
         return ss.toString();
+    }
+    public static synchronized String getRest(String sgrp,String mynumber){
+        System.out.println(sgrp+"=="+mynumber);
+        int grp=functions.str2int(sgrp,-1);
+        if (grp==-1) return "false";
+        int ops=0;
+        int rest=0;
+        mysession myses=null;
+        System.out.println("11111111111");
+                for (Map.Entry entr:EchoServer.session2.entrySet()) {
+                        mysession ses=(mysession)entr.getValue();
+
+
+            if (ses==null) {
+
+            }else if (ses.session==null){
+
+            }else if (!ses.session.isOpen()) {
+
+            }else {
+                if (mynumber.equals(entr.getKey().toString()))
+                    myses=ses;
+                if (ses.grp==grp){
+                    ops++;
+                    if (ses.status==sets.REST) rest++;
+                }
+            }
+                }
+
+        Integer add=grprestadd.get(sgrp);
+        if (add==null) add=0;
+        System.out.println("======"+add+"=="+ops+"=="+rest);
+                if (rest<ops/10+1+add){
+                    System.out.println("22222222222222");
+                    if (myses==null) return "false";
+                    String srest = GreetingServiceImpl.reststart(mynumber);
+                    System.out.println("33333333333333=="+srest);
+                    if (srest.equals("false")) return "false";
+                    myses.status=sets.REST;
+                    return srest;
+                }else return "false";
+
     }
     static Timer timer=new Timer();
 
@@ -363,5 +412,13 @@ public class EchoServer {
         String query=String.format("UPDATE oprest set statedop=%d WHERE oid='%s'",
                 sets.RESTWARNING,oid);
         functions.execSql(query, functions.isnewcc);
+    }
+    public static String grpadd(String ss){
+        System.out.println(ss);
+        String[] s2=ss.split("\t");
+        System.out.println(s2[1]+"==="+s2[2]);
+        int add=functions.str2int0(s2[2]);
+        grprestadd.put(s2[1],add);
+        return "$say\tok";
     }
 }
