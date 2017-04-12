@@ -33,174 +33,86 @@ h1 {
   margin: 15px 6px 6px;
 }
 
-.mymyHighGridCell,
-.mymyHighGridCellDark {
-  color:red;
-  border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
-  background-color:#fff0f0;
+
+
+
+/*----------------------mymy------------------------*/
+
+
+/*=========================mymyListGrid=====================*/
+
+.mymylistgrid,
+.mymylistgridDark,
+.mymylistgridOver,
+.mymylistgridOverDark,
+.mymylistgridexOver,
+.mymylistgridexOverDark,
+.mymylistgridSelected,
+.mymylistgridSelectedDark,
+.mymylistgridSelectedOver,
+.mymylistgridSelectedOverDark,
+.mymylistgridexcurrOver,
+.mymylistgridexcurrOverDark,
+.mymylistgridDisabled,
+.mymylistgridDisabledDark {
+  border-top: 1px solid #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  color: black;
+  font-family: Arial, Verdana, sans-serif;
+  font-size: 11px;
+  text-overflow: ellipsis;
 }
 
-.mymyHighGridCellcurr,
-.mymyHighGridCellcurrDark {
-  color:red;
-  border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
-  background-color:#ffe0e0;
+.mymylistgridDark {
+  background-color: #fafafa;
 }
-
-
-
-
-.mymyHighGridCell2 {
-  font-family:Verdana,Bitstream Vera Sans,sans-serif; font-size:11px !important; text-overflow:ellipsis;
-  color:red;
-  border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
-  background-color:#fff0f0;
+.mymylistgridOver,
+.mymylistgridexcurrOver,
+.mymylistgridexOver{
+  /*background-color:rgb(190,215,225);*/
+  background-color:rgb(159,200,232);
 }
-.mymyHighGridCellcurr2 {
-  font-family:Verdana,Bitstream Vera Sans,sans-serif; font-size:11px !important; text-overflow:ellipsis;
-  color:red;
-  border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
-  background-color:#ffe0e0;
+.mymylistgridOverDark,
+.mymylistgridexcurrOverDark,
+.mymylistgridexOverDark {
+  /*background-color:rgb(170,195,210);*/
+  background-color:rgb(159,200,232);
 }
-
-
-.normal {
-  font-family:Arial,sans-serif; font-size:14px;
-  color:#333333;
+.mymylistgridSelected,
+.mymylistgridSelectedDark,
+.mymylistgridSelectedOver,
+.mymylistgridSelectedOverDark {
+  color:#FFFFFF;
+  background-color:rgb(65,160,210);
 }
-
-.myfont1 {
-  font-size:14px !important;
-}
-
-.button1,
-.button1Over,
-.button1Focused,
-.button1FocusedOver,
-.button1Down,
-.button1FocusedDown,
-.button1Selected,
-.button1SelectedFocused,
-.button1SelectedDown,
-.button1SelectedFocusedDown,
-.button1SelectedOver,
-.button1SelectedFocusedOver,
-.button1SelectedDisabled {
-  padding:2px;
-  font-weight:bold;
-  font-family:Arial,Bitstream Vera Sans,sans-serif; font-size:14px !important;
-
-  border:1px solid #6DA2BD;
-}
-.button1Disabled {
-  padding:2px;
-  font-family:Arial,sans-serif; font-size:14px !important;
-  border:1px solid #78A9C2;
-  background-color:#97BDCF;
-  color:#808080;
-}
-
-.button1Focused,
-.button1FocusedOver {
-
-}
-
-.button1Over,
-.button1FocusedOver,
-.button1SelectedFocused,
-.button1SelectedFocusedOver {
-  border:1px solid #E4D63A;
-}
-
-.button1Down,
-.button1FocusedDown {
-
-}
-
-.button1Selected,
-.button1SelectedDown,
-.button1SelectedFocused,
-.button1SelectedOver,
-.button1SelectedFocusedOver,
-.button1SelectedFocusedDown {
-
-}
-
-.button1SelectedDisabled {
-  padding:2px;
-  font-family:Arial,sans-serif; font-size:14px !important;
-  border:1px solid #808080;
+.mymylistgridDisabled,
+.mymylistgridDisabledDark {
+  color:#A7C4D3;
   background-color:#FFFFFF;
-  color:#808080;
-}
-/* ImgButton */
-.imgButton,
-.imgButtonOver,
-.imgButtonSelected,
-.imgButtonSelectedDisabled,
-.imgButtonSelectedOver,
-.imgButtonDown,
-.imgButtonSelectedDown,
-.imgButtonDisabled {
-
-}
-.imgButtonDisabled {
-  color:#666666;
 }
 
-/* StretchImgButton */
-.stretchImgButton,
-.stretchImgButtonSelected,
-.stretchImgButtonSelectedOver,
-.stretchImgButtonOver,
-.stretchImgButtonDown,
-.stretchImgButtonSelectedDown,
-.stretchImgButtonSelectedDisabled,
-.stretchImgButtonDisabled {
-  font-family:Arial,sans-serif; font-size:13px !important;
-}
-.stretchImgButtonOver {
-  font-weight:bold;
-}
-.stretchImgButtonSelectedDisabled,
-.stretchImgButtonDisabled {
-  color:#666666;
+
+.mymylistgridex,
+.mymylistgridexDark {
+  color:red;
+  border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
+  font-family: Arial, Verdana, sans-serif;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  background-color:#fff0f0;
 }
 
-/* Button Title */
-.button1Title,
-.button1TitleOver,
-.button1TitleDown,
-.button1TitleSelected,
-.button1TitleFocused,
-.button1TitleSelectedFocused,
-.button1TitleSelectedOver,
-.button1TitleFocusedOver,
-.button1TitleSelectedFocusedOver,
-.button1TitleSelectedDown,
-.button1TitleFocusedDown,
-.button1TitleSelectedFocusedDown,
-.button1TitleDisabled,
-.button1TitleSelectedDisabled {
-  font-family:Arial,Bitstream Vera Sans,sans-serif; font-size:14px !important; color: #414141;
-  font-weight:bold;
-}
-.button1TitleDown,
-.button1TitleSelectedDown,
-.button1TitleFocusedDown,
-.button1TitleSelectedFocusedDown {
-  color: #000000;
+.mymylistgridexcurr,
+.mymylistgridexcurrDark {
+  color:red;
+  border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
+  font-family: Arial, Verdana, sans-serif;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  background-color:#ffe0e0;
 }
 
-.button1TitleOver,
-.button1TitleFocusedOver,
-.button1TitleSelected,
-.button1TitleSelectedOver,
-.button1TitleSelectedFocusedOver {
-  color: #000000;
-}
 
-.button1TitleDisabled,
-.button1TitleSelectedDisabled {
-  color: #666666;
-}
+
+
+

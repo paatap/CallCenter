@@ -2,8 +2,12 @@ package ge.magti;
 
 import ge.magti.server.GreetingServiceImpl;
 import ge.magti.server.functions;
+import ge.magti.server.sets;
 
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebListener;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +20,24 @@ import java.util.Map;
  * Created by user on 3/7/17.
  */
 @WebServlet(name = "mymessage")
-public class mymessage extends HttpServlet {
+@WebListener
+public class mymessage extends HttpServlet implements ServletContextListener {
+
+
+
+    @Override
+    public void contextInitialized(ServletContextEvent event) {
+        // Do your job here during webapp startup.
+        System.out.println("======================CallCenter Started==============111===========");
+        sets.init();
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent event) {
+        // Do your job here during webapp shutdown.
+        EchoServer.stoptimer();
+        System.out.println("=====================CallCenter Destroyed=========222=====");
+    }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out=response.getWriter();
         try{

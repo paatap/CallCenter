@@ -263,7 +263,7 @@ public class functions {
             stmt = connection.createStatement();
             //stmt.executeQuery(sql);
             stmt.execute(sql);
-            connection.close();
+            //connection.close();
         } catch (SQLException e) {
 
             e.printStackTrace();

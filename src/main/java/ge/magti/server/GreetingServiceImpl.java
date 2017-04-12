@@ -57,9 +57,11 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 
     if (input.startsWith("savetxt")) return savetxt(input);
     if (input.startsWith("getops")) return EchoServer.getops(input);
+    if (input.startsWith("get2ops")) return EchoServer.getops();
     if (input.startsWith("sendmessage")) return EchoServer.sendopmessage(input);
     if (input.startsWith("sendsms")) return sendsms(input);
     if (input.startsWith("grpadd")) return EchoServer.grpadd(input);
+    if (input.startsWith("killopsession")) return EchoServer.killsession(input);
    // return "Hello, " + input + "!<br><br>I am running " + serverInfo
    //     + ".<br><br>It looks like you are using:<br>" + userAgent;
       return "unknown";
@@ -195,7 +197,7 @@ functions.execSql(query,functions.isnewcc);
 
 
 
-    String query="SELECT oid,optype,number FROM secrets where uname='"+s2[1]+"'and secret='"+s2[2]+"'";
+    String query="SELECT oid,optype,number,style FROM secrets where uname='"+s2[1]+"'and secret='"+s2[2]+"'";
       ArrayList<String[]> res = functions.getResult(query,functions.isnewcc);
     if (res.size()>0) {
         String res2;
@@ -233,7 +235,7 @@ functions.execSql(query,functions.isnewcc);
      // System.out.println("111111111111111111111111111111111111");
         boolean debug=sets.debug;
         if (s2[1].equals("sarchi")) debug=true;
-      return "$login\tok\t"+setsmessagestring+"\t"+debug+"\t"+res.get(0)[2]+"\t"+s2[1]+"\t"+res.get(0)[1]+"\t"+res.get(0)[0]+"\n"+rst+"\n"+res2;
+      return "$login\tok\t"+setsmessagestring+"\t"+debug+"\t"+res.get(0)[2]+"\t"+s2[1]+"\t"+res.get(0)[1]+"\t"+res.get(0)[0]+"\t"+CallCenter.ver+"\t"+res.get(0)[3]+"\n"+rst+"\n"+res2;
     }
     else return "$login\terror\tError user password !!!";
   }
@@ -302,7 +304,11 @@ functions.execSql(query,functions.isnewcc);
     mysession ses=EchoServer.getsession(s2[4]);
     if (ses!=null){
       ses.uname=s2[3];
-      ses.status=sets.LOGIN;ses.tim=System.nanoTime() / 1000000;
+      if (ses.status==0) {
+          //ses.status=sets.LOGIN;
+          ses.status=sets.READY;
+          ses.tim=System.nanoTime() / 1000000;
+      }
     }
 
    /* ss.append("$request\n");

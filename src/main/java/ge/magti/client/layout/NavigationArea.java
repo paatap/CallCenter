@@ -1,45 +1,32 @@
 package ge.magti.client.layout;
 
-import com.smartgwt.client.data.Record;
-import com.smartgwt.client.data.RecordList;
 import com.smartgwt.client.types.Overflow;
-import com.smartgwt.client.types.SelectionAppearance;
 import com.smartgwt.client.types.TreeModelType;
 import com.smartgwt.client.types.VisibilityMode;
-import com.smartgwt.client.util.SC;
-import com.smartgwt.client.widgets.Label;
-import com.smartgwt.client.widgets.events.ClickEvent;
-import com.smartgwt.client.widgets.events.ClickHandler;
-import com.smartgwt.client.widgets.events.DrawEvent;
-import com.smartgwt.client.widgets.events.DrawHandler;
-import com.smartgwt.client.widgets.grid.CellFormatter;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.events.SectionHeaderClickEvent;
 import com.smartgwt.client.widgets.layout.events.SectionHeaderClickHandler;
 import com.smartgwt.client.widgets.tree.Tree;
-import com.smartgwt.client.widgets.tree.TreeGrid;
-import com.smartgwt.client.widgets.tree.TreeGridField;
 import com.smartgwt.client.widgets.tree.TreeNode;
 import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 import ge.magti.client.CallCenter;
+import ge.magti.client.MyWidgets.MyTreeGrid;
 
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class NavigationArea extends HLayout {
     public Chat chat;
  //   Tree reportTree = new Tree();
-    TreeGrid reportTreeGrid = new TreeGrid();
+    MyTreeGrid reportTreeGrid ;
     public NavigationArea() {
 
         super();
-
+        reportTreeGrid = new MyTreeGrid("",CallCenter.style);
         this.setMembersMargin(20);
         this.setOverflow(Overflow.HIDDEN);
         this.setShowResizeBar(true);

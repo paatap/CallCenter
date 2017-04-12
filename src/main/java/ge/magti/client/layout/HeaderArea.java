@@ -1,33 +1,27 @@
 package ge.magti.client.layout;
 
-import com.google.gwt.dom.client.Style;
 import com.smartgwt.client.types.Alignment;
-import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.IButton;
-import com.smartgwt.client.widgets.Img;
-import com.smartgwt.client.widgets.Label;
-import com.smartgwt.client.widgets.form.fields.ButtonItem;
-import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
-import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import ge.magti.client.CallCenter;
+import ge.magti.client.MyWidgets.MyLabel;
 
 public class HeaderArea extends HLayout {
 
 //    private static final int HEADER_AREA_HEIGHT = 20;
-public Label leftl = new Label();
+public MyLabel leftl;
 
     public HeaderArea(String ss) {
 
         super();
-
+leftl = new MyLabel("",CallCenter.style);
 //        this.setHeight(HEADER_AREA_HEIGHT);
 
 //        Img logo = new Img("jcg_logo.png", 282, 60);
 
-        Label name = new Label();
+        MyLabel name = new MyLabel("",CallCenter.style);
         //name.setOverflow(Overflow.HIDDEN);
         name.setContents(ss);
        // name.getElement().getStyle().setBackgroundColor("#FF0000");// .setFontSize(4, Style.Unit.EM);

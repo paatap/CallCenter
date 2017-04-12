@@ -7,8 +7,9 @@ import ge.magti.EchoServer;
  */
 public class sets {
     public static boolean firstinit =true;
-    public static void init(){
+    public static  void init(){
         if (firstinit){
+            firstinit=false;
             String ss=functions.file2str("/opt/cc_crm.conf");
             db_stringnewcc=functions.getparam(ss,"db_stringnewcc",db_stringnewcc);
             db_usernewcc=functions.getparam(ss,"db_usernewcc",db_usernewcc);
@@ -19,7 +20,7 @@ public class sets {
             System.out.println("db_usernewcc="+db_usernewcc);
             System.out.println("debug="+debug);
             System.out.println("messagestring="+messagestring);
-            firstinit=false;
+
             EchoServer.starttimer();
         }
     }

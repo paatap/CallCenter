@@ -16,6 +16,7 @@ package ge.magti.client.Dialogs;
         import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
         import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
         import com.smartgwt.client.widgets.layout.HLayout;
+        import ge.magti.EchoServer;
         import ge.magti.client.CallCenter;
         import ge.magti.client.clfunctions;
 
@@ -38,7 +39,7 @@ public class DlgLogin extends Window {
     public DlgLogin() {
         setWidth(280);
         setHeight(130);
-        setTitle("Login");
+        setTitle("Login "+ CallCenter.ver);
         setShowMinimizeButton(false);
         setIsModal(true);
         setShowModalMask(true);
@@ -91,11 +92,11 @@ public class DlgLogin extends Window {
             @Override
             public void onClick(ClickEvent event) {
                 login();
-                String skinCookieName="Graphite";
+            /*    String skinCookieName="Graphite";
                 String skinCookieValue="Graphite";
                 Cookies.setCookie(skinCookieName, skinCookieValue);
                 com.google.gwt.user.client.Window.Location.reload();
-                SC.say("1111111111111111");
+                SC.say("1111111111111111");*/
             }
         });
 

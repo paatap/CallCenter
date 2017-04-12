@@ -27,6 +27,7 @@ import com.smartgwt.client.widgets.grid.events.SelectionEvent;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import ge.magti.client.CallCenter;
+import ge.magti.client.MyWidgets.*;
 import ge.magti.server.functions;
 
 
@@ -40,23 +41,23 @@ import java.util.Map;
  */
 public class ReportAreaFring extends VLayout {
     final Window audiowindow;
-     final       SelectItem soperat ;
+     final MySelectItem soperat ;
 
-     final   SelectItem infos ;
+     final   MySelectItem infos ;
 
-    final    SelectItem problems ;
+    final    MySelectItem problems ;
 
-    final TextItem sanumber;
-    final TextItem finfo ;
+    final MyTextItem sanumber;
+    final MyTextItem finfo ;
 
-    final TextItem fproblem ;
-    final TextItem foperat ;
-    final DateItem date1;
-    final DateItem date2;
-    final    SelectItem hour1 ;
-    final    SelectItem hour2 ;
-    final ListGrid problems2;
-    final ListGrid infos2;
+    final MyTextItem fproblem ;
+    final MyTextItem foperat ;
+    final MyDateItem date1;
+    final MyDateItem date2;
+    final    MySelectItem hour1 ;
+    final    MySelectItem hour2 ;
+    final MyListGrid problems2;
+    final MyListGrid infos2;
     public ReportAreaFring() {
 
         super();
@@ -67,7 +68,7 @@ public class ReportAreaFring extends VLayout {
         //audiowindow.setAutoSize(true);
         audiowindow.setTitle("audiowindow");
         audiowindow.setWidth(350);
-        audiowindow.setHeight(100);
+        audiowindow.setHeight(60);
         audiowindow.setMinHeight(40);
 
         audiowindow.setCanDragReposition(true);
@@ -81,12 +82,12 @@ public class ReportAreaFring extends VLayout {
 
         HLayout soundlayout = new HLayout();
         soundlayout.setWidth100();
-        soundlayout.setHeight("60%");
+        soundlayout.setHeight100();//"60%");
         soundlayout.setShowEdges(true);
-        HLayout soundlayout2 = new HLayout();
-        soundlayout2.setWidth100();
-        soundlayout2.setHeight("40%");
-        soundlayout2.setShowEdges(true);
+     //   HLayout soundlayout2 = new HLayout();
+     //   soundlayout2.setWidth100();
+     //   soundlayout2.setHeight("40%");
+     //   soundlayout2.setShowEdges(true);
 
 
 
@@ -111,21 +112,21 @@ public class ReportAreaFring extends VLayout {
 
 
 
-         sanumber = new TextItem();
+         sanumber = new MyTextItem("",CallCenter.style);
 
         sanumber.setTitle("number");
 
 
 
-        date1 = new DateItem("date1");
-        date2 = new DateItem("date2");
+        date1 = new MyDateItem("date1",CallCenter.style);
+        date2 = new MyDateItem("date2",CallCenter.style);
 
 
-        hour1=new SelectItem();hour1.setTitle("");hour1.setWidth(40);hour1.setAlign(Alignment.LEFT);hour1.setShowTitle(false);hour1.setColSpan(2);
+        hour1=new MySelectItem("",CallCenter.style);hour1.setTitle("");hour1.setWidth(50);hour1.setAlign(Alignment.LEFT);hour1.setShowTitle(false);hour1.setColSpan(2);
         hour1.setValueMap("0","1","2","3","4","5","6","7","8","9","10",
                 "11","12","13","14","15","16","17","18","19","20","21","22","23","24");
         hour1.setValue("0");
-        hour2=new SelectItem();hour2.setTitle("");hour2.setWidth(40);hour2.setAlign(Alignment.LEFT);hour2.setShowTitle(false);hour2.setColSpan(2);
+        hour2=new MySelectItem("",CallCenter.style);hour2.setTitle("");hour2.setWidth(50);hour2.setAlign(Alignment.LEFT);hour2.setShowTitle(false);hour2.setColSpan(2);
         hour2.setValueMap("0","1","2","3","4","5","6","7","8","9","10",
                 "11","12","13","14","15","16","17","18","19","20","21","22","23","24");
         hour2.setValue("24");
@@ -133,7 +134,7 @@ public class ReportAreaFring extends VLayout {
 
         form1.setItems(date1,hour1,date2,hour2,sanumber);
 
-         soperat = new SelectItem("operator");
+         soperat = new MySelectItem("operator",CallCenter.style);
 
          /////////////////////////////////////////////
 
@@ -146,32 +147,32 @@ public class ReportAreaFring extends VLayout {
         "number", "uname", null);
 
         /*
-ListGrid olistGrid=new ListGrid();
+MyListGrid oMyListGrid=new MyListGrid();
 
-        olistGrid.setShowRecordComponents(true);
-        olistGrid.setShowRecordComponentsByCell(true);
-
-
-
-        //listGrid.setCriteria(getcriteria());
-        //listGrid.setWidth100();
-        //listGrid.setHeight100();
-        olistGrid.setAlternateRecordStyles(true);
-        olistGrid.setDataSource(DataSource.get("operatDS"));
-        olistGrid.setFetchOperation("getoperats");
-        olistGrid.setAutoFetchData(true);
-        olistGrid.setSelectionType(SelectionStyle.SINGLE);
-        //listGrid.setShowFilterEditor(true);
-        //listGrid.setCanEdit(true);
-        //listGrid.setEditEvent(ListGridEditEvent.CLICK);
-        //listGrid.setCanRemoveRecords(true);
-        olistGrid.setAutoFetchData(true);
+        oMyListGrid.setShowRecordComponents(true);
+        oMyListGrid.setShowRecordComponentsByCell(true);
 
 
-//        ListGridField countryName = new ListGridField("oid","OID", 200);
-        //      ListGridField capital = new ListGridField("call_start","sdfsfdsdfsdf", 200);
 
-        //    listGrid.setFields(countryName, capital);
+        //MyListGrid.setCriteria(getcriteria());
+        //MyListGrid.setWidth100();
+        //MyListGrid.setHeight100();
+        oMyListGrid.setAlternateRecordStyles(true);
+        oMyListGrid.setDataSource(DataSource.get("operatDS"));
+        oMyListGrid.setFetchOperation("getoperats");
+        oMyListGrid.setAutoFetchData(true);
+        oMyListGrid.setSelectionType(SelectionStyle.SINGLE);
+        //MyListGrid.setShowFilterEditor(true);
+        //MyListGrid.setCanEdit(true);
+        //MyListGrid.setEditEvent(MyListGridEditEvent.CLICK);
+        //MyListGrid.setCanRemoveRecords(true);
+        oMyListGrid.setAutoFetchData(true);
+
+
+//        MyListGridField countryName = new MyListGridField("oid","OID", 200);
+        //      MyListGridField capital = new MyListGridField("call_start","sdfsfdsdfsdf", 200);
+
+        //    MyListGrid.setFields(countryName, capital);
 
 
 
@@ -180,13 +181,13 @@ ListGrid olistGrid=new ListGrid();
 
 
 
-        ListGridField ooid = new ListGridField("oid","oid");
-        ListGridField uname = new ListGridField("uname","uname");
-     //   ListGridField onumber = new ListGridField("number","number");
+        MyListGridField ooid = new MyListGridField("oid","oid");
+        MyListGridField uname = new MyListGridField("uname","uname");
+     //   MyListGridField onumber = new MyListGridField("number","number");
 
-        olistGrid.setCellFormatter(new CellFormatter() {
+        oMyListGrid.setCellFormatter(new CellFormatter() {
             @Override
-            public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
+            public String format(Object value, MyListGridRecord record, int rowNum, int colNum) {
                 String uname = record.getAttribute("uname");
                 String oid = record.getAttribute("oid");
                 String number = record.getAttribute("number");
@@ -200,9 +201,9 @@ if (number == null) number = "[no description3]";
             }
         });
 
-    //    olistGrid.setFields(ooid,ouname);
+    //    oMyListGrid.setFields(ooid,ouname);
 
-olistGrid.setHeight(200);
+oMyListGrid.setHeight(200);
 DataSource ds=DataSource.get("operatDS1");
    //     DataSourceTextField oidField = new DataSourceTextField("oid", "oid");
      //   DataSourceTextField unameField = new DataSourceTextField("uname", "uname");
@@ -210,10 +211,10 @@ DataSource ds=DataSource.get("operatDS1");
 soperat.setOptionDataSource(ds);
 //soperat.setDisplayField("uname");soperat.setValueField("oid");
 
-        ListGrid olistGrid2=new ListGrid();
+        MyListGrid oMyListGrid2=new MyListGrid();
 soperat.setPickListFields(ooid,uname);
         //soperat.setDisplayField("uname");
-        soperat.setPickListProperties(olistGrid2);
+        soperat.setPickListProperties(oMyListGrid2);
 
 soperat.setValue("fhgtrhrth");
 */
@@ -221,9 +222,9 @@ soperat.setValue("fhgtrhrth");
 
         /////////////////////////////////////////////////////////
 
-         infos = new SelectItem("info");
+         infos = new MySelectItem("info",CallCenter.style);
 
-         problems = new SelectItem("problem");
+         problems = new MySelectItem("problem",CallCenter.style);
 
          form2.setNumCols(4);
         form2.setWidth("60%");form2.setHeight100();//form2.setShowEdges(true);
@@ -231,32 +232,34 @@ soperat.setValue("fhgtrhrth");
 
       //  form2.setItems(infos,finfo,problems,fproblem,soperat,fbutton);
 
-         finfo = new TextItem();finfo.setTitle("info pattern");
+         finfo = new MyTextItem("",CallCenter.style);finfo.setTitle("info pattern");
 
-         fproblem = new TextItem();fproblem.setTitle("problem pattern");
-        foperat = new TextItem();foperat.setTitle("operat pattern");
+         fproblem = new MyTextItem("",CallCenter.style);fproblem.setTitle("problem pattern");
+        foperat = new MyTextItem("",CallCenter.style);foperat.setTitle("operat pattern");
 
-        ButtonItem fbutton = new ButtonItem("Filter");fbutton.setStartRow(false);
+        MyIButton fbutton = new MyIButton("Filter",CallCenter.style);//fbutton.setStartRow(false);
+fbutton.addClickHandler(new ClickHandler() {
+    @Override
+    public void onClick(ClickEvent clickEvent) {
+        setprobleminfo() ;
+    }
+});
 
-        fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler() {
-            @Override
-            public void onClick(com.smartgwt.client.widgets.form.fields.events.ClickEvent clickEvent) {
-                setprobleminfo() ;
-            }
-        });
 
-        fbutton.setColSpan(4);
+
+       // fbutton.setColSpan(4);
         fbutton.setWidth("200");
         //fbutton.setLeft(20);
-        fbutton.setAlign(Alignment.RIGHT);
+        //fbutton.setAlign(Alignment.RIGHT);
+        /*
 fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler() {
     @Override
     public void onClick(com.smartgwt.client.widgets.form.fields.events.ClickEvent clickEvent) {
         setprobleminfo();
     }
-});
+});*/
 
-        form2.setItems(infos,finfo,problems,fproblem,soperat,foperat,fbutton);
+        form2.setItems(infos,finfo,problems,fproblem,soperat,foperat);
 
         //form3.setWidth("33%");form3.setHeight100();//form3.setShowEdges(true);
         //form3.setTitleOrientation(TitleOrientation.LEFT);
@@ -267,13 +270,16 @@ fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.Click
         filtrlayout.addMember(form2);
 //        filtrlayout.addMember(form3);
 
-        VLayout1001.addMember(filtrlayout);//VLayout1001.addMember(olistGrid);
+        VLayout1001.addMember(filtrlayout);//VLayout1001.addMember(oMyListGrid);
+        HLayout lay100=new HLayout();
+        lay100.setAlign(Alignment.RIGHT);
+        lay100.setMembers(fbutton);
+VLayout1001.addMember(lay100);
 
-
-        IButton refreshbutton = new IButton("Find ring");
+        MyIButton refreshbutton = new MyIButton("Find ring",CallCenter.style);
         refreshbutton.setHeight(30);
         refreshbutton.setWidth(200);
-        IButton clearbutton = new IButton("Clear fields");
+        MyIButton clearbutton = new MyIButton("Clear fields",CallCenter.style);
         clearbutton.setHeight(30);
         clearbutton.setWidth(200);
 
@@ -289,7 +295,7 @@ fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.Click
         VLayout1001.addMember(buttlayout);
 
 
-        final ListGrid listGrid = new ListGrid() {
+        final MyListGrid MyListGrid = new MyListGrid(CallCenter.style) {
             @Override
             protected Canvas createRecordComponent(final ListGridRecord record, Integer colNum) {
 
@@ -312,10 +318,11 @@ fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.Click
                             String[] ss= DateTimeFormat.getFormat( "yyyy-MM-dd" ).format( dat ).split("-");
                             String su="http://192.168.27.14/storage/"+ss[0]+"/"+ss[0]+ss[1]+"/"+ss[0]+ss[1]+ss[2]+"/"+callid+".mp3";
 //width="100%" height="100%"
-                            String audioTag = "<audio style=\"width: 100%;\" src=\""+su+"\" autobuffer preload controls autoplay width=\"100%\"> Your browser does not support the <audio> element. </audio>";
+                            String audioTag = "<audio style=\"width: 100%;\" src=\""+su+"\" autobuffer preload controls autoplay width=\"100%\">" +
+                                    " Your browser does not support the <audio> element. </audio>";
                             soundlayout.setContents(audioTag);
-                             audioTag = "<a href=\""+su+"\" download>download</a>";
-                            soundlayout2.setContents(audioTag);
+                           //  audioTag = "<a href=\""+su+"\" download>download</a>";
+                           // soundlayout2.setContents(audioTag);
                             audiowindow.setTitle(callid+" "+DateTimeFormat.getFormat( "yyyy-MM-dd HH:mm:ss" ).format( dat )+" "+operat+" "+anumber);
                             audiowindow.setVisible(true);
                         }
@@ -327,7 +334,7 @@ fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.Click
 
             }
         };
-listGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
+MyListGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
     @Override
     public void onSelectionChanged(SelectionEvent selectionEvent) {
         String pr=selectionEvent.getSelectedRecord().getAttribute("problems");
@@ -364,30 +371,30 @@ listGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
     }
 });
         myclear();
-        listGrid.setShowRecordComponents(true);
-        listGrid.setShowRecordComponentsByCell(true);
+        MyListGrid.setShowRecordComponents(true);
+        MyListGrid.setShowRecordComponentsByCell(true);
 
 
 
-        listGrid.setCriteria(getcriteria());
-        listGrid.setWidth100();
-        listGrid.setHeight100();
-        listGrid.setAlternateRecordStyles(true);
-        listGrid.setDataSource(DataSource.get("LogDS"));
-        listGrid.setFetchOperation("getLogs");
-        listGrid.setAutoFetchData(true);
-        listGrid.setSelectionType(SelectionStyle.SINGLE);
-        //listGrid.setShowFilterEditor(true);
-        //listGrid.setCanEdit(true);
-        //listGrid.setEditEvent(ListGridEditEvent.CLICK);
-        //listGrid.setCanRemoveRecords(true);
-        listGrid.setAutoFetchData(true);
+        MyListGrid.setCriteria(getcriteria());
+        MyListGrid.setWidth100();
+        MyListGrid.setHeight100();
+        MyListGrid.setAlternateRecordStyles(true);
+        MyListGrid.setDataSource(DataSource.get("LogDS"));
+        MyListGrid.setFetchOperation("getLogs");
+        MyListGrid.setAutoFetchData(true);
+        MyListGrid.setSelectionType(SelectionStyle.SINGLE);
+        //MyListGrid.setShowFilterEditor(true);
+        //MyListGrid.setCanEdit(true);
+        //MyListGrid.setEditEvent(MyListGridEditEvent.CLICK);
+        //MyListGrid.setCanRemoveRecords(true);
+        MyListGrid.setAutoFetchData(true);
 
 
-//        ListGridField countryName = new ListGridField("oid","OID", 200);
-  //      ListGridField capital = new ListGridField("call_start","sdfsfdsdfsdf", 200);
+//        MyListGridField countryName = new MyListGridField("oid","OID", 200);
+  //      MyListGridField capital = new MyListGridField("call_start","sdfsfdsdfsdf", 200);
 
-    //    listGrid.setFields(countryName, capital);
+    //    MyListGrid.setFields(countryName, capital);
 
 
 
@@ -417,14 +424,14 @@ listGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
 
         call_start.setAttribute("displayFormat", "yyyy-MM-dd HH:mm:ss");
         op_answer.setAttribute("displayFormat", "yyyy-MM-dd HH:mm:ss");
-           listGrid.setFields(oid,call_start,op_answer,duration,problem,info,operat,anumber,called,callid,audioField);
+           MyListGrid.setFields(oid,call_start,op_answer,duration,problem,info,operat,anumber,called,callid,audioField);
 
 
 /*
         IButton newButton = new IButton("Add New");
         newButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                listGrid.startEditingNew();
+                MyListGrid.startEditingNew();
             }
         });
 
@@ -435,7 +442,7 @@ refreshbutton.addClickHandler(new ClickHandler() {
     public void onClick(ClickEvent clickEvent) {
 
 
-     //   listGrid.fetchData(new Criteria("anumber", sanumber.getValue().toString()));
+     //   MyListGrid.fetchData(new Criteria("anumber", sanumber.getValue().toString()));
 
 
 
@@ -465,12 +472,12 @@ refreshbutton.addClickHandler(new ClickHandler() {
 //and anumber like '%'||$criteria.anumber||'%'
 
  //       dsRequest.setCriteria(criteria);
-        listGrid.invalidateCache();//???????????????????????????????????
+        MyListGrid.invalidateCache();//???????????????????????????????????
 
-      //  listGrid.setCriteria(criteria2);
+      //  MyListGrid.setCriteria(criteria2);
 
 
-        listGrid.fetchData(getcriteria(), new DSCallback() {
+        MyListGrid.fetchData(getcriteria(), new DSCallback() {
             @Override
             public void execute(DSResponse dsResponse, Object o, DSRequest dsRequest) {
                 if(dsResponse.getStatus() == DSResponse.STATUS_VALIDATION_ERROR)
@@ -486,8 +493,8 @@ refreshbutton.addClickHandler(new ClickHandler() {
                  //   ResultSet resultSetProperties = new ResultSet();
                  //   resultSetProperties.setLength(dsResponse.getTotalRows());
 
-//                    listGrid.setDataProperties(resultSetProperties);
-                    listGrid.setData(dsResponse.getDataAsRecordList());
+//                    MyListGrid.setDataProperties(resultSetProperties);
+                    MyListGrid.setData(dsResponse.getDataAsRecordList());
                 }
             }
         },dsRequest);
@@ -498,13 +505,13 @@ refreshbutton.addClickHandler(new ClickHandler() {
 });
 
 
-        VLayout1001.addMember(listGrid);
+        VLayout1001.addMember(MyListGrid);
 
 
 
         HLayout prinfolayout=new HLayout();prinfolayout.setWidth100();prinfolayout.setHeight(200);
-        problems2= new ListGrid();
-        infos2= new ListGrid();
+        problems2= new MyListGrid(CallCenter.style);
+        infos2= new MyListGrid(CallCenter.style);
         ListGridField problem2Field = new ListGridField("problem", "problem");
         ListGridField info2Field = new ListGridField("info", "info");
         problems2.setFields(problem2Field);
@@ -524,7 +531,7 @@ refreshbutton.addClickHandler(new ClickHandler() {
 
 
 
-        audiowindow.addMember(soundlayout);audiowindow.addMember(soundlayout2);
+        audiowindow.addMember(soundlayout);//audiowindow.addMember(soundlayout2);
 
 
         this.addChild(audiowindow);
@@ -545,8 +552,8 @@ refreshbutton.addClickHandler(new ClickHandler() {
 //        vv="0";
         //end logika pokaza
       //  String[] vv2=vv.split(",");
-       // problems.setData(new ListGridRecord[] {});
-     //   infos.setData(new ListGridRecord[] {});
+       // problems.setData(new MyListGridRecord[] {});
+     //   infos.setData(new MyListGridRecord[] {});
 
 
         LinkedHashMap<String,String> mpp=new LinkedHashMap();
@@ -565,7 +572,7 @@ String sh="";if (!da) sh=fproblem.getValue().toString().toLowerCase();
                     mpp.put(key,val);
             }
 
-        problems.setValueMap(mpp);
+        problems.setValueMap(mpp);problems.setValue("");
 
 
         LinkedHashMap<String,String> mpi=new LinkedHashMap();
@@ -581,10 +588,10 @@ String sh="";if (!da) sh=fproblem.getValue().toString().toLowerCase();
              else if(val.toLowerCase().contains(sh))
                 mpi.put(key,val);
         }
-        infos.setValueMap(mpi);
+        infos.setValueMap(mpi);infos.setValue("");
 
         HashMap<String,String> hm=null;
-
+        soperat.setValue("");
         if(foperat.getValue()!=null&&!foperat.getValue().toString().equals(""))
         {
             hm=new HashMap<String,String>();
@@ -643,7 +650,7 @@ String sh="";if (!da) sh=fproblem.getValue().toString().toLowerCase();
                                  final String valueField, String displayField, Map<String, String> aditionalCriteria) {
 
         try {
-            if (!(formItem instanceof ComboBoxItem) && !(formItem instanceof SelectItem)) {
+            if (!(formItem instanceof ComboBoxItem) && !(formItem instanceof MySelectItem)) {
                 return;
             }
 
@@ -654,7 +661,7 @@ String sh="";if (!da) sh=fproblem.getValue().toString().toLowerCase();
                 cItem.setAddUnknownValues(false);
                 cItem.setAutoFetchData(false);
             } else {
-                SelectItem sItem = (SelectItem) formItem;
+                MySelectItem sItem = (MySelectItem) formItem;
                 sItem.setAddUnknownValues(false);
                 sItem.setAutoFetchData(false);
             }
@@ -678,7 +685,7 @@ if (aditionalCriteria!=null)
 
 
             formItem.setOptionCriteria(criteria);
-            if (formItem instanceof SelectItem)
+            if (formItem instanceof MySelectItem)
                 formItem.addKeyDownHandler(new KeyDownHandler() {
 
                     @Override

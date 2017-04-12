@@ -9,7 +9,7 @@ public class mysession {
     public Session session;
     public int grp;
     public String callid;
-    public int status;
+    public int status=0;
     public String uname;
     public String anumber;
     public long tim;

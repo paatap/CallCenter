@@ -10,6 +10,8 @@ import ge.magti.server.sets;
 import java.io.IOException;
 import java.util.*;
 
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -25,7 +27,9 @@ import javax.websocket.server.ServerEndpoint;
  * and "echo" is the address to access this class from the server
  */
 @ServerEndpoint("/message/{clientId}")
-public class EchoServer {
+public class EchoServer  {
+
+
     /**
      * @OnOpen allows us to intercept the creation of a new session.
      * The session class allows us to send data to the user.
@@ -39,9 +43,10 @@ public class EchoServer {
 
 
         try {
-            session.getBasicRemote().sendText("Connection Established==========client==============="+clientId);
  String[] s2=clientId.split(",");
             addsession(s2[0],session, functions.str2int(s2[1]));
+            session.getBasicRemote().sendText("$connectionestablished==========client==============="+clientId);
+
             //GreetingServiceImpl.callpause(s2[0]);
             //GreetingServiceImpl.callenable(s2[0],s2[1]);
         } catch (IOException ex) {
@@ -198,6 +203,18 @@ public class EchoServer {
         removesession(session);
     }
 
+    public static String killsession(String input){
+        String[] s2=input.split("\t");
+        String clientId=s2[1];
+        mysession ses=session2.get(clientId);
+        if (ses==null)  return "$say\tkillerror";
+        GreetingServiceImpl.callpause(clientId,true,ses.uname);
+        try {
+            ses.session.close();
+        }catch(Exception e){};
+        session2.remove(clientId);
+        return "$say\tkill";
+    }
 
     public static String getops(String input){
         String mynumber=input.split("\t")[1];
@@ -217,6 +234,23 @@ public class EchoServer {
         }
         return ss;
     }
+    public static String getops(){
+
+        String ss="$get2ops";
+        for (Map.Entry entr:EchoServer.session2.entrySet()) {
+            mysession ses = (mysession) entr.getValue();
+            if (ses==null) {
+
+            }else if (ses.session==null){
+
+            }else if (!ses.session.isOpen()) {
+
+            }else {
+                    ss+="\n"+ses.uname+"\t"+entr.getKey().toString();
+            }
+        }
+        return ss;
+    }
     public static String sendopmessage(String input){
 
      /*   try{
@@ -230,12 +264,13 @@ public class EchoServer {
    //     "sendmessage\t"+
      //                   CallCenter.callCenterInstance.mynumber+"\t"+CallCenter.callCenterInstance.uname+
        //                 "\t"+ops.getValue().toString()+"\n"+txt.getValue().toString());
-        String ss="$sendopmessage\t"+s22[2]+"<<<<<<";
+        String ss="$sendopmessage\t"+s22[2];
         for (int i=1;i<s2.length;i++) {
-            if (i==1) ss+=s2[i];
-            else ss+="\n"+s2[i];
+            //if (i==1) ss+=s2[i];
+            //else
+                ss+="\n"+s2[i];
         }
-
+        System.out.println("ss=="+ss);
         if (s22[3].equals("-100")){
                     for (Map.Entry entr:EchoServer.session2.entrySet()) {
                         mysession ses = (mysession) entr.getValue();
@@ -394,9 +429,11 @@ public class EchoServer {
                 }else return "false";
 
     }
-    static Timer timer=new Timer();
+    static Timer timer=null;
 
-    public static void starttimer (){
+    public static synchronized void starttimer (){
+        if (timer!=null) return;
+            timer=new Timer();
         TimerTask task;
 
         task = new TimerTask() {
@@ -412,6 +449,10 @@ public class EchoServer {
         String query=String.format("UPDATE oprest set statedop=%d WHERE oid='%s'",
                 sets.RESTWARNING,oid);
         functions.execSql(query, functions.isnewcc);
+    }
+    public static void stoptimer(){
+        if (timer!=null)
+            timer.cancel();
     }
     public static String grpadd(String ss){
         System.out.println(ss);

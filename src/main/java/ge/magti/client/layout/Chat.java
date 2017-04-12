@@ -1,28 +1,23 @@
 package ge.magti.client.layout;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.smartgwt.client.rpc.Messaging;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.util.SC;
-import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.RichTextEditor;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.SelectItem;
-import com.smartgwt.client.widgets.form.fields.TextAreaItem;
-import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import ge.magti.client.CallCenter;
+import ge.magti.client.MyWidgets.MyIButton;
+import ge.magti.client.MyWidgets.MySelectItem;
+import ge.magti.client.MyWidgets.MyTextAreaItem;
+import ge.magti.client.MyWidgets.MyTextItem;
 
 
 import java.util.LinkedHashMap;
@@ -31,29 +26,29 @@ import java.util.LinkedHashMap;
  * Created by user on 3/17/17.
  */
 public class Chat extends SectionStackSection {
-    final TextAreaItem txt = new TextAreaItem();
+    final MyTextAreaItem txt = new MyTextAreaItem("",CallCenter.style);
     final DynamicForm txtform = new DynamicForm();
-    IButton sendbutton = new IButton();
-    IButton okbutton = new IButton();
-    IButton smsbutton = new IButton();
+    MyIButton sendbutton = new MyIButton();
+    MyIButton okbutton = new MyIButton();
+    MyIButton smsbutton = new MyIButton();
 
-    SelectItem ops = new SelectItem("ops");
+    MySelectItem ops = new MySelectItem("ops",CallCenter.style);
     final DynamicForm opsform = new DynamicForm();
 
-    IButton gopsbutton = new IButton();
+    MyIButton gopsbutton = new MyIButton();
 
-    final TextAreaItem lenta = new TextAreaItem();
-    final DynamicForm lentaform = new DynamicForm();
+    final RichTextEditor lenta = new RichTextEditor();
 
-    TextItem number = new TextItem();
+
+    MyTextItem number = new MyTextItem("",CallCenter.style);
     final DynamicForm numberform = new DynamicForm();
 
-    IButton shablonbutton = new IButton();
+    MyIButton shablonbutton = new MyIButton();
 
-    SelectItem shablon1 = new SelectItem("shablon1");
+    MySelectItem shablon1 = new MySelectItem("shablon1",CallCenter.style);
     final DynamicForm shablon1form = new DynamicForm();
 
-    SelectItem shablon2 = new SelectItem("shablon2");
+    MySelectItem shablon2 = new MySelectItem("shablon2",CallCenter.style);
     final DynamicForm shablon2form = new DynamicForm();
 
     Chat(){
@@ -77,12 +72,12 @@ public class Chat extends SectionStackSection {
         final HLayout HLayout4 = new HLayout();HLayout4.setWidth100();HLayout4.setHeight(25);
         final HLayout HLayout5 = new HLayout();HLayout5.setWidth100();HLayout5.setHeight(25);
 
-        sendbutton = new IButton("SEND");sendbutton.setHeight100();sendbutton.setWidth("70%");
+        sendbutton = new MyIButton("SEND",CallCenter.style);sendbutton.setHeight100();sendbutton.setWidth("70%");
         sendbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (ops.getValue()!=null&&!ops.getValue().toString().equals("")) {
-                    String ss=mp.get(ops.getValue())+">>>>"+txt.getValue().toString();
-                    String s1=ss+"\n"+lenta.getValue();
+                    String ss="<span style='color:red'>"+mp.get(ops.getValue())+"<<< </span>"+txt.getValue().toString();
+                    String s1=ss+"<br>"+lenta.getValue();
                     lenta.setValue(s1.substring(0,5000));
                     CallCenter.callCenterInstance.sendgreet("sendmessage\t" +
                             CallCenter.callCenterInstance.mynumber + "\t" + CallCenter.callCenterInstance.uname +
@@ -91,12 +86,12 @@ public class Chat extends SectionStackSection {
                 }
             }
         });
-        okbutton = new IButton("OK");okbutton.setHeight100();okbutton.setWidth("30%");
+        okbutton = new MyIButton("OK",CallCenter.style);okbutton.setHeight100();okbutton.setWidth("30%");
         okbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (ops.getValue()!=null&&!ops.getValue().toString().equals("")) {
-                    String ss=mp.get(ops.getValue())+">>>>ok";
-                    String s1=ss+"\n"+lenta.getValue();
+                    String ss="<span style='color:red'>"+mp.get(ops.getValue())+"<<< </span>ok";
+                    String s1=ss+"<br>"+lenta.getValue();
                     lenta.setValue(s1.substring(0,5000));
                     CallCenter.callCenterInstance.sendgreet("sendmessage\t" +
                             CallCenter.callCenterInstance.mynumber + "\t" + CallCenter.callCenterInstance.uname +
@@ -114,7 +109,7 @@ public class Chat extends SectionStackSection {
 
         opsform.setFields(ops);
 
-        gopsbutton = new IButton("");gopsbutton.setHeight100();gopsbutton.setWidth("20%");
+        gopsbutton = new MyIButton("",CallCenter.style);gopsbutton.setHeight100();gopsbutton.setWidth("20%");
         gopsbutton.setIcon("users.png");
         gopsbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -133,12 +128,12 @@ public class Chat extends SectionStackSection {
 
 
 
-        smsbutton = new IButton("sms");smsbutton.setHeight100();smsbutton.setWidth("20%");
+        smsbutton = new MyIButton("sms",CallCenter.style);smsbutton.setHeight100();smsbutton.setWidth("30%");
         smsbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (number.getValue()!=null&&number.getValue().toString().length()>2) {
-                    String ss=number.getValue().toString()+">>>>"+txt.getValue().toString();
-                    String s1=ss+"\n"+lenta.getValue();
+                    String ss="<span style='color:red'>"+number.getValue().toString()+"<<< </span>"+txt.getValue().toString();
+                    String s1=ss+"<br>"+lenta.getValue();
                     lenta.setValue(s1.substring(0,5000));
                     CallCenter.callCenterInstance.sendgreet("sendsms\t" +
                             CallCenter.callCenterInstance.mynumber + "\t" + CallCenter.callCenterInstance.uname +
@@ -165,7 +160,7 @@ public class Chat extends SectionStackSection {
 
 
 
-        shablonbutton = new IButton("pattern");shablonbutton.setHeight100();shablonbutton.setWidth("30%");
+        shablonbutton = new MyIButton("pattern",CallCenter.style);shablonbutton.setHeight100();shablonbutton.setWidth("35%");
         shablonbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 txt.setValue(shablon2.getValue());
@@ -204,16 +199,11 @@ public class Chat extends SectionStackSection {
         HLayout5.addMember(shablon2form);
         this.addItem(HLayout5);
 
-        lenta.setShowTitle(false);
-        lenta.setColSpan(2);
-        lenta.setWidth("100%");lenta.setHeight("100%");
-        lentaform.setWidth100();
-        lentaform.setHeight100();
-        lentaform.setTitleOrientation(TitleOrientation.TOP);
-        lentaform.setWidth100();
 
-        lentaform.setFields(lenta);
-        addItem(lentaform);
+        lenta.setWidth("100%");lenta.setHeight("100%");
+        lenta.setControlGroups(new String[]{});
+
+        addItem(lenta);
 
 
         lenta.setValue("");
@@ -244,8 +234,13 @@ public class Chat extends SectionStackSection {
         }
     }
     public void getmessage(String result){
-            String ss = result.substring(15);
-            String s1 = ss +"\n" + lenta.getValue();
+            String[] s2= result.split("\n");
+            String[] s22=s2[0].split("\t");
+
+            String ss = "<span style='color:red'>"+s22[1]+">>> </span>";
+            for (int i=1;i<s2.length;i++) ss+=s2[i]+"<br>";
+
+            String s1 = ss  + lenta.getValue(); //SC.say(s1.replace("<",".").replace(">",","));
             lenta.setValue(s1.substring(0, 5000));
             this.setExpanded(true);
         //SC.say(ss);

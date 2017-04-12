@@ -6,7 +6,6 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="gwt:property" content="locale=ka">
     <meta name="author" content="Sarchi"/>
-
     <meta name="Description" content="Magticom CallCenter Web Application"/>
     <meta name="Keywords" content="Billing "/>
 
@@ -104,23 +103,27 @@
     <%--<link rel="stylesheet" href="Showcase.css?isc_version=11.0p.css">--%>
     <%--<link rel="stylesheet" href="sourceColorizer.css?isc_version=11.0p.css">--%>
     <link type="text/css" rel="stylesheet" href="CallCenter.css">
+    <link type="text/css" rel="stylesheet" href="addcss1.css">
+    <link type="text/css" rel="stylesheet" href="addcss2.css">
     <%--<link type="image/x-icon" href="images/favicon.ico" rel="shortcut icon"/>--%>
     <title>Magticom CallCenter Web Application</title>
 </head>
 <body>
 
 <!--add loading indicator while the app is being loaded-->
-<%--<div id="loadingWrapper">--%>
-    <%--<div id="loading">--%>
-        <%--<div class="loadingIndicator">--%>
-            <%--<img src="images/loading.gif" width="32" height="32"--%>
-                 <%--style="margin-right:8px;float:left;vertical-align:top;"/>--%>
-            <%--<span id="sgwtProductName">--%>
-          <%--Magticom Customer-Care Web Application--%>
-        <%--</span><br/>--%>
-            <%--<span id="loadingMsg">მიმდინარეობს პროგრამის ჩატვირთვა...</span></div>--%>
-    <%--</div>--%>
-<%--</div>--%>
+
+
+<div id="loadingWrapper">
+    <div id="loading">
+        <div class="loadingIndicator">
+            <img src="images/loading.gif" width="32" height="32"
+                 style="margin-right:8px;float:left;vertical-align:top;"/>
+            <span id="sgwtProductName">
+          Magticom CallCenter Web Application
+        </span><br/>
+            <span id="loadingMsg">მიმდინარეობს პროგრამის ჩატვირთვა...</span></div>
+    </div>
+</div>
 
 
 <%--<script type="text/javascript">--%>
@@ -217,6 +220,7 @@
 <script type="text/javascript" src='CallCenter/sc/modules/ISC_Containers.js?isc_version=11.0p_2016-08-04.js'></script>
 <script type="text/javascript" src='CallCenter/sc/modules/ISC_Grids.js?isc_version=11.0p_2016-08-04.js'></script>
 <script type="text/javascript" src='CallCenter/sc/modules/ISC_Forms.js?isc_version=11.0p_2016-08-04.js'></script>
+<script type="text/javascript" src='CallCenter/sc/modules/ISC_RichTextEditor.js?isc_version=11.0p_2016-08-04.js'></script>
 <script type="text/javascript">document.getElementById('loadingMsg').innerHTML = 'მონაცემების ჩატვირთვა...';</script>
 <script type="text/javascript" src='CallCenter/sc/modules/ISC_DataBinding.js?isc_version=11.0p_2016-08-04.js'></script>
 <script>
@@ -225,8 +229,8 @@
 <script type="text/javascript" src='CallCenter/sc/modules/ISC_Tools.js?isc_version=11.0p_2016-08-04.js'></script>
 
 <script type="text/javascript">document.getElementById('loadingMsg').innerHTML = 'მონაცემთა წყაროების ჩატვირთვა...';</script>
-<!--<script type='text/javascript' src='CallCenter/sc/skins/EnterpriseBlue/load_skin.js?isc_version=11.0p_2016-08-04.js'></script>
--->
+<script type='text/javascript' src='CallCenter/sc/skins/EnterpriseBlue/load_skin.js?isc_version=11.0p_2016-08-04.js'></script>
+
 
 <!--load the datasources-->
 <script type="text/javascript" src="sc/DataSourceLoader?dataSource=LogDS">
@@ -255,16 +259,18 @@
     // Determine which skin to load
     var currentSkin = readCookie('skin_name_2_4');
     if (currentSkin == null) currentSkin = "EnterpriseBlue";
-
+currentSkin = null;
     // Load the skin
     document.getElementById('loadingMsg').innerHTML = 'ვიზუალის ჩატვირთვა ...';
-//currentSkin = "EnterpriseBlue";
-    alert(currentSkin);
 //    document.write("<" + "script type='text/javascript' src='CallCenter/sc/skins/" + currentSkin + "/load_skin.js?isc_version=11.0p_2016-08-04.js'><" + "/script>");
-    document.write("<"+"script src=CallCenter/sc/skins/" + currentSkin + "/load_skin.js><"+"/script>");
+
 
     // Include the application JS
     document.getElementById('loadingMsg').innerHTML = 'ჩატვირთვის დასრულება<br>გთხოვთ მოითმინოთ...';
+
+
+
+    document.getElementById("loadingWrapper").style.display = "none";
 </script>
 <script type="text/javascript" src="CallCenter/CallCenter.nocache.js"></script>
 

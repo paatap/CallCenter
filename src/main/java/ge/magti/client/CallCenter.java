@@ -35,8 +35,9 @@ public class CallCenter implements EntryPoint{
   /**
    * Create a remote service proxy to talk to the server-side Greeting service.
    */
-  public static String ver="Call Center 2.002";
+  public static String ver="Call Center 2.004c";
   public static CallCenter callCenterInstance;
+  public static String style="";
   public  boolean debug=false;
   public  String messagestring;
   public  String mynumber;
@@ -108,6 +109,20 @@ public native void registeronclose() /*-{
           }
       });
 
+
+    String myeksp = com.google.gwt.user.client.Window.Location.getParameter("myeksp");
+
+    if (myeksp!=null&&myeksp.equals("true")) {
+            Window.enableScrolling(false);
+    Window.setMargin("0px");
+    Window.setTitle("eksp");
+        myeksp meksp=new myeksp();
+        meksp.setWidth100();
+        meksp.setHeight100();
+        RootLayoutPanel.get().add(meksp);
+        meksp.show();
+     return;
+    }
 
 
       //registerHandlers(Jsni.this, window);
@@ -278,7 +293,11 @@ public void setsouthLayout(Layout lay){
                 SC.warn("Group not found !");
                 dlgLogin.buttonItem.setDisabled(false);
             }else {
-
+                if (!s2[8].equals(ver))
+                    SC.say("version is old!"
+                    +"<br>"+s2[8]+"<br>"+ver+"<br><br><br>please click 'ctrl+F5'");
+                style=s2[9];
+                if (style.equalsIgnoreCase("null")) style="";
                 dlgLogin.loginSuccess(s22);
                 reststr=s22[1];
             }
@@ -303,6 +322,13 @@ public void setsouthLayout(Layout lay){
       }else if (result.startsWith("$say")){
           String[] s2=result.split("\t");
           SC.say(s2[1]);
+      }else if (result.startsWith("$get2ops")){
+            ReportAreaAdmin r4=(ReportAreaAdmin) getlayout("admin");
+
+            if (r4!=null) r4.getops(result);
+      }else if (result.startsWith("$connectionestablished")){
+            //((MainArea)maincc).init2();
+            SC.say("$connectionestablished");
       }
 
 

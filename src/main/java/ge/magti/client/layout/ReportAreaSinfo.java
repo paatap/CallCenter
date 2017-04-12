@@ -9,6 +9,7 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import ge.magti.client.CallCenter;
+import ge.magti.client.MyWidgets.MyListGrid;
 
 import java.util.ArrayList;
 
@@ -16,9 +17,9 @@ import java.util.ArrayList;
  * Created by user on 3/28/17.
  */
 public class ReportAreaSinfo extends HLayout {
-    ListGrid ops1;
-    ListGrid ops2;
-    ListGrid info;
+    MyListGrid ops1;
+    MyListGrid ops2;
+    MyListGrid info;
     int infom=-1;
     public ReportAreaSinfo() {
 
@@ -26,7 +27,7 @@ public class ReportAreaSinfo extends HLayout {
 
         this.setShowEdges(true);
 
-         ops1=new ListGrid();
+         ops1=new MyListGrid(CallCenter.style);
 //        ss.append(ses.grp+"\t" + functions.getstatus(ses.status)+"\t"+"time"+"\t"+
   //              ses.uname+"\t"+entr.getKey()+"\t" +ses.anumber+"\t" +ses.callid+"\n");
         ListGridField grpField = new ListGridField("group", "group");
@@ -39,11 +40,11 @@ public class ReportAreaSinfo extends HLayout {
         ops1.setFields( grpField,statusField,timeField,unameField,numberField,anumberField,callidField);
 
 
-         ops2=new ListGrid();ops2.setHeight("60%");
+         ops2=new MyListGrid(CallCenter.style);ops2.setHeight("60%");
 
         ops2.setFields( grpField,statusField,timeField,unameField,numberField,anumberField,callidField);
 
-         info=new ListGrid();info.setHeight("40%");
+         info=new MyListGrid(CallCenter.style);info.setHeight("40%");
         ListGridField info0 = new ListGridField("info0", "");
         ListGridField info1 = new ListGridField("info1", "");
         ListGridField info2 = new ListGridField("info2", "");
