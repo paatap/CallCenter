@@ -12,6 +12,7 @@ import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.grid.ListGridField;
@@ -350,6 +351,7 @@ public class MainArea extends VLayout {
                 txt.setWidth100();
             }
         });
+
         VLayout1000.setMembers(HLayout100, txt);
         callpanel2.setMembers(callpanel);
         HLayout100.setMembers(VLayout10, callpanel2);
@@ -645,6 +647,7 @@ public class MainArea extends VLayout {
             }
         }
         txt.setValue(txt0.toString());
+        //txt.setContents(txt0.toString());
         CallCenter.callCenterInstance.setchatsh(sh0.toString());
         CallCenter.callCenterInstance.settree(reps);
     }

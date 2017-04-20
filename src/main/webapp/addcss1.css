@@ -114,6 +114,13 @@
 .mymybutton1DeselectedDisabled {
     font-size:16px !important;
 }
+.mymybutton1Disabled,
+.mymybutton1SelectedDisabled,
+.mymybutton1DeselectedDisabled {
+    background-color: #e8e8e8 !important;
+    color: #ababab !important;
+}
+
 
 /*----------------------mymytext------------------------*/
 

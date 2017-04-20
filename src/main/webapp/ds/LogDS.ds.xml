@@ -26,16 +26,17 @@ log.oid,log.call_start,log.op_answer,
 (SELECT EXTRACT(EPOCH FROM log.call_end-log.call_start)) as duration,
 array_to_string(log2.problems, ',', '*') as problems,
 array_to_string(log2.info, ',', '*') as info,
-log.operat,log.anumber,log.called,log.callid,log.callid
+log.operat,uname,log.anumber,log.called,log.callid,log.callid
     			]]>
             </selectClause>
             <tableClause><![CDATA[
 			   		log
 			   		left join log2 on log.callid=log2.callid and (log.operat=log2.operat or log.operat is null)
+			   		left join secrets on log.operat='SIP/'||secrets.number
 				]]>
             </tableClause>
             <whereClause><![CDATA[
-            1=1
+            log.operat is not null
             #if($criteria.anumber)
 			    	and (anumber = $criteria.anumber or called = $criteria.called)
 			#end

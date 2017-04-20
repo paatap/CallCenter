@@ -35,7 +35,7 @@ public class CallCenter implements EntryPoint{
   /**
    * Create a remote service proxy to talk to the server-side Greeting service.
    */
-  public static String ver="Call Center 2.004c";
+  public static String ver="Call Center 2.005";
   public static CallCenter callCenterInstance;
   public static String style="";
   public  boolean debug=false;

@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * Created by user on 4/6/17.
  */
 public class myeksp extends VLayout {
-    RichTextEditor richTextEditor = null;
+    RichTextEditor rich = null;
     MyTextItem txt = null;
     MyTextAreaItem txt2 = null;
     MySelectItem shablon= null;
@@ -62,7 +62,7 @@ if (h1!=null) {
 }
          h1=new HLayout();h1.setShowEdges(true);
          h2=new HLayout();h2.setShowEdges(true);
-     richTextEditor = null;
+        rich = null;
      txt = new MyTextItem("kuku",style);
      txt2 = new MyTextAreaItem("kuku2",style);
      shablon=new MySelectItem("kuku333",style);
@@ -127,13 +127,13 @@ butt1.setTitle("==="+butt1.getBaseStyle()+"="+style);
         String ajaxDefinition ="rgvgrsg=="+style;
 
 
-        richTextEditor = new RichTextEditor();
-        richTextEditor.setValue(ajaxDefinition);
+        rich = new RichTextEditor();
+        rich.setValue(ajaxDefinition);
         //richTextEditor.setShowEdges(true);
-        richTextEditor.setWidth(222);richTextEditor.setHeight(222);
-        richTextEditor.setOverflow(Overflow.HIDDEN);
-        richTextEditor.setCanDragResize(true);
-        richTextEditor.setShowEdges(true);
+        rich.setWidth(222);rich.setHeight(222);
+        rich.setOverflow(Overflow.HIDDEN);
+        rich.setCanDragResize(true);
+        rich.setShowEdges(true);
 
 
 
@@ -161,7 +161,33 @@ butt1.setTitle("==="+butt1.getBaseStyle()+"="+style);
         });
 lab.setWidth(100);
 lab.setHeight(100);
-        h1.setMembers(lab,butt1,butt11,form);h2.setMembers(butt2,richTextEditor);
+
+VLayout v1=new VLayout();
+MyIButton rbut1=new MyIButton();
+rbut1.addClickHandler(new ClickHandler() {
+    @Override
+    public void onClick(ClickEvent clickEvent) {
+        txt2.setValue(rich.getValue().toString());
+    }
+});
+MyIButton rbut2=new MyIButton();
+rbut2.addClickHandler(new ClickHandler() {
+    @Override
+    public void onClick(ClickEvent clickEvent) {
+        String ss=txt2.getValue().toString();
+        String[] s2=ss.split("\n");
+        StringBuffer sb=new StringBuffer("");
+        for (int i=0;i<s2.length;i++){
+            sb.append("\n"+s2[i]);
+        }
+        rich.setValue(sb.toString());
+    }
+});
+
+v1.setMembers(rich,rbut1,rbut2);
+
+        h1.setMembers(lab,butt1,butt11,form,v1);
+        h2.setMembers(butt2);
 
 
         ListGridField problemField = new ListGridField("aaa", "aaa");

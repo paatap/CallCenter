@@ -10,15 +10,17 @@ import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import ge.magti.client.CallCenter;
 import ge.magti.client.MyWidgets.MyListGrid;
+import ge.magti.client.MyWidgets.MyListGrid2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by user on 3/28/17.
  */
 public class ReportAreaSinfo extends HLayout {
-    MyListGrid ops1;
-    MyListGrid ops2;
+    MyListGrid2 ops1;
+    MyListGrid2 ops2;
     MyListGrid info;
     int infom=-1;
     public ReportAreaSinfo() {
@@ -27,7 +29,12 @@ public class ReportAreaSinfo extends HLayout {
 
         this.setShowEdges(true);
 
-         ops1=new MyListGrid(CallCenter.style);
+         ops1=new MyListGrid2(CallCenter.style);
+
+
+
+
+
 //        ss.append(ses.grp+"\t" + functions.getstatus(ses.status)+"\t"+"time"+"\t"+
   //              ses.uname+"\t"+entr.getKey()+"\t" +ses.anumber+"\t" +ses.callid+"\n");
         ListGridField grpField = new ListGridField("group", "group");
@@ -40,7 +47,7 @@ public class ReportAreaSinfo extends HLayout {
         ops1.setFields( grpField,statusField,timeField,unameField,numberField,anumberField,callidField);
 
 
-         ops2=new MyListGrid(CallCenter.style);ops2.setHeight("60%");
+         ops2=new MyListGrid2(CallCenter.style);ops2.setHeight("60%");
 
         ops2.setFields( grpField,statusField,timeField,unameField,numberField,anumberField,callidField);
 
@@ -84,31 +91,22 @@ public class ReportAreaSinfo extends HLayout {
         ops2.setData(new ListGridRecord[] {});
         info.setData(new ListGridRecord[] {});
         boolean binf=true;
+
+        String s2a="";
+
         for (int i=1;i<s2.length;i++){
             if (s2[i].equals("$stat")) {typ=1;continue;}
             String[] s22=s2[i].split("\t");
             if (typ==0){
-                Record rr=new Record();
-                rr.setAttribute("group",s22[0]);
-                rr.setAttribute("status",s22[1]);
-                rr.setAttribute("time",s22[2]);
-                rr.setAttribute("uname",s22[3]);
-                rr.setAttribute("number",s22[4]);
-                rr.setAttribute("anumber",s22[5]);
-                rr.setAttribute("callid",s22[6]);
-                if (s22[3].compareToIgnoreCase("m")>0) ops2.addData(rr);
-                else ops1.addData(rr);
-//        ss.append(ses.grp+"\t" + functions.getstatus(ses.status)+"\t"+"time"+"\t"+
-  //              ses.uname+"\t"+entr.getKey()+"\t" +ses.anumber+"\t" +ses.callid+"\n");
-
+                s2a+=s22[3]+"\t"+s2[i]+"\n";
             }else{
                 if (binf){
                     int jm=s22.length;if (jm>10) jm=10;
                     if (infom!=jm){
-                         for (int j=0;j<10;j++) {
-                             if (j<jm)info.showField("info"+j);
-                             else info.hideField("info"+j);
-                         }
+                        for (int j=0;j<10;j++) {
+                            if (j<jm)info.showField("info"+j);
+                            else info.hideField("info"+j);
+                        }
                         infom=jm;
                     }
                     for (int j=0;j<jm;j++) info.getField(j).setTitle(s22[j]);
@@ -119,6 +117,30 @@ public class ReportAreaSinfo extends HLayout {
                     info.addData(rr);
                 }
             }
+        }
+
+        String[] s2a2=s2a.split("\n");
+
+        Arrays.sort(s2a2);
+
+        for (int i=0;i<s2a2.length;i++){
+
+            String[] s22=s2a2[i].split("\t");
+
+                Record rr=new Record();
+                rr.setAttribute("group",s22[1]);
+                rr.setAttribute("status",s22[2]);
+                rr.setAttribute("time",s22[3]);
+                rr.setAttribute("uname",s22[4]);
+                rr.setAttribute("number",s22[5]);
+                rr.setAttribute("anumber",s22[6]);
+                rr.setAttribute("callid",s22[7]);
+
+                if (1000*i/s2a2.length>600) ops2.addData(rr);
+                else ops1.addData(rr);
+//        ss.append(ses.grp+"\t" + functions.getstatus(ses.status)+"\t"+"time"+"\t"+
+  //              ses.uname+"\t"+entr.getKey()+"\t" +ses.anumber+"\t" +ses.callid+"\n");
+
         }
         info.refreshFields();
     }

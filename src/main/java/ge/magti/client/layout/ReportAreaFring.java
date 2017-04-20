@@ -295,7 +295,7 @@ VLayout1001.addMember(lay100);
         VLayout1001.addMember(buttlayout);
 
 
-        final MyListGrid MyListGrid = new MyListGrid(CallCenter.style) {
+        final MyListGrid grid = new MyListGrid(CallCenter.style) {
             @Override
             protected Canvas createRecordComponent(final ListGridRecord record, Integer colNum) {
 
@@ -334,7 +334,7 @@ VLayout1001.addMember(lay100);
 
             }
         };
-MyListGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
+        grid.addSelectionChangedHandler(new SelectionChangedHandler() {
     @Override
     public void onSelectionChanged(SelectionEvent selectionEvent) {
         String pr=selectionEvent.getSelectedRecord().getAttribute("problems");
@@ -371,24 +371,24 @@ MyListGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
     }
 });
         myclear();
-        MyListGrid.setShowRecordComponents(true);
-        MyListGrid.setShowRecordComponentsByCell(true);
+        grid.setShowRecordComponents(true);
+        grid.setShowRecordComponentsByCell(true);
 
 
 
-        MyListGrid.setCriteria(getcriteria());
-        MyListGrid.setWidth100();
-        MyListGrid.setHeight100();
-        MyListGrid.setAlternateRecordStyles(true);
-        MyListGrid.setDataSource(DataSource.get("LogDS"));
-        MyListGrid.setFetchOperation("getLogs");
-        MyListGrid.setAutoFetchData(true);
-        MyListGrid.setSelectionType(SelectionStyle.SINGLE);
-        //MyListGrid.setShowFilterEditor(true);
-        //MyListGrid.setCanEdit(true);
-        //MyListGrid.setEditEvent(MyListGridEditEvent.CLICK);
-        //MyListGrid.setCanRemoveRecords(true);
-        MyListGrid.setAutoFetchData(true);
+        grid.setCriteria(getcriteria());
+        grid.setWidth100();
+        grid.setHeight100();
+        grid.setAlternateRecordStyles(true);
+        grid.setDataSource(DataSource.get("LogDS"));
+        grid.setFetchOperation("getLogs");
+        grid.setAutoFetchData(true);
+        grid.setSelectionType(SelectionStyle.SINGLE);
+        //grid.setShowFilterEditor(true);
+        //grid.setCanEdit(true);
+        //grid.setEditEvent(MyListGridEditEvent.CLICK);
+        //grid.setCanRemoveRecords(true);
+        grid.setAutoFetchData(true);
 
 
 //        MyListGridField countryName = new MyListGridField("oid","OID", 200);
@@ -413,6 +413,7 @@ MyListGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
         ListGridField problem = new ListGridField("problems","problems");
         ListGridField info = new ListGridField("info","info");
         ListGridField operat = new ListGridField("operat","operat");
+        ListGridField uname = new ListGridField("uname","name");
         ListGridField anumber = new ListGridField("anumber","anumber");
         ListGridField called = new ListGridField("called","called");
         ListGridField callid = new ListGridField("callid","callid");
@@ -424,7 +425,7 @@ MyListGrid.addSelectionChangedHandler(new SelectionChangedHandler() {
 
         call_start.setAttribute("displayFormat", "yyyy-MM-dd HH:mm:ss");
         op_answer.setAttribute("displayFormat", "yyyy-MM-dd HH:mm:ss");
-           MyListGrid.setFields(oid,call_start,op_answer,duration,problem,info,operat,anumber,called,callid,audioField);
+        grid.setFields(oid,call_start,op_answer,duration,problem,info,operat,uname,anumber,called,callid,audioField);
 
 
 /*
@@ -472,12 +473,12 @@ refreshbutton.addClickHandler(new ClickHandler() {
 //and anumber like '%'||$criteria.anumber||'%'
 
  //       dsRequest.setCriteria(criteria);
-        MyListGrid.invalidateCache();//???????????????????????????????????
+        grid.invalidateCache();//???????????????????????????????????
 
-      //  MyListGrid.setCriteria(criteria2);
+      //  grid.setCriteria(criteria2);
 
 
-        MyListGrid.fetchData(getcriteria(), new DSCallback() {
+        grid.fetchData(getcriteria(), new DSCallback() {
             @Override
             public void execute(DSResponse dsResponse, Object o, DSRequest dsRequest) {
                 if(dsResponse.getStatus() == DSResponse.STATUS_VALIDATION_ERROR)
@@ -493,8 +494,8 @@ refreshbutton.addClickHandler(new ClickHandler() {
                  //   ResultSet resultSetProperties = new ResultSet();
                  //   resultSetProperties.setLength(dsResponse.getTotalRows());
 
-//                    MyListGrid.setDataProperties(resultSetProperties);
-                    MyListGrid.setData(dsResponse.getDataAsRecordList());
+//                    grid.setDataProperties(resultSetProperties);
+                    grid.setData(dsResponse.getDataAsRecordList());
                 }
             }
         },dsRequest);
@@ -505,7 +506,7 @@ refreshbutton.addClickHandler(new ClickHandler() {
 });
 
 
-        VLayout1001.addMember(MyListGrid);
+        VLayout1001.addMember(grid);
 
 
 

@@ -46,12 +46,12 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
     //String userAgent = getThreadLocalRequest().getHeader("User-Agent");
 
     // Escape data from the client to avoid cross-site script vulnerabilities.
-    input = escapeHtml(input);
+  //  input = escapeHtml(input);
     //userAgent = escapeHtml(userAgent);
     if (input.startsWith("getserverinfo")) return EchoServer.getserverinfo();
     System.out.println("1111111111111111111111111111111111=="+input.substring(0,10));
 
-    if (input.startsWith("getprobleminfo")) return getprobleminfo(input);
+    if (input.startsWith("getprobleminfo")) return getprobleminfo(input);//login2!!!!
     if (input.startsWith("login")) return login(input);
     if (input.startsWith("button")) return button(input);
 
@@ -242,7 +242,10 @@ functions.execSql(query,functions.isnewcc);
 
 
    public static void callpause(String number,boolean logout,String uname){
-      String query="update pbx.member_control set pause='1' where number='"+number+"'";
+      String query;
+      if (logout)
+           query="update pbx.member_control set pause='1',login='0' where number='"+number+"'";
+      else query="update pbx.member_control set pause='1',login='1' where number='"+number+"'";
       functions.execSql(query,functions.isaster12);
       if (logout) {
          query = "insert into oplog(uname,dt,action,channel) values ('" + uname + "',NOW(),'logout','number');";
@@ -250,7 +253,7 @@ functions.execSql(query,functions.isnewcc);
    }
   public static void callenable(String number,String grps){
      //String grps=grp2grps(functions.str2int(grp));
-    String query="update pbx.member_control set pause='1' where number='"+number+"'";
+    String query="update pbx.member_control set pause='1',login='1' where number='"+number+"'";
     System.out.println(query);
     functions.execSql(query,functions.isaster12);
     query="update pbx.member_control set pause='0' where number='"+number+"' and queue='"+grps+"'";
@@ -368,7 +371,7 @@ functions.execSql(query,functions.isnewcc);
 
   }
   public static String reststart(String oid){
-      String stt=getRestOpTime(oid);
+      String stt=getRestOpTime(oid).split("\t")[0];
       if (functions.str2int(stt,-1)<0) return "false";
              String query=String.format("UPDATE oprest set start_time=NOW(),state=%d,statedop=%d WHERE oid='%s'",
                  sets.REST,0,oid);

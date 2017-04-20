@@ -18,7 +18,7 @@
     border-bottom: 1px solid #f0f0f0;
     color: black;
     font-family: Arial, Verdana, sans-serif;
-    font-size: 16px !important;
+    font-size: 20px !important;
     text-overflow: ellipsis;
 }
 
@@ -67,7 +67,7 @@
     color:red;
     border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
     font-family: Arial, Verdana, sans-serif;
-    font-size: 16px !important;
+    font-size: 20px !important;
     text-overflow: ellipsis;
     background-color:#fff0f0;
 }
@@ -77,7 +77,7 @@
     color:red;
     border-bottom:1px solid #c0c0c0; border-top:1px solid #c0c0c0;
     font-family: Arial, Verdana, sans-serif;
-    font-size: 16px !important;
+    font-size: 20px !important;
     text-overflow: ellipsis;
     background-color:#ffe0e0;
 }
@@ -113,9 +113,14 @@
 .mymybutton2PendingDisabled,
 .mymybutton2PendingSelectedDisabled,
 .mymybutton2DeselectedDisabled {
-    font-size:16px !important;
+    font-size:20px !important;
 }
-
+.mymybutton2Disabled,
+.mymybutton2SelectedDisabled,
+.mymybutton2DeselectedDisabled {
+    background-color: #e8e8e8 !important;
+    color: #ababab !important;
+}
 /*----------------------mymytext------------------------*/
 
 .mymytext2,
@@ -123,7 +128,7 @@
 .mymytext2Disabled,
 .mymytext2Error,
 .mymytext2Hint{
-    font-size:16px !important;
+    font-size:20px !important;
 }
 
 /*-----------------------select--------------------*/
@@ -142,7 +147,7 @@
 .mymyselectitemText2Disabled,
 .mymyselectitemText2Focused,
 .mymyselectitemText2Hint{
-    font-size:16px !important; text-overflow:ellipsis;
+    font-size:20px !important; text-overflow:ellipsis;
 }
 /*
 .mymyselectitemText2Dark111 {
