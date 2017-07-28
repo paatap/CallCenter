@@ -1,12 +1,15 @@
 package ge.magti.client.MyWidgets;
 
 
+import com.smartgwt.client.widgets.events.MouseDownEvent;
+import com.smartgwt.client.widgets.events.MouseDownHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.VLayout;
+import ge.magti.client.CallCenter;
 
 /**
  * Created by user on 4/5/17.
@@ -45,9 +48,22 @@ public class MyListGridEx extends VLayout {
     };
 
     MyTextItem text;
-    Boolean da=true;
-    public MyListGridEx(String _prop,String style) {
+    Boolean da=true;String ss="";
+    public MyListGridEx(String _prop,String style,String name) {
         super();
+
+
+        ss=name;
+        if (CallCenter.callCenterInstance.debug)
+            this.addMouseDownHandler(new MouseDownHandler() {
+                @Override
+                public void onMouseDown(MouseDownEvent mouseDownEvent) {
+                    if (mouseDownEvent.isCtrlKeyDown())
+                        CallCenter.callCenterInstance.tolenta(ss);
+                }
+            });
+
+
         if (style==null||style.equals("")) da=false;
 
         addcss=addcss0+style;

@@ -12,6 +12,8 @@ import com.smartgwt.client.widgets.*;
 
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.events.CloseClickEvent;
+import com.smartgwt.client.widgets.events.CloseClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.*;
 import com.smartgwt.client.widgets.form.fields.events.KeyDownEvent;
@@ -41,6 +43,7 @@ import java.util.Map;
  */
 public class ReportAreaFring extends VLayout {
     final Window audiowindow;
+    HLayout soundlayout;
      final MySelectItem soperat ;
 
      final   MySelectItem infos ;
@@ -74,23 +77,25 @@ public class ReportAreaFring extends VLayout {
         audiowindow.setCanDragReposition(true);
         audiowindow.setCanDragResize(true);
 
-        audiowindow.setVisible(false);
 
 
 
 
 
-        HLayout soundlayout = new HLayout();
+
+        soundlayout = new HLayout();
         soundlayout.setWidth100();
         soundlayout.setHeight100();//"60%");
         soundlayout.setShowEdges(true);
-     //   HLayout soundlayout2 = new HLayout();
-     //   soundlayout2.setWidth100();
-     //   soundlayout2.setHeight("40%");
-     //   soundlayout2.setShowEdges(true);
 
 
-
+        audiowindow.addCloseClickHandler(new CloseClickHandler() {
+            @Override
+            public void onCloseClick(CloseClickEvent closeClickEvent) {
+                soundlayout.setContents("");
+            }
+        });
+        audiowindow.setVisible(false);
 
         HLayout filtrlayout = new HLayout();
 
@@ -237,7 +242,7 @@ soperat.setValue("fhgtrhrth");
          fproblem = new MyTextItem("",CallCenter.style);fproblem.setTitle("problem pattern");
         foperat = new MyTextItem("",CallCenter.style);foperat.setTitle("operat pattern");
 
-        MyIButton fbutton = new MyIButton("Filter",CallCenter.style);//fbutton.setStartRow(false);
+        MyIButton fbutton = new MyIButton("Filter",CallCenter.style,"fbutton");//fbutton.setStartRow(false);
 fbutton.addClickHandler(new ClickHandler() {
     @Override
     public void onClick(ClickEvent clickEvent) {
@@ -276,10 +281,10 @@ fbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.Click
         lay100.setMembers(fbutton);
 VLayout1001.addMember(lay100);
 
-        MyIButton refreshbutton = new MyIButton("Find ring",CallCenter.style);
+        MyIButton refreshbutton = new MyIButton("Find ring",CallCenter.style,"refreshbutton");
         refreshbutton.setHeight(30);
         refreshbutton.setWidth(200);
-        MyIButton clearbutton = new MyIButton("Clear fields",CallCenter.style);
+        MyIButton clearbutton = new MyIButton("Clear fields",CallCenter.style,"clearbutton");
         clearbutton.setHeight(30);
         clearbutton.setWidth(200);
 
@@ -289,9 +294,11 @@ VLayout1001.addMember(lay100);
                 myclear();
             }
         });
+        MyLabel cnt=new MyLabel("count",CallCenter.style,"cnt");
+        cnt.setWidth(200);cnt.setHeight(30);cnt.setAlign(Alignment.CENTER);
 
         HLayout buttlayout=new HLayout();//buttlayout.setLayoutLeftMargin(10);buttlayout.setLayoutRightMargin(10);
-        buttlayout.addMember(refreshbutton);buttlayout.addMember(clearbutton);
+        buttlayout.addMember(refreshbutton);buttlayout.addMember(clearbutton);buttlayout.addMember(cnt);
         VLayout1001.addMember(buttlayout);
 
 
@@ -375,6 +382,8 @@ VLayout1001.addMember(lay100);
         grid.setShowRecordComponentsByCell(true);
 
 
+//grid.setMinFieldWidth(100);
+
 
         grid.setCriteria(getcriteria());
         grid.setWidth100();
@@ -437,7 +446,8 @@ VLayout1001.addMember(lay100);
         });
 
 */
-
+        DSRequest dsRequest = new DSRequest();
+        dsRequest.setOperationId("getLogs");
 refreshbutton.addClickHandler(new ClickHandler() {
     @Override
     public void onClick(ClickEvent clickEvent) {
@@ -447,9 +457,9 @@ refreshbutton.addClickHandler(new ClickHandler() {
 
 
 
-        DSRequest dsRequest = new DSRequest();
-        dsRequest.setOperationId("getLogs");
-
+      //  DSRequest dsRequest = new DSRequest();
+      //  dsRequest.setOperationId("getLogs");
+//dsRequest.setStartRow(0);
 /*
         AdvancedCriteria criteria22 = new AdvancedCriteria(OperatorId.AND, new Criterion[]{
                 new Criterion("call_start", OperatorId.LESS_THAN, rangeItem.getToDate()),
@@ -473,8 +483,11 @@ refreshbutton.addClickHandler(new ClickHandler() {
 //and anumber like '%'||$criteria.anumber||'%'
 
  //       dsRequest.setCriteria(criteria);
-        grid.invalidateCache();//???????????????????????????????????
 
+//        grid.getAutoFetchData();
+
+        grid.invalidateCache();//???????????????????????????????????
+dsRequest.setStartRow(0);
       //  grid.setCriteria(criteria2);
 
 
@@ -489,13 +502,21 @@ refreshbutton.addClickHandler(new ClickHandler() {
                     }
                 }
                 else
-                {
-                 //   SC.say(""+dsResponse.getTotalRows());
-                 //   ResultSet resultSetProperties = new ResultSet();
-                 //   resultSetProperties.setLength(dsResponse.getTotalRows());
+                {//cnt.setContents("count=kuku="+dsResponse.getStatus()+""+dsResponse.getTotalRows());
 
-//                    grid.setDataProperties(resultSetProperties);
-                    grid.setData(dsResponse.getDataAsRecordList());
+                 //   SC.say(""+dsResponse.getTotalRows());
+                   // ResultSet resultSetProperties = new ResultSet();
+                    //resultSetProperties.setFetchMode(FetchMode.PAGED);
+                    //resultSetProperties.setInitialLength(dsResponse.getTotalRows());
+                   Integer nn=dsResponse.getTotalRows();
+
+                   // Integer nn=dsResponse.getData().length;
+                    //resultSetProperties.setLength(nn);
+                    //grid.getResultSet().setLength(nn);
+                    cnt.setContents("count="+nn);
+                    //grid.setData(dsResponse.getDataAsRecordList());
+                    //grid.setDataProperties(resultSetProperties);
+                 //   grid.setData(dsResponse.getDataAsRecordList());
                 }
             }
         },dsRequest);

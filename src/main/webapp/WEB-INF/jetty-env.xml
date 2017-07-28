@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<Configure id='wac' class="org.eclipse.jetty.webapp.WebAppContext">
+<New id="DSTest" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg></Arg>
+    <Arg>jdbc/postgres</Arg>
+    <Arg>
+        <New class="org.postgresql.ds.PGSimpleDataSource">
+            <Set name="User">cc_crm</Set>
+            <Set name="Password"></Set>
+            <Set name="DatabaseName">cc_crm</Set>
+            <Set name="ServerName">192.168.27.30</Set>
+            <Set name="PortNumber">5432</Set>
+
+        </New>
+    </Arg>
+</New>
+
+    <New id="DSTestsql" class="org.eclipse.jetty.plus.jndi.Resource">
+        <Arg></Arg>
+        <Arg>jdbc/mysql</Arg>
+        <Arg>
+                <New class="com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource">
+                    <Set name="Url">jdbc:mysql://192.168.27.12:3306/</Set>
+                    <Set name="User">ccmaster-manage</Set>
+                    <Set name="Password">uH8Zj23Ha8mN</Set>
+                </New>
+        </Arg>
+    </New>
+
+</Configure>
+
+
+<!--
+<New class="org.postgresql.ds.PGConnectionPoolDataSource">
+<Resource name="jdbc/postgres" auth="Container"
+          type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
+          url="jdbc:postgresql://192.168.27.30:5432/cc_crm"
+          username="cc_crm" password="" maxTotal="2" maxIdle="1"
+          maxWaitMillis="-1"
+          closeMethod="close"/>
+-->

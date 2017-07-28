@@ -2,6 +2,9 @@ package ge.magti.client.MyWidgets;
 
 import com.google.gwt.dom.client.Style;
 import com.smartgwt.client.widgets.IButton;
+import com.smartgwt.client.widgets.events.MouseDownEvent;
+import com.smartgwt.client.widgets.events.MouseDownHandler;
+import ge.magti.client.CallCenter;
 
 /**
  * Created by user on 4/10/17.
@@ -9,10 +12,22 @@ import com.smartgwt.client.widgets.IButton;
 public class MyIButton extends IButton {
     //static String addcss=" mymyfont";//mymybutton
     //String style;
+    String ss="";
     public  MyIButton(){
     }
-    public  MyIButton(String _title,String style){
+    public  MyIButton(String _title,String style,String name){
         this.setTitle(_title);
+
+        ss=name;
+        if (CallCenter.callCenterInstance.debug)
+            this.addMouseDownHandler(new MouseDownHandler() {
+                @Override
+                public void onMouseDown(MouseDownEvent mouseDownEvent) {
+                    if (mouseDownEvent.isCtrlKeyDown())
+                        CallCenter.callCenterInstance.tolenta(ss);
+                }
+            });
+
         if (style==null||style.equals("")) return;
         this.setBaseStyle(this.getBaseStyle()+" mymybutton"+style);
     }

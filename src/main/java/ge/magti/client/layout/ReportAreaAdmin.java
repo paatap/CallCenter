@@ -40,7 +40,7 @@ public class ReportAreaAdmin extends VLayout {
 
         //grp.setAlign(Alignment.CENTER);
 //-----------------------------------------addtorest--------------------
-        grp.setValueMap("mobile", "gov", "magtisat", "magtifix", "marketing");
+        grp.setValueMap("mobile", "gov", "magtisat", "magtifix", "marketing","info");
 
         fbutton.setColSpan(2);
 
@@ -71,7 +71,7 @@ public class ReportAreaAdmin extends VLayout {
 
 
         opsform.setFields(ops);
-        MyIButton gopsbutton = new MyIButton("",CallCenter.style);gopsbutton.setHeight100();
+        MyIButton gopsbutton = new MyIButton("",CallCenter.style,"gopsbutton");gopsbutton.setHeight100();
         gopsbutton.setIcon("users.png");
         gopsbutton.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
             public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) {
@@ -79,7 +79,7 @@ public class ReportAreaAdmin extends VLayout {
             }
         });
 
-        MyIButton killbutton = new MyIButton("kill session",CallCenter.style);killbutton.setHeight100();
+        MyIButton killbutton = new MyIButton("kill session",CallCenter.style,"killbutton");killbutton.setHeight100();
 
         killbutton.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
             public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) {

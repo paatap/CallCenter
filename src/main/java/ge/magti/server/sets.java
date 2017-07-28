@@ -54,7 +54,8 @@ public class sets {
     public static final int   magtisat      =13;
     public static final int   magtifix      =3;
     public static final int   marketing     =5;
-    public static final int   nophone     =-1;
+    public static final int   info          =7;
+    public static final int   nophone       =-1;
 
     public static final int   SendRingFile  =200;
     public static final int   LOGIN 		=201;
@@ -74,4 +75,7 @@ public class sets {
 
     public static int RestFullTime=1800;
     public static int RestWarnTime=600;
+
+    public static String gobsip="192.168.27.27";
+    public static String asterip="192.168.27.12";
 }

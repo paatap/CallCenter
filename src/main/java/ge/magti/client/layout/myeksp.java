@@ -66,7 +66,7 @@ if (h1!=null) {
      txt = new MyTextItem("kuku",style);
      txt2 = new MyTextAreaItem("kuku2",style);
      shablon=new MySelectItem("kuku333",style);
-     butt1=new MyIButton("but1",style);//butt1.setmystyle(style);
+     butt1=new MyIButton("but1",style,"butt1");//butt1.setmystyle(style);
 butt1.setWidth(200);
 /*
        if (style.equals("")) {
@@ -92,16 +92,16 @@ butt1.setWidth(200);
 
 butt1.setTitle("==="+butt1.getBaseStyle()+"="+style);
 
-        butt11=new MyIButton("but1",style);//butt11.setWidth(200);
+        butt11=new MyIButton("but1",style,"butt11");//butt11.setWidth(200);
         butt11.setTitle(butt11.getBaseStyle()+" mymybutton"+style);
         //butt11.setBaseStyle(butt11.getBaseStyle()+" mymyfont"+style);
 
 
       //  butt11.setBaseStyle("mymyfont"+style);
 
-     butt2=new MyIButton("but2",style);//butt2.setmystyle(style);
+     butt2=new MyIButton("but2",style,"butt2");//butt2.setmystyle(style);
      grid=new MyListGrid(style);
-     gridex=new MyListGridEx("problem",style);
+     gridex=new MyListGridEx("problem",style,"gridex");
         //this.setShowEdges(true);
 
 
@@ -112,7 +112,7 @@ butt1.setTitle("==="+butt1.getBaseStyle()+"="+style);
         DynamicForm form=new DynamicForm();
 
        // init2();
- lab= new MyLabel("",style);
+ lab= new MyLabel("",style,"lab");
  lab.setContents("Contents=="+style);
         form.setFields(shablon,txt,txt2);
 

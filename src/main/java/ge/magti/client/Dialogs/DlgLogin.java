@@ -194,19 +194,49 @@ buttonItem2.setVisible(false);grp.setVisible(false);
     LinkedHashMap mp;
     public void loginSuccess(String[] s22){
         CallCenter.callCenterInstance.resttime= clfunctions.str2int(s22[1].split("\t")[0],0);
-        if (s22.length==3) { CallCenter.callCenterInstance.loginSuccess2(s22[2]);}
+        int kk=-1;
+        //String ss="";
+        if (CallCenter.callCenterInstance.mygrplink!=null){
+          //  ss+="--"+CallCenter.callCenterInstance.mygrplink+"--\n";
+            for (int i = 2; i < s22.length; i++) {
+             //   ss+="=="+s22[i]+"==\n";
+                if (s22[i].replace("\t","").equals(CallCenter.callCenterInstance.mygrplink)){
+                    kk=i;break;
+                }
+            }
+        }
+        int kinfo=-1;
+        for (int i = 2; i < s22.length; i++) {
+            if (s22[i].replace("\t","").equals("info")){
+                kinfo=i;break;
+            }
+        }
+
+        if (kk>=0) { CallCenter.callCenterInstance.loginSuccess2(s22[kk]);}
+        else if (s22.length==3) {
+            CallCenter.callCenterInstance.loginSuccess2(s22[2]);
+        }else
+        if (s22.length==4&&kinfo>=0) {
+            if (kinfo==2) CallCenter.callCenterInstance.loginSuccess2(s22[3]);
+            else CallCenter.callCenterInstance.loginSuccess2(s22[2]);
+        }
         else {
             setHeight(200);
             buttonItem2.setVisible(true);
             grp.setVisible(true);
             mp = new LinkedHashMap();
+            int k1=-1;
             for (int i = 2; i < s22.length; i++) {
                 //String[] s222=s22[i].replace("null","").split("\t");
                 //log.operat, log.provider, log2.problems, log2.info, log.call_start,log.callid
-                mp.put(s22[i], s22[i]);
+                if(i!=kinfo){
+                    mp.put(s22[i], s22[i]);
+                    if (k1<0) k1=i;
+                }
+
             }
             grp.setValueMap(mp);
-            grp.setValue(mp.get(s22[2]));
+            grp.setValue(mp.get(s22[k1]));
             form.redraw();
         }
     }

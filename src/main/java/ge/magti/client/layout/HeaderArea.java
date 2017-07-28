@@ -16,12 +16,12 @@ public MyLabel leftl;
     public HeaderArea(String ss) {
 
         super();
-leftl = new MyLabel("",CallCenter.style);
+leftl = new MyLabel("",CallCenter.style,"leftl");
 //        this.setHeight(HEADER_AREA_HEIGHT);
 
 //        Img logo = new Img("jcg_logo.png", 282, 60);
 
-        MyLabel name = new MyLabel("",CallCenter.style);
+        MyLabel name = new MyLabel("",CallCenter.style,"name");
         //name.setOverflow(Overflow.HIDDEN);
         name.setContents(ss);
        // name.getElement().getStyle().setBackgroundColor("#FF0000");// .setFontSize(4, Style.Unit.EM);

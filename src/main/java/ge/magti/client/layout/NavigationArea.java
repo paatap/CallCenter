@@ -75,7 +75,7 @@ public class NavigationArea extends HLayout {
 //        employeeTreeGrid.setFolderIcon("icons/16/person.png");
         //reportTreeGrid.setShowOpenIcons(false);
         //reportTreeGrid.setShowDropIcons(false);
-        reportTreeGrid.setClosedIconSuffix("");
+        //reportTreeGrid.setClosedIconSuffix("");
         //reportTreeGrid.setData(reportTree);
         reportTreeGrid.setShowRoot(false);
 //        employeeTreeGrid.setSelectionAppearance(SelectionAppearance.CHECKBOX);
@@ -93,9 +93,10 @@ reportTreeGrid.addNodeClickHandler(new NodeClickHandler() {
     public void onNodeClick(NodeClickEvent nodeClickEvent) {
       //  SC.say(nodeClickEvent.getNode().getAttribute("dat").toString());
 
+        String dat=nodeClickEvent.getNode().getAttribute("dat").toString();
+        if (dat.equals("")) return;
         CallCenter.callCenterInstance.setvisiblearea(nodeClickEvent.getNode().getName(),
-                nodeClickEvent.getNode().getAttribute("dat").toString());
-
+                dat);
     }
 });
 /*
@@ -155,13 +156,18 @@ section2.addItem(reportTreeGrid);
     public void settree(String ss) {
         Tree reportTree = new Tree();
         reportTree.setModelType(TreeModelType.PARENT);
-        reportTree.setRootValue(1);
+        reportTree.setRootValue(0);
         reportTree.setNameProperty("name");
         reportTree.setIdField("myid");
         reportTree.setParentIdField("idto");
         reportTree.setOpenProperty("isOpen");
         reportTree.setTitleProperty("title");
         reportTree.setData(getreportData(ss));
+        //reportTreeGrid.setFolderIcon("folder.png");
+        //reportTreeGrid.setClosedIconSuffix("closed");
+        //reportTreeGrid.setShowOpenIcons(true);
+        //reportTreeGrid.setShowDropIcons(true);
+        reportTree.closeAll();
         reportTreeGrid.setData(reportTree);
     }
 
@@ -171,10 +177,13 @@ section2.addItem(reportTreeGrid);
         ArrayList<TreeNode> rd=new ArrayList<TreeNode>();
         String ss22="";
         for (int i=0;i<s2.length;i++){
-            String[] s22=s2[i].split("\t");
+            String[] s22 = s2[i].split("\t",-1);
+            ss22 += s22[0] + s22[1] + "\n";
 
-            ss22+=s22[0]+s22[1]+"\n";
-            rd.add(new reportTreeNode(""+(i+2), "1", s22[0], s22[1], true,s22[2]));
+            String poid=s22[4];
+
+            if (poid.equals("")) poid="0";
+            rd.add(new reportTreeNode(s22[3], poid, s22[0], s22[1], true, s22[2]));
         }
 
 

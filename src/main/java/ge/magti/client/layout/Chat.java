@@ -4,6 +4,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.HTMLPane;
+import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.RichTextEditor;
 import com.smartgwt.client.widgets.events.ClickEvent;
@@ -12,6 +14,7 @@ import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
+import com.smartgwt.client.widgets.layout.Layout;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import ge.magti.client.CallCenter;
 import ge.magti.client.MyWidgets.MyIButton;
@@ -20,6 +23,7 @@ import ge.magti.client.MyWidgets.MyTextAreaItem;
 import ge.magti.client.MyWidgets.MyTextItem;
 
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 /**
@@ -37,8 +41,9 @@ public class Chat extends SectionStackSection {
 
     MyIButton gopsbutton = new MyIButton();
 
-    final RichTextEditor lenta = new RichTextEditor();
+    //final RichTextEditor lenta = new RichTextEditor();
 
+    final HTMLPane lenta = new HTMLPane();
 
     MyTextItem number = new MyTextItem("",CallCenter.style);
     final DynamicForm numberform = new DynamicForm();
@@ -52,6 +57,26 @@ public class Chat extends SectionStackSection {
     final DynamicForm shablon2form = new DynamicForm();
 
     Chat(){
+/*
+        IButton but1 = new IButton("111");IButton but2 = new IButton("222");
+        but1.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                Layout lay=CallCenter.callCenterInstance.getlayout("oldrep");
+                CallCenter.callCenterInstance.setsouthLayout(lay);
+                //lay.setVisible(true);
+            }
+        });
+        but2.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                Layout lay=CallCenter.callCenterInstance.getlayout("mainarea");
+                lay.setVisible(true);
+                CallCenter.callCenterInstance.setsouthLayout(lay);
+            }
+        });
+        addItem(but1);addItem(but2);
+*/
         setTitle("Chat");
 
         txt.setShowTitle(false);
@@ -72,13 +97,14 @@ public class Chat extends SectionStackSection {
         final HLayout HLayout4 = new HLayout();HLayout4.setWidth100();HLayout4.setHeight(25);
         final HLayout HLayout5 = new HLayout();HLayout5.setWidth100();HLayout5.setHeight(25);
 
-        sendbutton = new MyIButton("SEND",CallCenter.style);sendbutton.setHeight100();sendbutton.setWidth("70%");
+        sendbutton = new MyIButton("SEND",CallCenter.style,"sendbutton");sendbutton.setHeight100();sendbutton.setWidth("70%");
         sendbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (ops.getValue()!=null&&!ops.getValue().toString().equals("")) {
                     String ss="<span style='color:red'>"+mp.get(ops.getValue())+"<<< </span>"+txt.getValue().toString();
-                    String s1=ss+"<br>"+lenta.getValue();
-                    lenta.setValue(s1.substring(0,5000));
+                    lentasetValue(ss);
+                  //  String s1=ss+"<br>"+lenta.getValue();
+                  //  lenta.setValue(s1.substring(0,5000));
                     CallCenter.callCenterInstance.sendgreet("sendmessage\t" +
                             CallCenter.callCenterInstance.mynumber + "\t" + CallCenter.callCenterInstance.uname +
                             "\t" + ops.getValue().toString() + "\n" + txt.getValue().toString());
@@ -86,13 +112,14 @@ public class Chat extends SectionStackSection {
                 }
             }
         });
-        okbutton = new MyIButton("OK",CallCenter.style);okbutton.setHeight100();okbutton.setWidth("30%");
+        okbutton = new MyIButton("OK",CallCenter.style,"okbutton");okbutton.setHeight100();okbutton.setWidth("30%");
         okbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (ops.getValue()!=null&&!ops.getValue().toString().equals("")) {
                     String ss="<span style='color:red'>"+mp.get(ops.getValue())+"<<< </span>ok";
-                    String s1=ss+"<br>"+lenta.getValue();
-                    lenta.setValue(s1.substring(0,5000));
+                    lentasetValue(ss);
+                    //String s1=ss+"<br>"+lenta.getValue();
+                    //lenta.setValue(s1.substring(0,5000));
                     CallCenter.callCenterInstance.sendgreet("sendmessage\t" +
                             CallCenter.callCenterInstance.mynumber + "\t" + CallCenter.callCenterInstance.uname +
                             "\t" + ops.getValue().toString() + "\nok");
@@ -109,7 +136,7 @@ public class Chat extends SectionStackSection {
 
         opsform.setFields(ops);
 
-        gopsbutton = new MyIButton("",CallCenter.style);gopsbutton.setHeight100();gopsbutton.setWidth("20%");
+        gopsbutton = new MyIButton("",CallCenter.style,"gopsbutton");gopsbutton.setHeight100();gopsbutton.setWidth("20%");
         gopsbutton.setIcon("users.png");
         gopsbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -128,13 +155,14 @@ public class Chat extends SectionStackSection {
 
 
 
-        smsbutton = new MyIButton("sms",CallCenter.style);smsbutton.setHeight100();smsbutton.setWidth("30%");
+        smsbutton = new MyIButton("sms",CallCenter.style,"smsbutton");smsbutton.setHeight100();smsbutton.setWidth("30%");
         smsbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (number.getValue()!=null&&number.getValue().toString().length()>2) {
                     String ss="<span style='color:red'>"+number.getValue().toString()+"<<< </span>"+txt.getValue().toString();
-                    String s1=ss+"<br>"+lenta.getValue();
-                    lenta.setValue(s1.substring(0,5000));
+                    lentasetValue(ss);
+                    //String s1=ss+"<br>"+lenta.getValue();
+                    //lenta.setValue(s1.substring(0,5000));
                     CallCenter.callCenterInstance.sendgreet("sendsms\t" +
                             CallCenter.callCenterInstance.mynumber + "\t" + CallCenter.callCenterInstance.uname +
                             "\t" + number.getValue().toString() + "\n"+txt.getValue().toString());
@@ -160,7 +188,7 @@ public class Chat extends SectionStackSection {
 
 
 
-        shablonbutton = new MyIButton("pattern",CallCenter.style);shablonbutton.setHeight100();shablonbutton.setWidth("35%");
+        shablonbutton = new MyIButton("pattern",CallCenter.style,"shablonbutton");shablonbutton.setHeight100();shablonbutton.setWidth("35%");
         shablonbutton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 txt.setValue(shablon2.getValue());
@@ -201,12 +229,12 @@ public class Chat extends SectionStackSection {
 
 
         lenta.setWidth("100%");lenta.setHeight("100%");
-        lenta.setControlGroups(new String[]{});
+        //lenta.setControlGroups(new String[]{});
 
         addItem(lenta);
 
-
-        lenta.setValue("");
+lenta.setContents("");
+        //lenta.setValue("");
 
     }
     LinkedHashMap<String,String> mp;
@@ -238,10 +266,13 @@ public class Chat extends SectionStackSection {
             String[] s22=s2[0].split("\t");
 
             String ss = "<span style='color:red'>"+s22[1]+">>> </span>";
-            for (int i=1;i<s2.length;i++) ss+=s2[i]+"<br>";
-
-            String s1 = ss  + lenta.getValue(); //SC.say(s1.replace("<",".").replace(">",","));
-            lenta.setValue(s1.substring(0, 5000));
+            for (int i=1;i<s2.length;i++) {
+                if (i==1) ss+=s2[i];
+                else ss+="<br>"+s2[i];
+            }
+            lentasetValue(ss);
+            //String s1 = ss  + lenta.getValue(); //SC.say(s1.replace("<",".").replace(">",","));
+            //lenta.setValue(s1.substring(0, 5000));
             this.setExpanded(true);
         //SC.say(ss);
        /* final com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
@@ -364,4 +395,37 @@ public class Chat extends SectionStackSection {
     public void setsmsnumber(String smsnumber){
         number.setValue(smsnumber);
     }
+
+    ArrayList<String> lenta2=new ArrayList<String>();
+    public void lentasetValue(String ss){
+        //<font size="4"><span style="background-color: rgb(255, 255, 255);">
+        if (lenta2.size()>100) lenta2.remove(lenta2.size()-1);
+        lenta2.add(0,ss);
+        boolean lentada=true;
+        StringBuffer sb=new StringBuffer("");
+        sb.append("<table>");
+        for (int i=0;i<lenta2.size();i++){
+            String s1;
+            if (i==0) {
+                if (lentada) s1="<tr><td><font size=\"5\">"+lenta2.get(i)+"</font></td></tr>";
+                else s1="<tr style=\"background-color: rgb(245, 245, 245);\"><td><font size=\"5\">"+lenta2.get(i)+"</font></td></tr>";
+            }
+            else{
+                if (lentada) s1="<tr><td><font size=\"4\">"+lenta2.get(i)+"</font></td></tr>";
+                else s1="<tr style=\"background-color: rgb(245, 245, 245);\"><td><font size=\"4\">"+lenta2.get(i)+"</font></td></tr>";
+
+            }
+            sb.append(s1+"\n");
+            lentada=!lentada;
+        }
+
+    //    String s1;
+    //    if (lentada) s1="<span style=\"background-color: rgb(204, 255, 255);\"><font size=\"5\">"+ss+"</font></span><br>"+lenta.getContents().replace("<font size=\"5\">","<font size=\"4\">");
+    //    else s1="<font size=\"5\">"+ss+"</font><br>"+lenta.getContents().replace("<font size=\"5\">","<font size=\"4\">");
+
+
+      //  lenta.setContents(s1.substring(0,5000));
+        lenta.setContents(sb.toString());
+    }
+
 }

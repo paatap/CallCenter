@@ -35,7 +35,7 @@ public class CallCenter implements EntryPoint{
   /**
    * Create a remote service proxy to talk to the server-side Greeting service.
    */
-  public static String ver="Call Center 2.005";
+  public static String ver="Call Center 2.020";
   public static CallCenter callCenterInstance;
   public static String style="";
   public  boolean debug=false;
@@ -46,7 +46,8 @@ public class CallCenter implements EntryPoint{
   public  String uname;
   public  String pass;
     public int mygrp=0;
-    public String mygrps="";
+    public String mygrps="";public String grps="";public String sippass="";
+    public String mygrplink;
   public String reststr;
   public int resttime=0;
   public  int optype=-1;
@@ -63,13 +64,8 @@ public class CallCenter implements EntryPoint{
   private NavigationArea westLayout;
 
 
-MyVLayout[] reps=new MyVLayout[]{
-        new MyVLayout("mainarea"),
-        new MyVLayout("findring"),
-        new MyVLayout("serverinfo"),
-        new MyVLayout("admin"),
-        new MyVLayout("repframe")
-};
+MyVLayout[] reps=MyVLayout.getlayouts();
+
 public Layout getlayout(String name){
     for (int i=0;i<reps.length;i++)
         if (name.equals(reps[i].name)) return reps[i].myvlayout;
@@ -82,6 +78,12 @@ public Layout getlayout(String name){
 
       if (closesock) ((MainArea)maincc).closesocket();
 
+      for(int i=0;i<reps.length;i++)
+       if (reps[i].myvlayout!=null)
+      {
+          reps[i].myvlayout.destroy();
+          reps[i].myvlayout=null;
+      }
       mainLayout.destroy();
 
        onModuleLoad1();
@@ -123,7 +125,7 @@ public native void registeronclose() /*-{
         meksp.show();
      return;
     }
-
+       mygrplink = com.google.gwt.user.client.Window.Location.getParameter("grp");
 
       //registerHandlers(Jsni.this, window);
         registeronclose();
@@ -163,14 +165,16 @@ DlgLogin dlgLogin=null;
       else if (ss.startsWith("magtifix")) grp=MainArea.magtifix;
       else if (ss.startsWith("marketing")) grp=MainArea.marketing;
       else if (ss.startsWith("nophone")) grp=MainArea.nophone;
+      else if (ss.startsWith("info")) grp=MainArea.info;
       else {
           SC.warn("Group not found !"+ss+"!");
 
           dlgLogin.buttonItem.setDisabled(false);
           return;
       }
-
-    dlgLogin.destroy();dlgLogin=null;
+//        dlgLogin.close();
+    dlgLogin.destroy();
+      dlgLogin=null;
 
     Window.enableScrolling(false);
     Window.setMargin("0px");
@@ -190,18 +194,17 @@ DlgLogin dlgLogin=null;
     northLayout.addMember(vLayout);
 
     westLayout = new NavigationArea();
-    westLayout.setWidth("15%");
+    westLayout.setWidth("25%");
         mygrp=grp;
         mygrps=ss;
       maincc = new MainArea();
 
-
       ((MainArea)maincc).init();
-      maincc.setWidth("85%");
+      //maincc.setWidth("85%");
 
     southLayout = new HLayout();
-    southLayout.setMembers(westLayout, maincc);
-
+    //southLayout.setMembers(westLayout, maincc);
+        setsouthLayoutall();
     mainLayout.addMember(northLayout);
     mainLayout.addMember(southLayout);
 
@@ -226,10 +229,39 @@ DlgLogin dlgLogin=null;
          hh.leftl.setBackgroundColor("#ffffff");
   }
 public void setsouthLayout(Layout lay){
-    southLayout.setMembers(westLayout, lay);
+
+  /*    southLayout.setMembers(westLayout);
+      for (int i=0;i<reps.length;i++){
+          if (reps[i].myvlayout!=null) {
+
+                  southLayout.addMember(reps[i].myvlayout);
+
+
+          }
+      }*/
+
+   // southLayout.setMembers(westLayout, lay);
 }
-  public void setvisiblearea(String type,String ss){
-        if (ss.startsWith("<iframe")) type="repframe";
+
+    public void setsouthLayoutall(){
+
+    southLayout.setMembers(westLayout);
+      for (int i=0;i<reps.length;i++){
+
+          if (reps[i].name.equals("mainarea")) {
+              reps[i].myvlayout=maincc;
+              reps[i].myvlayout0.setMembers(maincc);
+              reps[i].myvlayout0.setVisible(true);
+          }
+           else  reps[i].myvlayout0.setVisible(false);
+
+          southLayout.addMember(reps[i].myvlayout0);
+
+      }
+    }
+  public void setvisiblearea(String type0,String ss){
+
+        String type=MyVLayout.isframe(type0,ss);// type="repframe";
         MyVLayout myv=null;
         for (int i=0;i<reps.length;i++){
 
@@ -239,8 +271,9 @@ public void setsouthLayout(Layout lay){
           else reps[i].mydestroy();
 
       }
+      //if (!da)
       if (myv!=null)
-        myv.myinit(ss);
+        myv.myinit(ss,type0);
 
 
   }
@@ -259,7 +292,7 @@ public void setsouthLayout(Layout lay){
                 serverResponseLabel.setHTML(SERVER_ERROR);
                 dialogBox.center();
                 closeButton.setFocus(true);*/
-      if (debug) ((MainArea)maincc).txt.setValue("onFailure");
+      if (debug) tolenta("onFailure");
     }
 
     public void onSuccess(String result) {
@@ -273,7 +306,7 @@ public void setsouthLayout(Layout lay){
         {
             SC.say("save ok");
         }
-      else if(result.startsWith("$getprobleminfo"))
+      else if(result.startsWith("$getprobleminfo")||result.startsWith("$mainarea"))
       {
 
         ((MainArea)maincc).fromgreet(result);
@@ -297,9 +330,12 @@ public void setsouthLayout(Layout lay){
                     SC.say("version is old!"
                     +"<br>"+s2[8]+"<br>"+ver+"<br><br><br>please click 'ctrl+F5'");
                 style=s2[9];
+                grps=s2[10];
+                sippass=s2[11];
                 if (style.equalsIgnoreCase("null")) style="";
-                dlgLogin.loginSuccess(s22);
                 reststr=s22[1];
+                dlgLogin.loginSuccess(s22);
+
             }
         }else {
             String[] s2=result.split("\t");
@@ -334,7 +370,7 @@ public void setsouthLayout(Layout lay){
 
 
 
-      if (debug) ((MainArea)maincc).txt.setValue("onSuccess"+result);
+      //if (debug) tolenta("onSuccess"+result);
     }
   };
 
@@ -354,5 +390,57 @@ public void setsouthLayout(Layout lay){
   public void settree(String ss){
       westLayout.settree(ss);
   }
+    public void tolenta(String ss){
+      if (ss.length()>100) westLayout.chat.lentasetValue(ss.substring(0,100).replace("<",".").replace(">","."));
+      else  westLayout.chat.lentasetValue(ss.replace("<",".").replace(">","."));
+    }
 
+    public native void sendframemessage(String mess) /*-{
+
+
+        //var domain = $wnd.location.protocol + "//" + $wnd.location.hostname;
+        var iframe0 = $wnd.document.getElementById('Frame1');
+        if(typeof iframe0 !== 'undefined' && iframe0 !== null) {
+            var iframe = iframe0.contentWindow;
+
+            iframe.postMessage(mess, "*");
+        }
+
+
+    }-*/;
+    public static native void newwin(String ss) /*-{
+
+        var w=300;
+        var h=200;
+
+
+        var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+        var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+
+        var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+        var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+        var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+        var top = ((height / 2) - (h / 2)) + dualScreenTop;
+
+
+
+        var myWin = window.open('about:blank','Copy','scrollbars=yes, width=' + w + ', height=' + h+ ', top=' + top + ', left=' + left);
+        myWin.document.write(ss);
+
+        //      var div = myWin.document.createElement('div'),
+        //          body = myWin.document.body;
+
+//        div.innerHTML = ss
+        //      div.style.fontSize = '30px'
+
+        // вставить первым элементом в body нового окна
+        //    body.insertBefore(div, body.firstChild);
+
+        myWin.focus();
+        myWin.onblur = function() { this.close(); };
+        setTimeout(function() {
+            myWin.close();
+        }, 50000);
+    }-*/;
 }

@@ -332,8 +332,14 @@ public class functions {
         }
         return null;
     }
+
+
+
     public static StringBuffer getResult2(String sql,String nn,String tt,int _isnew) {
-        System.out.println(sql);
+        return getResult2( sql, nn, tt, _isnew, -1, "",false,true);
+    }
+    public static StringBuffer getResult2(String sql,String nn,String tt,int _isnew,int key,String ss,boolean n12,boolean nullreturn) {
+        //System.out.println(sql);
         StringBuffer retVal=new StringBuffer("");
         Connection connection = null;Statement stmt =null;
         try {
@@ -341,8 +347,8 @@ public class functions {
             connection = GetMyConnection(_isnew);
 
             stmt =connection.createStatement();
-                    //connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                      //      ResultSet.CONCUR_READ_ONLY);
+            //connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+            //      ResultSet.CONCUR_READ_ONLY);
 
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -357,14 +363,22 @@ public class functions {
 //            retVal = new String[rowCount][columnCount];
 
 //            int i = 0;
-
+            Object ob1=null;int n=1;
             while (rs.next()) {
+                if (key >= 0) {
+                    Object ob2=rs.getString(key+1);
+                    if (ob2!=null&&ob1!=null&&!ob2.equals(ob1)) retVal.append(ss+nn);
+                    ob1=ob2;
+                }
+                if (n12) retVal.append(""+n+"\t");
                 for (int k = 1; k <= columnCount; k++) {
-                    retVal.append(rs.getString(k)+tt);
+                    String s1=rs.getString(k);
+                    if (!nullreturn&&s1==null) retVal.append(tt);
+                    else retVal.append(s1+tt);
                 }
                 retVal.append(nn);
                 //              i++;
-
+                n++;
             }
 
 
@@ -382,6 +396,7 @@ public class functions {
         }
         return null;
     }
+
     public static String getTableNames(String name,int _isnew) {
         String sql = "select * from " + name+" limit 1";
         System.out.println(sql);
@@ -605,26 +620,34 @@ public class functions {
         if (hh>h2-1) return false;
         return true;
     }
-    public static String getnow() {
-        Calendar calendar = new GregorianCalendar();
+    public static String getnowdatetime(String format) {
+
         java.util.Date date = calendar.getTime();
-        DateFormat localFormat = DateFormat.getDateInstance();
+        //DateFormat localFormat = DateFormat.getDateInstance();
+        DateFormat ff = new SimpleDateFormat(format);
+        return ff.format(date);
+    }
+    public static String getnow() {
+
+        java.util.Date date = calendar.getTime();
+        //DateFormat localFormat = DateFormat.getDateInstance();
         DateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
         return ff.format(date);
     }
-
+    static Calendar calendar = new GregorianCalendar();
+    static DateFormat ff = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static String getnowdatetime() {
-        Calendar calendar = new GregorianCalendar();
+
         java.util.Date date = calendar.getTime();
-        DateFormat localFormat = DateFormat.getDateInstance();
-        DateFormat ff = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //DateFormat localFormat = DateFormat.getDateInstance();
+
         return ff.format(date);
     }
     public static String getnowzavtra() {
         Calendar calendar = new GregorianCalendar();
         calendar.add(Calendar.DAY_OF_MONTH, 1);
         java.util.Date date = calendar.getTime();
-        DateFormat localFormat = DateFormat.getDateInstance();
+        //DateFormat localFormat = DateFormat.getDateInstance();
         DateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
         return ff.format(date);
 
@@ -633,11 +656,12 @@ public class functions {
         Calendar calendar = new GregorianCalendar();
         calendar.add(Calendar.DAY_OF_MONTH, day);
         java.util.Date date = calendar.getTime();
-        DateFormat localFormat = DateFormat.getDateInstance();
+        //DateFormat localFormat = DateFormat.getDateInstance();
         DateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
         return ff.format(date);
 
     }
+    /*
     public static String getdate(String ss,int d) {
         Calendar calendar = new GregorianCalendar();
         String[] s2=ss.split("-");
@@ -650,6 +674,7 @@ public class functions {
         return ff.format(date);
 
     }
+    */
     public static java.util.Date str2datetime(String ss) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -738,6 +763,19 @@ public class functions {
             return 0;
         }
 
+    }
+    public static boolean str2bool(String str) {
+        if (str==null) return false;
+        String ss=str.toLowerCase();
+        if (ss.equals("true")) return true;
+        return false;
+    }
+    public static Boolean str2Bool(String str) {
+        if (str==null) return null;
+        String ss=str.toLowerCase();
+        if (ss.equals("true")) return true;
+        if (ss.equals("false")) return false;
+        return null;
     }
     public static String requestgetParameter(String par,HttpServletRequest request
     ) {
@@ -978,14 +1016,17 @@ public class functions {
     }
 
 
-    public static void send(String instr,String myserv,int myservport){
+    public static String send(String instr,String myserv,int myservport){
 //        System.out.println("isssssssssisssssssssssisss");
+        PrintWriter out = null;
+        Socket clientSocketw = null;
+        String ret="";
         try{
 //                    System.out.println("\n socket OK--1");
 //         System.out.println(myserv);System.out.println(myservport);
             System.out.println(myserv);System.out.println(myservport);
-            PrintWriter out = null;
-            Socket clientSocketw = new Socket();
+            out = null;
+            clientSocketw = new Socket();
 
             clientSocketw.connect(new InetSocketAddress( myserv,myservport),1000);
 //        clientSocketw.connect(new InetSocketAddress( "localhost",myservport),1000);
@@ -998,10 +1039,17 @@ public class functions {
 
             out.println(instr);
 
-            out.close();
-            clientSocketw.close();
-        }catch(Exception e){e.printStackTrace();}
-
+            out.close();out=null;
+            clientSocketw.close();clientSocketw=null;
+        }catch(Exception e){ret="$say\terror";
+            System.out.println(e.toString());}
+        try{
+            if (out!=null)    out.close();
+        }catch(Exception e){}
+        try{
+            if (clientSocketw!=null)    clientSocketw.close();
+        }catch(Exception e){}
+        return ret;
     }
     public static String mysocket(String instr,String myserv,int myservport){
         PrintWriter out = null;
@@ -1096,8 +1144,20 @@ public class functions {
         if (grp==sets.magtisat) return "magtisat";
         if (grp==sets.magtifix) return "magtifix";
         if (grp==sets.marketing) return "marketing";
+        if (grp==sets.info) return "info";
         if (grp==sets.nophone) return "nophone";
         return ""+grp;
     }
+    public static void sleep(int msec){
+        try {
+            Thread.sleep(msec);
+        }catch (Exception e){}
 
+    }
+    public static boolean isgobs(String mygrp){
+       return mygrp.equals(""+sets.magtisat);
+    }
+    public static boolean isgobs(int mygrp){
+        return mygrp==sets.magtisat;
+    }
 }

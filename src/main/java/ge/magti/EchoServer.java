@@ -62,12 +62,14 @@ public class EchoServer  {
     static synchronized void addsession(String clientId, Session session,int grp){
         mysession ses=new mysession();
         ses.session=session;
-        ses.grp=grp;
+        ses.grp=grp;ses.clientid=clientId;
         session2.put(clientId,ses);
+        System.out.println("add session for "+clientId+"=size="+session2.size());
     }
     public static synchronized void removesession(String clientId){
         mysession ses=session2.get(clientId);
         GreetingServiceImpl.callpause(clientId,true,ses.uname);
+        System.out.println("remove11 session "+clientId);
         session2.remove(clientId);
     }
     static synchronized void removesession(Session session){
@@ -76,49 +78,61 @@ public class EchoServer  {
             if (session.equals(ses.session)){
                 System.out.println("remove session=="+entr.getKey().toString());
                 GreetingServiceImpl.callpause(entr.getKey().toString(),true,ses.uname);
+                System.out.println("remove22 session "+entr.getKey());
                 session2.remove(entr.getKey());
                 break;
             }
         }
     }
     static synchronized void removesession(){
+        //--------------res twarn
+        String query="select oid from oprest where state=205 and statedop=0 and " +
+                " EXTRACT(EPOCH FROM now()-start_time)>"+sets.RestWarnTime;
+        //System.out.println("kukukuku");
+        ArrayList<String[]> res=functions.getResult(query,functions.isnewcc);
+
+        for (int i=0;i<res.size();i++){
+            restwarn(res.get(i)[0]);
+            sendmessage(res.get(i)[0],"$restwarning");
+            System.out.println("warn20 "+res.get(i)[0]);
+
+        }
+
+        query="select oid from oprest where state=205 and statedop=0 and " +
+                " resttime-EXTRACT(EPOCH FROM now()-start_time)<0 ";
+        //System.out.println("kukukuku");
+        res=functions.getResult(query,functions.isnewcc);
+        for (int i=0;i<res.size();i++){
+            restwarn(res.get(i)[0]);
+            sendmessage(res.get(i)[0],"$restwarning");
+            System.out.println("warn "+res.get(i)[0]);
+        }
+        //--------------end res twarn
+
         ArrayList rems=new ArrayList();
         for (Map.Entry entr:session2.entrySet()){
             mysession ses = (mysession) entr.getValue();
             if (ses==null) {
-                rems.add(entr.getKey());
+                rems.add(entr.getKey());System.out.println("remove331 session "+ses.clientid);
             }else if (ses.session==null){
-                rems.add(entr.getKey());
+                rems.add(entr.getKey());System.out.println("remove332 session "+ses.clientid);
             }else if (!ses.session.isOpen()) {
-                rems.add(entr.getKey());
+                rems.add(entr.getKey());System.out.println("remove333 session "+ses.clientid);
             }else {
 
-                String query="select oid from oprest where state=205 and statedop=0 and " +
-                        " EXTRACT(EPOCH FROM now()-start_time)>"+sets.RestWarnTime;
-                //System.out.println("kukukuku");
-                ArrayList<String[]> res=functions.getResult(query,functions.isnewcc);
 
-                for (int i=0;i<res.size();i++){
-                    restwarn(res.get(i)[0]);
-                    sendmessage(res.get(i)[0],"$restwarning");
-                    System.out.println("warn20 "+res.get(i)[0]);
 
-                }
+                if (ses.tim>=0&&System.currentTimeMillis()-ses.tim>36000000) {
+                    rems.add(entr.getKey());//8 hours
 
-                query="select oid from oprest where state=205 and statedop=0 and " +
-                        " resttime-EXTRACT(EPOCH FROM now()-start_time)<0 ";
-                //System.out.println("kukukuku");
-                res=functions.getResult(query,functions.isnewcc);
-                for (int i=0;i<res.size();i++){
-                    restwarn(res.get(i)[0]);
-                    sendmessage(res.get(i)[0],"$restwarning");
-                    System.out.println("warn "+res.get(i)[0]);
+                    System.out.println("remove334 session " + ses.tim+" "+(System.currentTimeMillis() - ses.tim) + " " + ses.clientid);
                 }
             }
         }
         for (Object o:rems){
             mysession ses=session2.get(o);
             GreetingServiceImpl.callpause(o.toString(),true,ses.uname);
+            System.out.println("remove33 session "+ses.clientid);
             session2.remove(o);
         }
     }
@@ -142,8 +156,9 @@ public class EchoServer  {
     public static String sendmessage_callid(String callid,String message){
 
         mysession mses=getsession_callid(callid);
+return sendmessage( mses, message);
 
-        if (mses==null) return "session not enable";
+/*        if (mses==null) return "session not enable";
 
         Session ses=mses.session;
         if (ses==null) return "session not enable";
@@ -158,11 +173,13 @@ public class EchoServer  {
         }else{
             //removesession(clientId);
             return "session closed_callid";
-        }
+        }*/
     }
      public static String sendmessage(String clientId,String message){
         mysession mses=session2.get(clientId);
-        if (mses==null) return "session not enable";
+        return sendmessage( mses, message);
+
+     /*   if (mses==null) return "session not enable";
          Session ses=mses.session;
          if (ses==null) return "session not enable";
          if (ses.isOpen()) {
@@ -176,8 +193,25 @@ public class EchoServer  {
          }else{
              removesession(clientId);
              return "session closed";
-         }
+         }*/
      }
+    public static String sendmessage(mysession mses,String message){
+        if (mses==null) return "session not enable";
+        Session ses=mses.session;
+        if (ses==null) return "session not enable";
+        if (ses.isOpen()) {
+            try {
+                ses.getBasicRemote().sendText(message);
+                return "ok";
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "session exception";
+            }
+        }else{
+            removesession(mses.session);
+            return "session closed";
+        }
+    }
     /**
      * When a user sends a message to the server, this method will intercept the message
      * and allow us to react to it. For now the message is read as a String.
@@ -212,13 +246,23 @@ public class EchoServer  {
         try {
             ses.session.close();
         }catch(Exception e){};
+        System.out.println("remove44 session "+clientId);
         session2.remove(clientId);
         return "$say\tkill";
     }
-
+    public static String killsession(mysession ses){
+        if (ses==null)  return "$say\tkillerror";
+        GreetingServiceImpl.callpause(ses.clientid,true,ses.uname);
+        try {
+            ses.session.close();
+        }catch(Exception e){};
+        System.out.println("remove55 session "+ses.clientid);
+        session2.remove(ses.clientid);
+        return "$say\tkill";
+    }
     public static String getops(String input){
         String mynumber=input.split("\t")[1];
-        String ss="$getops\ntoall\t-100\nmobile\t-0\ngov\t-2\nmagtifix\t-3\nmagtisat\t-13\ntelemarket\t-6";
+        String ss="$getops\ntoall\t--100\nmobile\t--0\ngov\t--2\nmagtifix\t--3\nmagtisat\t--13\ntelemarket\t--6\ninfo\t--7";
         for (Map.Entry entr:EchoServer.session2.entrySet()) {
             mysession ses = (mysession) entr.getValue();
             if (ses==null) {
@@ -264,14 +308,14 @@ public class EchoServer  {
    //     "sendmessage\t"+
      //                   CallCenter.callCenterInstance.mynumber+"\t"+CallCenter.callCenterInstance.uname+
        //                 "\t"+ops.getValue().toString()+"\n"+txt.getValue().toString());
-        String ss="$sendopmessage\t"+s22[2];
+        String ss="$sendopmessage\t"+functions.getnowdatetime("HH:mm ")+s22[2];
         for (int i=1;i<s2.length;i++) {
             //if (i==1) ss+=s2[i];
             //else
                 ss+="\n"+s2[i];
         }
         System.out.println("ss=="+ss);
-        if (s22[3].equals("-100")){
+        if (s22[3].equals("--100")){
                     for (Map.Entry entr:EchoServer.session2.entrySet()) {
                         mysession ses = (mysession) entr.getValue();
                         if (ses!=null&&ses.session!=null&&ses.session.isOpen())
@@ -281,8 +325,9 @@ public class EchoServer  {
                     //e.printStackTrace();
                 }
                     }
-        }else if (s22[3].startsWith("-")){
-            int grpt=-functions.str2int(s22[3]);
+        }else if (s22[3].startsWith("--")){
+            int grpt=-functions.str2int(s22[3].substring(1));
+            System.out.println("grpt==============="+grpt);
                     for (Map.Entry entr:EchoServer.session2.entrySet()) {
                         mysession ses = (mysession) entr.getValue();
                         if (ses!=null&&ses.session!=null&&ses.session.isOpen())
@@ -340,7 +385,7 @@ public class EchoServer  {
                 if(ses.status==sets.TERMINATE) grp1.Term++;
 
                 grp1.Operators++;
-                long tt=(System.nanoTime() / 1000000 - ses.tim)/1000;
+                long tt=(System.currentTimeMillis()  - ses.tim)/1000;
                 String stt="";
                 if (tt<60) stt=""+tt +" s";
                 else stt=""+(tt/60)+" m "+(tt % 60) +" s";
@@ -446,8 +491,9 @@ public class EchoServer  {
         System.out.println("start timer");
     };
     static void restwarn(String oid){
-        String query=String.format("UPDATE oprest set statedop=%d WHERE oid='%s'",
-                sets.RESTWARNING,oid);
+        String query=String.format("UPDATE oprest set statedop=%d WHERE oid='%s';",
+                sets.RESTWARNING,oid)+
+                "insert into oplog(uname,dt,action,channel) values ('',NOW(),'answer','"+oid+"');";;
         functions.execSql(query, functions.isnewcc);
     }
     public static void stoptimer(){

@@ -49,7 +49,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
   //  input = escapeHtml(input);
     //userAgent = escapeHtml(userAgent);
     if (input.startsWith("getserverinfo")) return EchoServer.getserverinfo();
-    System.out.println("1111111111111111111111111111111111=="+input.substring(0,10));
+    System.out.println(functions.getnowdatetime()+" *****************************=="+input.substring(0,10));
 
     if (input.startsWith("getprobleminfo")) return getprobleminfo(input);//login2!!!!
     if (input.startsWith("login")) return login(input);
@@ -62,6 +62,11 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
     if (input.startsWith("sendsms")) return sendsms(input);
     if (input.startsWith("grpadd")) return EchoServer.grpadd(input);
     if (input.startsWith("killopsession")) return EchoServer.killsession(input);
+    if (input.startsWith("$check\t")) return check(input);
+    if (input.startsWith("myphone")) return myphone(input);
+    if (input.startsWith("mainarea.findServices")) return gobs.findServices(input).toString();
+    if (input.startsWith("mainarea.sdCallProcess")) return gobs.sdCallProcess(input).toString();
+    if (input.startsWith("mainarea.gobssave")) return gobs.gobssave(input).toString();
    // return "Hello, " + input + "!<br><br>I am running " + serverInfo
    //     + ".<br><br>It looks like you are using:<br>" + userAgent;
       return "unknown";
@@ -141,7 +146,9 @@ functions.execSql(query,functions.isnewcc);
       else if (!infos.equals(""))
         query += "\ninsert into log2(callid,operat,info,op_end) values ('" + s2[4] + "','SIP/" + s2[3] + "'," +
                 "'{" + infos + "}',now());";
-
+      else
+          query += "\ninsert into log2(callid,operat,op_end) values ('" + s2[4] + "','SIP/" + s2[3] + "'," +
+                  "now());";
  System.out.println("*************************="+phonedescrip+"*="+s2[7]+"\n"+input);
 
       if (!phonedescrip.equals("")){
@@ -169,6 +176,8 @@ functions.execSql(query,functions.isnewcc);
         state=sets.READY;
       }else if (s2[2].equals("terminate")){
         state=sets.TERMINATE;
+      }else if (s2[2].equals("ringreturn")){
+          state=sets.TERMINATE;
       }
 
       if (state==sets.READY){
@@ -179,7 +188,7 @@ functions.execSql(query,functions.isnewcc);
     System.out.println("sessssssssssssssssssss=="+s2[3]+"="+state);
     mysession ses=EchoServer.getsession(s2[3]);
     if (ses!=null){
-      ses.status=state;ses.tim=System.nanoTime() / 1000000;
+      ses.status=state;ses.tim=System.currentTimeMillis() ;
       if (state==sets.READY) {ses.callid="";ses.anumber="";}
         System.out.println("sess is not null");
     }
@@ -193,11 +202,11 @@ functions.execSql(query,functions.isnewcc);
   String login(String input){
     String[] s2=input.split("\t");
 
+      System.out.println(functions.getnowdatetime()+" login "+input);
 
 
 
-
-    String query="SELECT oid,optype,number,style FROM secrets where uname='"+s2[1]+"'and secret='"+s2[2]+"'";
+    String query="SELECT oid,optype,number,style,grps,sippass FROM secrets where uname='"+s2[1]+"'and secret='"+s2[2]+"'";
       ArrayList<String[]> res = functions.getResult(query,functions.isnewcc);
     if (res.size()>0) {
         String res2;
@@ -228,18 +237,47 @@ functions.execSql(query,functions.isnewcc);
 
       mysession ses=EchoServer.getsession(res.get(0)[2]);
       if (ses!=null){
-        return "$login\terror\tSession is open!!!";
+          EchoServer.sendmessage(ses,"$check\t"+res.get(0)[2]);
+          for (int i=0;i<10;i++) {
+              functions.sleep(300);
+              ses = EchoServer.getsession(res.get(0)[2]);
+              if (ses!=null) {
+                  if (System.currentTimeMillis() - ses.checktim < 5000) {
+                      return "$login\terror\tSession is open!!!";
+                  }
+              }
+          }
+          ses = EchoServer.getsession(res.get(0)[2]);
+          if (ses!=null) {
+              if (System.currentTimeMillis()-ses.checktim>5000){
+                  System.out.println("kill337 sess "+ses.clientid);
+                  EchoServer.killsession(ses);
+                 functions.sleep(1);
+
+              }else
+                return "$login\terror\tSession is open!!!";
+          }
       }
 
         String rst=this.getRestOpTime(res.get(0)[2]);
      // System.out.println("111111111111111111111111111111111111");
         boolean debug=sets.debug;
         if (s2[1].equals("sarchi")) debug=true;
-      return "$login\tok\t"+setsmessagestring+"\t"+debug+"\t"+res.get(0)[2]+"\t"+s2[1]+"\t"+res.get(0)[1]+"\t"+res.get(0)[0]+"\t"+CallCenter.ver+"\t"+res.get(0)[3]+"\n"+rst+"\n"+res2;
+        //System.out.println("======================="+s2[1]+"============="+debug);
+String s5=res.get(0)[5];
+if (s5==null) s5="112233";
+      return "$login\tok\t"+setsmessagestring+"\t"+debug+"\t"+res.get(0)[2]+"\t"+s2[1]+"\t"+res.get(0)[1]+"\t"+res.get(0)[0]+"\t"+CallCenter.ver+"\t"+res.get(0)[3]+"\t"+res.get(0)[4]+"\t"+s5+"\n"+rst+"\n"+res2;
     }
     else return "$login\terror\tError user password !!!";
   }
-
+public String check(String input){
+      String[] s2=input.split("\t");
+      mysession mses=EchoServer.getsession(s2[1]);
+      if (mses!=null){
+        mses.checktim=System.currentTimeMillis();
+      }
+      return "";
+}
 
    public static void callpause(String number,boolean logout,String uname){
       String query;
@@ -298,22 +336,43 @@ functions.execSql(query,functions.isnewcc);
 
       ss.append("$reports\n");
 //    query="SELECT info.oid, info.i_type,info.grp,not(info.grp="+mygrp+") as mygrp FROM info where info.grp in ("+vv+") ORDER BY mygrp,info.i_type";
-      query="select name,title,dat from mydat where optype<='"+optype+"' and type=1 ORDER BY n";
-      res = functions.getResult(query,functions.isnewcc);
+    //(optype<=-1 or (name='blacklist' and current_time>'0:0:0' and current_time<'18:30:0'))
+
+      query="select name,title,dat,oid,poid from mydat where (optype<='"+optype+
+              "' or (name='blacklist' and current_time>'0:0:0' and current_time<'8:30:0')) and type=0 ORDER BY n";
+ /*     res = functions.getResult(query,functions.isnewcc);
       for (int i=0;i<res.size();i++) {
           ss.append(""+res.get(i)[0]+"\t"+res.get(i)[1]+"\t"+res.get(i)[2]+"\n");
-      }
+      }*/
+      ss.append(functions.getResult2( query, "\n", "\t", functions.isnewcc, -1, "",false,false));
 
-    mysession ses=EchoServer.getsession(s2[4]);
+
+      mysession ses=EchoServer.getsession(s2[4]);
     if (ses!=null){
-      ses.uname=s2[3];
+        ses.uname=s2[3];
       if (ses.status==0) {
           //ses.status=sets.LOGIN;
           ses.status=sets.READY;
-          ses.tim=System.nanoTime() / 1000000;
+          ses.tim=System.currentTimeMillis();
       }
     }
+    boolean isgobs=functions.isgobs(mygrp);
+    if (isgobs){
 
+        ss.append(gobs.gettemplates(s2[3],s2[6]));
+    }
+      if (!s2[4].startsWith("-")) {
+              query="select title,dat from mydat where optype<='"+optype+ "' and type=3 ORDER BY n";
+
+              String ip;
+              if (isgobs) ip=sets.gobsip;
+              else ip=sets.asterip;
+
+          String pss = "myphone\nregister\n" + s2[4]
+                  + "\n"+ip+"\n"+s2[6]+"\nforward\n"+
+                  functions.getResult2( query, "\n", "\t", functions.isnewcc, -1, "",false,false);
+          myphone(pss);
+      }
    /* ss.append("$request\n");
     for (int i=0;i<13;i++) {
       ss.append(""+i+"\trequest"+i+"\n");
@@ -441,7 +500,8 @@ String s223=java.net.URLEncoder.encode(s22[3],"UTF-8");
    //   System.out.println("warName====="+warName);
     ss="/cgi-bin/sendsms?username=1&password=1&to=%2B995"+s223+"&from=110011"+
             "&dlr-url=http://192.168.27.30:8080/"+warName+"/mymessage?resp=%25d-"+
-            s12+ss+"-%25p&dlr-mask=31&text="+ss+"&coding=2&charset=utf8";
+//            s12+ss+"-%25p&dlr-mask=31&text="+ss+"&coding=2&charset=utf8";
+            s12+"-%25p&dlr-mask=31&text="+ss+"&coding=2&charset=utf8";
 
   //    http://192.168.19.194:13013/cgi-bin/sendsms?username=2&password=2&from=123&to=%2B995595392929&
       // text=%E1%83%A2%E1%83%94%E1%83%A1%E1%83%A2%E1%83%98&coding=2&charset=utf8
@@ -459,7 +519,11 @@ String s223=java.net.URLEncoder.encode(s22[3],"UTF-8");
     return "ok";
   }
 
-
+    String myphone(String input) {
+        String ip = getThreadLocalRequest().getRemoteAddr();
+        //System.out.println("==================="+ip);
+        return functions.send(input,ip,8000);
+    }
 
 
 

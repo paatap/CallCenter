@@ -12,5 +12,7 @@ public class mysession {
     public int status=0;
     public String uname;
     public String anumber;
-    public long tim;
+    public long tim=-1;
+    public long checktim=-1;
+    public String clientid;
 }

@@ -54,6 +54,7 @@ public class mymessage extends HttpServlet implements ServletContextListener {
         String number=request.getParameter("number");
         String mess=request.getParameter("message");
         String ss0=request.getParameter("resp");
+        String type=request.getParameter("type");
         try{
 
             if (ss0!=null){
@@ -62,17 +63,20 @@ public class mymessage extends HttpServlet implements ServletContextListener {
                     if (s2[0].equals("1"))
                     {
 
-                        String str="$sendopmessage<<"+s2[4]+"\t"+functions.getnowdatetime()+"\t mivida";
+                        String str="$sendopmessage\t"+functions.getnowdatetime("HH:mm ")+s2[4]+"\nmivida";
                         EchoServer.sendmessage(s2[1], str);
                     }else   if (s2[0].equals("2")){
 
-                        String str="$sendopmessage<<"+s2[4]+"\t"+functions.getnowdatetime()+"\t shectoma";
+                        String str="$sendopmessage\t"+functions.getnowdatetime("HH:mm ")+s2[4]+"\nshectoma";
                         EchoServer.sendmessage(s2[1], str);
                     }
             }else if (mess!=null&&number!=null){
-                String ss = EchoServer.sendmessage(number, mess);
+                String ss = EchoServer.sendmessage(number, mess.replace("_tt_","\t").replace("_nn_","\n").replace("_time_",functions.getnowdatetime("HH:mm")));
                 System.out.println(ss);
                 out.println(ss);
+            }else if (type!=null&&type.equals("sinfo")){
+                out.println(EchoServer.getserverinfo());
+
             }else {
                 out.println("<!DOCTYPE html>");
                 out.println("<html>");
@@ -81,26 +85,31 @@ public class mymessage extends HttpServlet implements ServletContextListener {
                 out.println("</head>");
                 out.println("<body>");
                 out.println("<table>");
-                int i=0;
+                //int i=0;
                 out.println("<tr><td> </td><td>uname</td><td>mynumber"
-                               +"</td><td>grp</td><td>callid"
-                                +"</td><td>anumber</td><td>status</td></tr>\n");
+                        +"</td><td>grp</td>"
+                        +"<td>anumber</td><td>callid</td><td>status</td><td>time</td></tr>\n");
                 for (Map.Entry entr:EchoServer.session2.entrySet()){
                     mysession ses=(mysession)entr.getValue();
-                    i++;
+                    //i++;
                     if (ses==null) {
-                        out.println("<tr><td> " + i + "</td><td>mysess-null</td></tr>\n");
+                        out.println("<tr><td>mysess-null</td></tr>\n");
                     }else if (ses.session==null){
-                        out.println("<tr><td> " + i + "</td><td>sess-null</td></tr>\n");
+                        out.println("<tr><td>sess-null</td></tr>\n");
                     }else if (!ses.session.isOpen()) {
-                        out.println("<tr><td> " + i + "</td><td>sess-closed</td></tr>\n");
+                        out.println("<tr><td>sess-closed</td></tr>\n");
                     }else {
-                        out.println("<tr><td> " + i + "</td><td>"+ses.uname+"</td><td>"+entr.getKey()
-                               +"</td><td>" +ses.grp+"</td><td>" +ses.callid
-                                +"</td><td>" +ses.anumber+"</td><td>" + functions.getstatus(ses.status)+"</td></tr>\n");
+                        long tt=(System.nanoTime() / 1000000 - ses.tim)/1000;
+                        out.println("<tr><td>"+ses.uname+"</td><td>"+entr.getKey()
+                                +"</td><td>" +ses.grp
+                                +"</td><td>" +ses.anumber+"</td><td>" +ses.callid
+                                +"</td><td>"+functions.getstatus(ses.status)
+                                +"</td><td>" + tt
+                                +"</td></tr>\n");
                     }
                 }
-                out.println("<table>");
+                out.println("<table><br>");
+                out.println(EchoServer.getserverinfo().replace("\n","<br>\n"));
 //                out.println("<h1> " + anum + "---" + bnum + "</h1>");
                 out.println("</body>");
                 out.println("</html>");
